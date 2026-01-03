@@ -2,11 +2,30 @@
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
     "builder": "NIXPACKS",
-    "buildCommand": "echo 'Building NeumoAir PWA'"
+    "buildCommand": "echo 'Building NeumoCalc PWA'"
   },
   "deploy": {
-    "startCommand": "echo 'PWA served statically'",
+    "startCommand": "nginx -g 'daemon off;'",
     "healthcheckPath": "/",
-    "restartPolicyType": "ON_FAILURE"
+    "restartPolicyType": "ON_FAILURE",
+    "numReplicas": 1
+  },
+  "ingress": {
+    "routes": [
+      {
+        "handle": "filesystem"
+      },
+      {
+        "src": "/(.*)",
+        "dest": "/app/$1",
+        "continue": true
+      }
+    ],
+    "rewrites": [
+      {
+        "source": "/*",
+        "destination": "/index.html"
+      }
+    ]
   }
 }
