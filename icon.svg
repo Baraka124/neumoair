@@ -1,45 +1,42 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <!-- Premium gradient background -->
+  <!-- Premium gradient with subtle shine -->
   <defs>
-    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#1a365d"/>
+    <linearGradient id="premiumGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E6EA6"/>
+      <stop offset="50%" stop-color="#155588"/>
       <stop offset="100%" stop-color="#0f3d66"/>
     </linearGradient>
-    <radialGradient id="dotGrad" cx="50%" cy="50%" r="50%">
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#5ABF95"/>
       <stop offset="100%" stop-color="#2E8B57"/>
-    </radialGradient>
-    <filter id="softShadow">
-      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#0a2d4d" flood-opacity="0.3"/>
-    </filter>
+    </linearGradient>
   </defs>
   
-  <!-- Premium rounded square -->
-  <rect width="100" height="100" fill="url(#bgGrad)" rx="20" filter="url(#softShadow)"/>
+  <!-- Sophisticated rounded square -->
+  <rect width="100" height="100" fill="url(#premiumGrad)" rx="20"/>
   
-  <!-- Abstract lungs as interconnected nodes -->
-  <circle cx="40" cy="45" r="10" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2.5"/>
-  <circle cx="60" cy="45" r="10" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2.5"/>
+  <!-- Abstract medical device -->
+  <circle cx="50" cy="45" r="18" fill="none" stroke="white" stroke-width="3" opacity="0.9"/>
   
-  <!-- Central data hub -->
-  <circle cx="50" cy="55" r="6" fill="url(#dotGrad)" stroke="white" stroke-width="1.5"/>
-  
-  <!-- Connecting data flows -->
-  <path d="M40 45 Q45 50 50 55" 
-        stroke="rgba(90, 191, 149, 0.7)" 
-        stroke-width="2" 
+  <!-- Data visualization inside -->
+  <path d="M40 45 
+           L45 42 
+           L50 48 
+           L55 44 
+           L60 47" 
         fill="none" 
-        stroke-linecap="round"/>
-  <path d="M60 45 Q55 50 50 55" 
-        stroke="rgba(90, 191, 149, 0.7)" 
-        stroke-width="2" 
-        fill="none" 
+        stroke="url(#accentGrad)" 
+        stroke-width="3" 
         stroke-linecap="round"/>
   
-  <!-- Data trend line -->
-  <path d="M35 65 L45 60 L55 63 L65 58" 
-        stroke="white" 
-        stroke-width="2.5" 
-        fill="none" 
-        stroke-linecap="round"/>
+  <!-- Precision dots -->
+  <circle cx="45" cy="42" r="1.5" fill="white"/>
+  <circle cx="50" cy="48" r="1.5" fill="white"/>
+  <circle cx="55" cy="44" r="1.5" fill="white"/>
+  
+  <!-- Medical cross below -->
+  <g transform="translate(50, 65)">
+    <rect x="-2.5" y="-10" width="5" height="20" rx="1" fill="white"/>
+    <rect x="-10" y="-2.5" width="20" height="5" rx="1" fill="white"/>
+  </g>
 </svg>
