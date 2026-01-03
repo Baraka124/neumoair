@@ -1,1 +1,17 @@
 
+{
+  "name": "NeumoAir",
+  "short_name": "NeumoAir",
+  "description": "Lung transplant monitoring calculator",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#1E6EA6",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
+    }
+  ]
+}
