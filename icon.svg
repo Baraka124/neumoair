@@ -1,16 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
   <rect width="100" height="100" fill="#1E6EA6" rx="20"/>
   
-  <!-- Calculator outline -->
-  <rect x="30" y="35" width="40" height="30" rx="5" fill="none" stroke="white" stroke-width="3"/>
-  
-  <!-- Plus sign -->
-  <path d="M45 42 L55 42 M50 37 L50 47" 
-        stroke="#5ABF95" 
-        stroke-width="3" 
+  <!-- Clean graph line -->
+  <path d="M30 60 L45 45 L60 50 L75 40" 
+        fill="none" 
+        stroke="white" 
+        stroke-width="4" 
         stroke-linecap="round"/>
   
-  <!-- Lung dots -->
-  <circle cx="40" cy="60" r="4" fill="white"/>
-  <circle cx="60" cy="60" r="4" fill="white"/>
+  <!-- Lung silhouette -->
+  <path d="M40 45 Q45 35 50 40 Q55 35 60 45" 
+        fill="none" 
+        stroke="#5ABF95" 
+        stroke-width="3"/>
 </svg>
