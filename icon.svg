@@ -1,16 +1,22 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Clean blue background -->
   <rect width="100" height="100" fill="#1E6EA6" rx="20"/>
   
-  <!-- Clean graph line -->
-  <path d="M30 60 L45 45 L60 50 L75 40" 
+  <!-- Abstract lung shape -->
+  <path d="M40 40 
+           Q35 50, 40 60 
+           Q45 65, 50 65 
+           Q55 65, 60 60 
+           Q65 50, 60 40 
+           Q55 35, 50 35 
+           Q45 35, 40 40 Z" 
         fill="none" 
         stroke="white" 
-        stroke-width="4" 
-        stroke-linecap="round"/>
+        stroke-width="4"/>
   
-  <!-- Lung silhouette -->
-  <path d="M40 45 Q45 35 50 40 Q55 35 60 45" 
-        fill="none" 
+  <!-- Data trend line -->
+  <path d="M40 50 L50 45 L60 50" 
         stroke="#5ABF95" 
-        stroke-width="3"/>
+        stroke-width="3" 
+        stroke-linecap="round"/>
 </svg>
