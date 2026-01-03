@@ -7,16 +7,16 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="description" content="Objective calculation tool for lung transplant monitoring. No diagnosis, just metrics.">
+    <meta name="description" content="Instant lung transplant calculations. No setup, just results.">
     
-    <title>NeumoCalc | Lung Transplant Calculator</title>
+    <title>NeumoCalc | Instant Transplant Metrics</title>
     
     <!-- PWA -->
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="icon.svg" type="image/svg+xml">
     
     <style>
-        /* ===== RESET & BASE ===== */
+        /* ===== CSS RESET & BASE ===== */
         * {
             margin: 0;
             padding: 0;
@@ -27,13 +27,14 @@
         html {
             height: 100%;
             -webkit-text-size-adjust: 100%;
+            font-size: 16px;
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            line-height: 1.6;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
+            background: #f8fafc;
+            color: #1f2937;
+            line-height: 1.5;
             height: 100%;
             overflow: hidden;
             position: fixed;
@@ -41,7 +42,7 @@
         }
         
         /* ===== APP CONTAINER ===== */
-        .app {
+        .app-container {
             display: flex;
             flex-direction: column;
             height: 100vh;
@@ -57,9 +58,10 @@
             justify-content: center;
             align-items: center;
             padding: 2rem;
+            background: linear-gradient(135deg, #1E6EA6 0%, #0f3d66 100%);
+            color: white;
             text-align: center;
-            background: linear-gradient(135deg, #1E6EA6 0%, #155588 100%);
-            animation: fadeIn 1s ease;
+            animation: fadeIn 0.8s ease;
         }
         
         @keyframes fadeIn {
@@ -67,26 +69,32 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
-        .logo {
+        .welcome-logo {
             width: 120px;
             height: 120px;
-            background: rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
             border-radius: 30px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 2rem;
-            backdrop-filter: blur(10px);
             border: 2px solid rgba(255,255,255,0.2);
+            animation: pulse 2s infinite;
         }
         
-        .logo-icon {
-            font-size: 3rem;
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .welcome-logo-icon {
+            font-size: 3.5rem;
         }
         
         .welcome-title {
             font-size: 2.5rem;
-            font-weight: 700;
+            font-weight: 800;
             margin-bottom: 0.5rem;
             letter-spacing: -0.02em;
         }
@@ -96,6 +104,12 @@
             opacity: 0.9;
             margin-bottom: 3rem;
             max-width: 400px;
+            line-height: 1.6;
+        }
+        
+        .welcome-cta {
+            width: 100%;
+            max-width: 300px;
         }
         
         /* ===== MAIN APP (Hidden initially) ===== */
@@ -103,14 +117,13 @@
             display: none;
             flex-direction: column;
             height: 100vh;
-            background: #f8fafc;
-            color: #1f2937;
         }
         
-        /* ===== HEADER ===== */
+        /* ===== APP HEADER ===== */
         .app-header {
             background: white;
-            padding: 1rem;
+            padding: 0.875rem 1rem;
+            padding-top: max(0.875rem, env(safe-area-inset-top));
             border-bottom: 1px solid #e5e7eb;
             display: flex;
             justify-content: space-between;
@@ -119,28 +132,101 @@
             top: 0;
             z-index: 100;
             flex-shrink: 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
         
-        .session-info {
+        .patient-info {
             display: flex;
             flex-direction: column;
-            gap: 0.25rem;
+            gap: 0.125rem;
         }
         
         .patient-id {
-            font-weight: 600;
+            font-weight: 700;
             color: #1E6EA6;
-            font-family: 'Courier New', monospace;
+            font-family: 'SF Mono', 'Courier New', monospace;
+            font-size: 1rem;
         }
         
-        .session-status {
+        .patient-status {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
             font-size: 0.75rem;
             color: #6b7280;
+        }
+        
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #059669;
+        }
+        
+        .status-dot.offline {
+            background: #6b7280;
         }
         
         .header-actions {
             display: flex;
             gap: 0.5rem;
+        }
+        
+        .header-btn {
+            background: none;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #4b5563;
+            transition: all 0.2s;
+            font-size: 1.125rem;
+        }
+        
+        .header-btn:hover {
+            background: #f3f4f6;
+            color: #1E6EA6;
+        }
+        
+        /* ===== MODE SELECTOR ===== */
+        .mode-selector {
+            display: flex;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 0.5rem;
+            gap: 0.5rem;
+            flex-shrink: 0;
+        }
+        
+        .mode-btn {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 12px;
+            background: #f9fafb;
+            color: #6b7280;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .mode-btn:hover {
+            background: #f3f4f6;
+        }
+        
+        .mode-btn.active {
+            background: #1E6EA6;
+            color: white;
+            box-shadow: 0 2px 8px rgba(30, 110, 166, 0.2);
         }
         
         /* ===== MAIN CONTENT ===== */
@@ -149,408 +235,474 @@
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
             overscroll-behavior: contain;
-            padding: 1rem;
-            padding-bottom: 100px; /* Space for bottom nav */
+            position: relative;
         }
         
-        /* ===== SECTIONS ===== */
-        .section {
-            display: none;
+        /* ===== QUICK CALC MODE (Default) ===== */
+        .quick-calc-mode {
+            padding: 1rem;
             animation: slideUp 0.3s ease;
         }
         
         @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
         
-        .section.active {
-            display: block;
+        /* Baseline Banner */
+        .baseline-banner {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 1px solid #bae6fd;
+            border-radius: 16px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
-        /* ===== CARD DESIGN ===== */
-        .card {
+        .baseline-values {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        
+        .baseline-label {
+            font-size: 0.75rem;
+            color: #1E6EA6;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .baseline-numbers {
+            display: flex;
+            gap: 1rem;
+            font-family: 'SF Mono', 'Courier New', monospace;
+            font-weight: 600;
+        }
+        
+        .baseline-fev1 {
+            color: #1E6EA6;
+        }
+        
+        .baseline-fvc {
+            color: #059669;
+        }
+        
+        .change-baseline-btn {
+            background: rgba(30, 110, 166, 0.1);
+            border: none;
+            color: #1E6EA6;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1rem;
+        }
+        
+        .change-baseline-btn:hover {
+            background: rgba(30, 110, 166, 0.2);
+        }
+        
+        /* Live Calculator */
+        .live-calculator {
             background: white;
-            border-radius: 16px;
+            border-radius: 20px;
             padding: 1.5rem;
             margin-bottom: 1rem;
             box-shadow: 0 4px 20px rgba(0,0,0,0.08);
             border: 1px solid #e5e7eb;
-            transition: transform 0.2s, box-shadow 0.2s;
         }
         
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
-        }
-        
-        .card-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #1E6EA6;
-            margin-bottom: 0.5rem;
-        }
-        
-        .card-subtitle {
-            color: #6b7280;
-            font-size: 0.875rem;
+        .calc-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
             margin-bottom: 1.5rem;
         }
         
-        /* ===== FORM ELEMENTS ===== */
-        .form-group {
-            margin-bottom: 1.5rem;
+        @media (max-width: 640px) {
+            .calc-inputs {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
         }
         
-        .form-label {
+        .input-group {
+            position: relative;
+        }
+        
+        .input-label {
             display: block;
-            font-weight: 500;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #4b5563;
             margin-bottom: 0.5rem;
-            color: #374151;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
         
-        .form-control {
+        .calc-input {
             width: 100%;
-            padding: 0.875rem;
-            border: 2px solid #d1d5db;
-            border-radius: 12px;
-            font-size: 1rem;
-            font-family: inherit;
-            background: white;
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 14px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            font-family: 'SF Mono', 'Courier New', monospace;
+            color: #1f2937;
+            text-align: center;
             transition: all 0.2s;
+            background: white;
+            -moz-appearance: textfield;
         }
         
-        .form-control:focus {
+        .calc-input::-webkit-outer-spin-button,
+        .calc-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        
+        .calc-input:focus {
             outline: none;
             border-color: #1E6EA6;
             box-shadow: 0 0 0 3px rgba(30, 110, 166, 0.1);
         }
         
-        .form-hint {
-            font-size: 0.75rem;
+        .calc-input.positive {
+            border-color: #059669;
+            background: linear-gradient(to right, #f0fdf4, white);
+        }
+        
+        .calc-input.negative {
+            border-color: #dc2626;
+            background: linear-gradient(to right, #fef2f2, white);
+        }
+        
+        .input-unit {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
             color: #6b7280;
-            margin-top: 0.375rem;
-            font-style: italic;
+            font-weight: 500;
         }
         
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
+        .date-input-wrapper {
+            grid-column: 1 / -1;
         }
         
-        /* ===== BUTTONS ===== */
-        .btn {
-            padding: 1rem 1.5rem;
-            border: none;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            min-height: 56px;
+        .date-input {
             width: 100%;
-            font-family: inherit;
+            padding: 0.875rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 14px;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #1f2937;
+            background: white;
+            text-align: center;
         }
         
-        .btn-primary {
-            background: linear-gradient(135deg, #1E6EA6 0%, #155588 100%);
-            color: white;
-            box-shadow: 0 4px 15px rgba(30, 110, 166, 0.3);
+        .date-input:focus {
+            outline: none;
+            border-color: #1E6EA6;
         }
         
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(30, 110, 166, 0.4);
-        }
-        
-        .btn-secondary {
-            background: #f3f4f6;
-            color: #374151;
-            border: 2px solid #d1d5db;
-        }
-        
-        .btn-secondary:hover {
-            background: #e5e7eb;
-        }
-        
-        .btn-success {
-            background: linear-gradient(135deg, #059669 0%, #047857 100%);
-            color: white;
-        }
-        
-        .btn-outline {
-            background: transparent;
-            border: 2px solid #1E6EA6;
-            color: #1E6EA6;
-        }
-        
-        .btn-outline:hover {
-            background: #f0f9ff;
-        }
-        
-        .btn-group {
-            display: flex;
-            gap: 1rem;
+        /* Instant Results */
+        .instant-results {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 1.5rem;
             margin-top: 1.5rem;
+            animation: fadeIn 0.3s ease;
         }
         
-        .btn-group .btn {
-            flex: 1;
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
         }
         
-        /* ===== PATH SELECTION ===== */
-        .path-selection {
+        .results-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #4b5563;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .results-grid {
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(2, 1fr);
             gap: 1rem;
-            margin: 2rem 0;
         }
         
-        @media (min-width: 640px) {
-            .path-selection {
-                grid-template-columns: 1fr 1fr;
+        @media (max-width: 480px) {
+            .results-grid {
+                grid-template-columns: 1fr;
             }
         }
         
-        .path-card {
-            background: white;
-            border-radius: 16px;
-            padding: 2rem;
-            text-align: center;
-            cursor: pointer;
-            border: 2px solid transparent;
-            transition: all 0.3s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1rem;
-        }
-        
-        .path-card:hover {
-            border-color: #1E6EA6;
-            transform: translateY(-4px);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
-        }
-        
-        .path-card.active {
-            border-color: #1E6EA6;
-            background: #f0f9ff;
-        }
-        
-        .path-icon {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        .path-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #1E6EA6;
-        }
-        
-        .path-desc {
-            color: #6b7280;
-            font-size: 0.875rem;
-        }
-        
-        /* ===== RESULTS DISPLAY ===== */
-        .results-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
-            margin: 2rem 0;
-        }
-        
         .result-card {
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-            border: 1px solid #e2e8f0;
+            background: white;
             border-radius: 12px;
-            padding: 1.5rem;
+            padding: 1rem;
             text-align: center;
-            position: relative;
-            overflow: hidden;
+            border: 1px solid #e5e7eb;
+            transition: transform 0.2s;
         }
         
-        .result-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(to right, #1E6EA6, #059669);
+        .result-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
         
         .result-value {
-            font-family: 'Courier New', monospace;
-            font-size: 1.75rem;
+            font-family: 'SF Mono', 'Courier New', monospace;
+            font-size: 1.5rem;
             font-weight: 700;
-            color: #1E6EA6;
             margin-bottom: 0.25rem;
+            line-height: 1;
         }
         
         .result-label {
-            font-size: 0.875rem;
-            color: #4b5563;
+            font-size: 0.75rem;
+            color: #6b7280;
             font-weight: 500;
         }
         
         .result-sub {
-            font-size: 0.75rem;
-            color: #6b7280;
-            margin-top: 0.25rem;
+            font-size: 0.6875rem;
+            color: #9ca3af;
+            margin-top: 0.125rem;
         }
         
-        /* ===== BOS INDICATOR ===== */
+        /* BOS Indicator */
+        .bos-indicator-wrapper {
+            grid-column: 1 / -1;
+            margin-top: 0.5rem;
+        }
+        
         .bos-indicator {
-            padding: 1.5rem;
             border-radius: 12px;
-            margin: 1.5rem 0;
+            padding: 1rem;
             text-align: center;
+            font-weight: 700;
+            font-size: 1.125rem;
+            transition: all 0.3s;
+            border: 2px solid;
         }
         
         .bos-indicator.bos0 {
             background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
             color: #065f46;
-            border: 2px solid #10b981;
+            border-color: #10b981;
         }
         
         .bos-indicator.bos0p {
             background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
             color: #92400e;
-            border: 2px solid #f59e0b;
+            border-color: #f59e0b;
         }
         
         .bos-indicator.bos1 {
             background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
             color: #991b1b;
-            border: 2px solid #ef4444;
+            border-color: #ef4444;
         }
         
         .bos-indicator.bos2-3 {
             background: linear-gradient(135deg, #fca5a5 0%, #f87171 100%);
             color: #7f1d1d;
-            border: 2px solid #dc2626;
+            border-color: #dc2626;
         }
         
-        .bos-title {
-            font-size: 1.125rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-        
-        .bos-desc {
-            font-size: 0.875rem;
-            opacity: 0.9;
-        }
-        
-        /* ===== VISIT HISTORY ===== */
-        .visit-input-row {
-            background: #f9fafb;
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-            border: 1px solid #e5e7eb;
-        }
-        
-        .visit-number {
-            font-weight: 600;
-            color: #1E6EA6;
-            margin-bottom: 1rem;
+        /* Quick Actions */
+        .quick-actions-bar {
             display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .visit-number::before {
-            content: '📅';
-            font-size: 1.25rem;
-        }
-        
-        /* ===== STABILITY VISUALIZATION ===== */
-        .stability-chart {
-            height: 200px;
-            background: #f8fafc;
-            border-radius: 12px;
-            margin: 1.5rem 0;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid #e5e7eb;
-        }
-        
-        .chart-line {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: #1E6EA6;
-            opacity: 0.3;
-        }
-        
-        .data-point {
-            position: absolute;
-            width: 12px;
-            height: 12px;
-            background: #1E6EA6;
-            border-radius: 50%;
-            border: 3px solid white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            transform: translate(-50%, 50%);
-        }
-        
-        /* ===== BOTTOM NAVIGATION ===== */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
             border-top: 1px solid #e5e7eb;
-            padding: 0.75rem;
-            padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
-            display: flex;
-            gap: 0.5rem;
-            z-index: 100;
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
         }
         
-        .nav-btn {
+        .action-btn {
             flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: none;
+            padding: 1rem;
             border: none;
-            padding: 0.75rem 0.5rem;
-            border-radius: 12px;
-            color: #6b7280;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 0.875rem;
             cursor: pointer;
             transition: all 0.2s;
-            font-size: 0.75rem;
-            font-weight: 500;
-            min-height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
         
-        .nav-btn i {
-            font-size: 1.25rem;
-            margin-bottom: 0.25rem;
-            font-style: normal;
+        .action-btn.primary {
+            background: linear-gradient(135deg, #1E6EA6 0%, #155588 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(30, 110, 166, 0.2);
         }
         
-        .nav-btn.active {
-            color: #1E6EA6;
+        .action-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(30, 110, 166, 0.3);
+        }
+        
+        .action-btn.secondary {
+            background: #f3f4f6;
+            color: #4b5563;
+            border: 1px solid #d1d5db;
+        }
+        
+        .action-btn.secondary:hover {
+            background: #e5e7eb;
+        }
+        
+        /* ===== STANDARD MODE ===== */
+        .standard-mode {
+            padding: 1rem;
+            display: none;
+        }
+        
+        .scenario-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 0.75rem;
+            margin: 1rem 0;
+        }
+        
+        .scenario-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 1.25rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .scenario-card:hover {
+            border-color: #1E6EA6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        .scenario-card.active {
+            border-color: #1E6EA6;
             background: #f0f9ff;
         }
         
-        .nav-btn:hover {
-            background: #f9fafb;
+        .scenario-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .scenario-title {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+        }
+        
+        .scenario-desc {
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+        
+        /* ===== REVIEW MODE ===== */
+        .review-mode {
+            padding: 1rem;
+            display: none;
+        }
+        
+        .comparison-view {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        
+        .comparison-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .comparison-title {
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        @media (max-width: 640px) {
+            .comparison-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+        
+        .comparison-col {
+            text-align: center;
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .comparison-col.current {
+            background: #f0f9ff;
+            border-color: #bae6fd;
+        }
+        
+        .comparison-col.diff {
+            background: #f8fafc;
+            border-color: #e5e7eb;
+        }
+        
+        .col-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .col-value {
+            font-family: 'SF Mono', 'Courier New', monospace;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        
+        .col-value.positive {
+            color: #059669;
+        }
+        
+        .col-value.negative {
+            color: #dc2626;
+        }
+        
+        .col-label {
+            font-size: 0.75rem;
+            color: #6b7280;
         }
         
         /* ===== TOAST NOTIFICATIONS ===== */
@@ -560,13 +712,16 @@
             right: 20px;
             background: white;
             color: #1f2937;
-            padding: 1rem 1.5rem;
-            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            border-radius: 14px;
             box-shadow: 0 8px 30px rgba(0,0,0,0.15);
             z-index: 10000;
             animation: slideInRight 0.3s ease;
             max-width: 300px;
             border-left: 4px solid #1E6EA6;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
         }
         
         @keyframes slideInRight {
@@ -586,39 +741,81 @@
             border-left-color: #dc2626;
         }
         
-        /* ===== LOADING STATES ===== */
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #f3f4f6;
-            border-top-color: #1E6EA6;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+        .toast-icon {
+            font-size: 1.25rem;
         }
         
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        /* ===== OFFLINE INDICATOR ===== */
+        .offline-indicator {
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #f59e0b;
+            color: #92400e;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            z-index: 9999;
+            display: none;
+            animation: pulse 2s infinite;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 640px) {
-            .welcome-title {
-                font-size: 2rem;
-            }
-            
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-            
-            .results-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 0.75rem;
-            }
-            
-            .card {
-                padding: 1.25rem;
-            }
+        /* ===== MODALS ===== */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 1rem;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 400px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+        }
+        
+        .modal-footer {
+            padding: 1.25rem 1.5rem;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
         }
         
         /* ===== UTILITY CLASSES ===== */
@@ -640,330 +837,211 @@
         .mb-6 { margin-bottom: 1.5rem; }
         
         .font-mono {
-            font-family: 'Courier New', monospace;
+            font-family: 'SF Mono', 'Courier New', monospace;
+        }
+        
+        /* ===== PRINT STYLES ===== */
+        @media print {
+            .mode-selector,
+            .header-actions,
+            .action-btn,
+            .change-baseline-btn {
+                display: none !important;
+            }
+            
+            .main-content {
+                overflow: visible;
+                height: auto;
+            }
+            
+            .live-calculator,
+            .instant-results,
+            .comparison-view {
+                box-shadow: none;
+                border: 1px solid #ccc;
+                break-inside: avoid;
+            }
+        }
+        
+        /* ===== SAFE AREA SUPPORT ===== */
+        @supports (padding: max(0px)) {
+            .quick-calc-mode,
+            .standard-mode,
+            .review-mode {
+                padding-left: max(1rem, env(safe-area-inset-left));
+                padding-right: max(1rem, env(safe-area-inset-right));
+                padding-bottom: max(1rem, env(safe-area-inset-bottom));
+            }
         }
     </style>
 </head>
 <body>
     <!-- Welcome Screen -->
-    <div class="app" id="welcomeScreen">
+    <div class="app-container" id="welcomeScreen">
         <div class="welcome-screen">
-            <div class="logo">
-                <div class="logo-icon">🫁</div>
+            <div class="welcome-logo">
+                <div class="welcome-logo-icon">🫁</div>
             </div>
             <h1 class="welcome-title">NeumoCalc</h1>
             <p class="welcome-subtitle">
-                Objective calculation tool for lung transplant monitoring.<br>
-                <em style="opacity: 0.8; font-size: 0.875rem;">No diagnosis, just metrics.</em>
+                Instant lung transplant calculations.<br>
+                <em style="opacity: 0.8; font-size: 0.9375rem;">Type numbers. Get results.</em>
             </p>
             
-            <div style="width: 100%; max-width: 300px;">
-                <button class="btn btn-primary" id="startSessionBtn">
-                    Start New Session
+            <div class="welcome-cta">
+                <button class="action-btn primary" id="startAppBtn" style="font-size: 1rem;">
+                    Start Calculating →
                 </button>
-                <div class="form-hint mt-4" style="color: rgba(255,255,255,0.7);">
-                    All calculations are session-based. Data is stored locally until export.
+                <div style="margin-top: 1rem; font-size: 0.8125rem; opacity: 0.8;">
+                    No setup needed. Works offline.
                 </div>
             </div>
         </div>
     </div>
     
-    <!-- Main Application (Hidden Initially) -->
+    <!-- Main Application -->
     <div class="main-app" id="mainApp">
         <!-- Header -->
         <header class="app-header">
-            <div class="session-info">
-                <div class="patient-id" id="currentPatientId">--</div>
-                <div class="session-status" id="sessionStatus">No active session</div>
+            <div class="patient-info">
+                <div class="patient-id" id="currentPatientId">NM-001</div>
+                <div class="patient-status">
+                    <span class="status-dot" id="statusDot"></span>
+                    <span id="statusText">Ready</span>
+                </div>
             </div>
             <div class="header-actions">
-                <button class="btn btn-outline btn-sm" id="newSessionBtn" style="min-height: auto; padding: 0.5rem 1rem;">
-                    New Patient
+                <button class="header-btn" id="newPatientBtn" title="New Patient">
+                    🆕
+                </button>
+                <button class="header-btn" id="exportBtn" title="Export">
+                    📤
+                </button>
+                <button class="header-btn" id="settingsBtn" title="Settings">
+                    ⚙️
                 </button>
             </div>
         </header>
         
+        <!-- Mode Selector -->
+        <div class="mode-selector">
+            <button class="mode-btn active" data-mode="quick">
+                ⚡ Quick Calc
+            </button>
+            <button class="mode-btn" data-mode="standard">
+                📋 Full Session
+            </button>
+            <button class="mode-btn" data-mode="review">
+                📊 Review
+            </button>
+        </div>
+        
         <!-- Main Content -->
-        <main class="main-content" id="mainContent">
-            <!-- Session Setup Section -->
-            <section id="sectionSetup" class="section active">
-                <div class="card">
-                    <h2 class="card-title">Patient Session Setup</h2>
-                    <p class="card-subtitle">All calculations are tied to this session</p>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Patient ID (for traceability only)</label>
-                        <input type="text" class="form-control" id="inputPatientId" 
-                               placeholder="e.g., NM-001, LTX-2024-01" maxlength="20">
-                        <div class="form-hint">
-                            Used only for session identification. No PHI.
+        <main class="main-content">
+            <!-- ===== QUICK CALC MODE ===== -->
+            <div class="quick-calc-mode" id="modeQuick">
+                <!-- Baseline Banner -->
+                <div class="baseline-banner">
+                    <div class="baseline-values">
+                        <div class="baseline-label">Baseline Values</div>
+                        <div class="baseline-numbers">
+                            <span class="baseline-fev1">FEV₁: 2.85 L</span>
+                            <span class="baseline-fvc">FVC: 3.40 L</span>
                         </div>
                     </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Clinical Pathway</label>
-                        <div class="path-selection">
-                            <!-- Path A: Baseline from EHR -->
-                            <div class="path-card" id="pathEHR">
-                                <div class="path-icon">📋</div>
-                                <div class="path-title">Baseline from EHR</div>
-                                <div class="path-desc">
-                                    Enter known baseline values from medical record
-                                </div>
-                            </div>
-                            
-                            <!-- Path B: Establish Baseline -->
-                            <div class="path-card" id="pathEstablish">
-                                <div class="path-icon">📊</div>
-                                <div class="path-title">Establish Baseline</div>
-                                <div class="path-desc">
-                                    Analyze post-transplant visits to determine baseline
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="btn-group">
-                        <button class="btn btn-primary" id="btnStartSession">
-                            Start Session
-                        </button>
-                    </div>
+                    <button class="change-baseline-btn" id="changeBaselineBtn" title="Change baseline">
+                        ⚙️
+                    </button>
                 </div>
                 
-                <div class="card">
-                    <h3 class="card-title">Important Notes</h3>
-                    <ul style="color: #6b7280; line-height: 1.6; padding-left: 1.25rem;">
-                        <li>All data is stored locally in your browser</li>
-                        <li>Sessions are temporary until exported</li>
-                        <li>No patient identification data is collected</li>
-                        <li>Tool provides objective metrics only - no diagnosis</li>
-                        <li>Export calculations to your EHR system</li>
-                    </ul>
-                </div>
-            </section>
-            
-            <!-- Path A: Baseline from EHR -->
-            <section id="sectionPathA" class="section">
-                <div class="card">
-                    <h2 class="card-title">Baseline from Medical Record</h2>
-                    <p class="card-subtitle">Enter established baseline values</p>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Baseline Date (When stable)</label>
-                        <input type="date" class="form-control" id="baselineDate">
-                        <div class="form-hint">
-                            Typically 3-6 months post-transplant when patient stabilized
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">FEV₁ Baseline (L)</label>
-                            <input type="number" step="0.01" min="0.5" max="8.0" 
-                                   class="form-control" id="baselineFev1">
-                            <div class="form-hint">From clinical record</div>
+                <!-- Live Calculator -->
+                <div class="live-calculator">
+                    <div class="calc-inputs">
+                        <!-- FEV1 Input -->
+                        <div class="input-group">
+                            <div class="input-label">FEV₁</div>
+                            <input type="number" 
+                                   step="0.01" 
+                                   min="0.5" 
+                                   max="8.0" 
+                                   class="calc-input" 
+                                   id="inputFev1"
+                                   placeholder="2.85"
+                                   autofocus>
+                            <span class="input-unit">L</span>
                         </div>
                         
-                        <div class="form-group">
-                            <label class="form-label">FVC Baseline (L)</label>
-                            <input type="number" step="0.01" min="0.5" max="10.0" 
-                                   class="form-control" id="baselineFvc">
-                            <div class="form-hint">From clinical record</div>
-                        </div>
-                    </div>
-                    
-                    <div class="btn-group">
-                        <button class="btn btn-secondary" onclick="showSection('setup')">
-                            Back
-                        </button>
-                        <button class="btn btn-primary" id="btnSaveBaseline">
-                            Save Baseline & Continue
-                        </button>
-                    </div>
-                </div>
-            </section>
-            
-            <!-- Path B: Establish Baseline -->
-            <section id="sectionPathB" class="section">
-                <div class="card">
-                    <h2 class="card-title">Establish New Baseline</h2>
-                    <p class="card-subtitle">Enter 3-6 months of post-transplant visits</p>
-                    
-                    <div id="visitEntries">
-                        <!-- Dynamic visit entries will be added here -->
-                    </div>
-                    
-                    <div class="btn-group">
-                        <button class="btn btn-outline" id="btnAddVisit">
-                            + Add Visit
-                        </button>
-                        <button class="btn btn-secondary" onclick="showSection('setup')">
-                            Back
-                        </button>
-                        <button class="btn btn-primary" id="btnAnalyzeStability">
-                            Analyze Stability
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Stability Analysis Results -->
-                <div class="card hidden" id="stabilityResults">
-                    <h2 class="card-title">Stability Analysis</h2>
-                    <p class="card-subtitle">Based on entered visit data</p>
-                    
-                    <div class="results-grid">
-                        <div class="result-card">
-                            <div class="result-value" id="analysisVariation">--</div>
-                            <div class="result-label">Variation</div>
-                            <div class="result-sub">% (lower is better)</div>
-                        </div>
-                        <div class="result-card">
-                            <div class="result-value" id="analysisVisits">--</div>
-                            <div class="result-label">Visits</div>
-                            <div class="result-sub">Analyzed</div>
-                        </div>
-                        <div class="result-card">
-                            <div class="result-value" id="analysisDays">--</div>
-                            <div class="result-label">Days</div>
-                            <div class="result-sub">Monitoring period</div>
-                        </div>
-                        <div class="result-card">
-                            <div class="result-value" id="analysisScore">--</div>
-                            <div class="result-label">Stability</div>
-                            <div class="result-sub">Score (0-100)</div>
-                        </div>
-                    </div>
-                    
-                    <!-- Suggested Baseline -->
-                    <div class="form-group mt-6">
-                        <label class="form-label">Suggested Baseline Values</label>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">FEV₁ (L)</label>
-                                <input type="number" step="0.01" class="form-control" 
-                                       id="suggestedFev1">
-                                <div class="form-hint">Average of top 2 values</div>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">FVC (L)</label>
-                                <input type="number" step="0.01" class="form-control" 
-                                       id="suggestedFvc">
-                                <div class="form-hint">Corresponding FVC</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="btn-group">
-                        <button class="btn btn-secondary" onclick="document.getElementById('stabilityResults').classList.add('hidden')">
-                            Adjust Visits
-                        </button>
-                        <button class="btn btn-success" id="btnAcceptBaseline">
-                            Accept Baseline
-                        </button>
-                    </div>
-                </div>
-            </section>
-            
-            <!-- Main Calculator -->
-            <section id="sectionCalculator" class="section">
-                <!-- Current Status Card -->
-                <div class="card">
-                    <h2 class="card-title">Current Status</h2>
-                    <div class="results-grid">
-                        <div class="result-card">
-                            <div class="result-value" id="currentFev1Display">--</div>
-                            <div class="result-label">Baseline FEV₁</div>
-                            <div class="result-sub">Liters</div>
-                        </div>
-                        <div class="result-card">
-                            <div class="result-value" id="currentFvcDisplay">--</div>
-                            <div class="result-label">Baseline FVC</div>
-                            <div class="result-sub">Liters</div>
-                        </div>
-                        <div class="result-card">
-                            <div class="result-value" id="currentVisits">0</div>
-                            <div class="result-label">Saved Visits</div>
-                            <div class="result-sub">This session</div>
-                        </div>
-                        <div class="result-card">
-                            <div class="result-value" id="currentDays">--</div>
-                            <div class="result-label">Days</div>
-                            <div class="result-sub">Since baseline</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- New Measurement Card -->
-                <div class="card">
-                    <h2 class="card-title">New Measurement</h2>
-                    <p class="card-subtitle">Enter current spirometry values</p>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Measurement Date</label>
-                        <input type="date" class="form-control" id="measurementDate">
-                        <div class="form-hint" id="dateContext"></div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">FEV₁ (L)</label>
-                            <input type="number" step="0.01" min="0.5" max="8.0" 
-                                   class="form-control" id="measurementFev1" 
-                                   placeholder="e.g., 2.85">
-                            <div class="form-hint">Best value from PFT</div>
+                        <!-- FVC Input -->
+                        <div class="input-group">
+                            <div class="input-label">FVC</div>
+                            <input type="number" 
+                                   step="0.01" 
+                                   min="0.5" 
+                                   max="10.0" 
+                                   class="calc-input" 
+                                   id="inputFvc"
+                                   placeholder="3.40">
+                            <span class="input-unit">L</span>
                         </div>
                         
-                        <div class="form-group">
-                            <label class="form-label">FVC (L)</label>
-                            <input type="number" step="0.01" min="0.5" max="10.0" 
-                                   class="form-control" id="measurementFvc" 
-                                   placeholder="e.g., 3.40">
-                            <div class="form-hint">Best value from PFT</div>
+                        <!-- Date Input -->
+                        <div class="input-group date-input-wrapper">
+                            <div class="input-label">Date</div>
+                            <input type="date" 
+                                   class="date-input" 
+                                   id="inputDate">
                         </div>
                     </div>
                     
-                    <div class="form-group">
-                        <label class="form-label">Clinical Context</label>
-                        <select class="form-control" id="measurementContext">
-                            <option value="routine">Routine follow-up</option>
-                            <option value="symptomatic">Symptomatic evaluation</option>
-                            <option value="post-treatment">Post-treatment assessment</option>
-                            <option value="concern">Clinical concern</option>
-                        </select>
-                    </div>
-                    
-                    <div class="btn-group">
-                        <button class="btn btn-primary" id="btnCalculate">
-                            Calculate Metrics
+                    <!-- Context Selector -->
+                    <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                        <button class="scenario-card mini" data-context="routine" style="flex: 1; padding: 0.75rem;">
+                            <div>📅</div>
+                            <div style="font-size: 0.75rem; font-weight: 600;">Routine</div>
                         </button>
-                        <button class="btn btn-outline" id="btnClear">
-                            Clear
+                        <button class="scenario-card mini" data-context="concern" style="flex: 1; padding: 0.75rem;">
+                            <div>🚨</div>
+                            <div style="font-size: 0.75rem; font-weight: 600;">Concern</div>
+                        </button>
+                        <button class="scenario-card mini" data-context="postTx" style="flex: 1; padding: 0.75rem;">
+                            <div>💊</div>
+                            <div style="font-size: 0.75rem; font-weight: 600;">Post-Tx</div>
                         </button>
                     </div>
                 </div>
                 
-                <!-- Results Card (Hidden Initially) -->
-                <div class="card hidden" id="resultsCard">
-                    <h2 class="card-title">Objective Metrics</h2>
-                    <p class="card-subtitle">Calculated values for clinical documentation</p>
+                <!-- Instant Results -->
+                <div class="instant-results hidden" id="instantResults">
+                    <div class="results-header">
+                        <div class="results-title">Results</div>
+                        <div style="font-size: 0.75rem; color: #6b7280;">
+                            <span id="resultDate">Today</span>
+                        </div>
+                    </div>
                     
-                    <!-- Key Metrics -->
                     <div class="results-grid">
+                        <!-- Ratio -->
                         <div class="result-card">
                             <div class="result-value" id="resultRatio">--</div>
-                            <div class="result-label">FEV₁/FVC</div>
-                            <div class="result-sub">Ratio %</div>
+                            <div class="result-label">FEV₁/FVC Ratio</div>
+                            <div class="result-sub">%</div>
                         </div>
+                        
+                        <!-- Change from Baseline -->
                         <div class="result-card">
-                            <div class="result-value" id="resultChangeBaseline">--</div>
-                            <div class="result-label">vs Baseline</div>
-                            <div class="result-sub">% Change</div>
+                            <div class="result-value" id="resultChange">--</div>
+                            <div class="result-label">Change</div>
+                            <div class="result-sub">from Baseline</div>
                         </div>
+                        
+                        <!-- Change from Last -->
                         <div class="result-card">
                             <div class="result-value" id="resultChangeLast">--</div>
-                            <div class="result-label">vs Last Visit</div>
-                            <div class="result-sub">% Change</div>
+                            <div class="result-label">From Last</div>
+                            <div class="result-sub">Visit</div>
                         </div>
+                        
+                        <!-- Rate -->
                         <div class="result-card">
                             <div class="result-value" id="resultRate">--</div>
                             <div class="result-label">Rate</div>
@@ -972,226 +1050,405 @@
                     </div>
                     
                     <!-- BOS Indicator -->
-                    <div class="bos-indicator bos0 mt-4" id="bosIndicator">
-                        <div class="bos-title" id="bosTitle">BOS Stage</div>
-                        <div class="bos-desc" id="bosDesc">Enter values to calculate</div>
-                    </div>
-                    
-                    <!-- Save Action -->
-                    <div class="btn-group mt-4">
-                        <button class="btn btn-success" id="btnSaveVisit">
-                            Save to Session
-                        </button>
-                        <button class="btn btn-outline" id="btnExportResults">
-                            Export Results
-                        </button>
+                    <div class="bos-indicator-wrapper">
+                        <div class="bos-indicator bos0" id="bosIndicator">
+                            <div id="bosTitle">Enter values to calculate</div>
+                            <div id="bosDesc" style="font-size: 0.875rem; font-weight: 400; opacity: 0.9;"></div>
+                        </div>
                     </div>
                 </div>
-            </section>
+                
+                <!-- Quick Actions -->
+                <div class="quick-actions-bar">
+                    <button class="action-btn secondary" id="clearBtn">
+                        🗑️ Clear
+                    </button>
+                    <button class="action-btn secondary" id="saveBtn">
+                        💾 Save
+                    </button>
+                    <button class="action-btn primary" id="exportQuickBtn">
+                        📤 Export to EHR
+                    </button>
+                </div>
+            </div>
             
-            <!-- History Section -->
-            <section id="sectionHistory" class="section">
-                <div class="card">
-                    <h2 class="card-title">Visit History</h2>
-                    <p class="card-subtitle" id="historySummary">No visits saved</p>
-                    
-                    <div id="historyList">
-                        <div class="text-center" style="color: #6b7280; padding: 3rem 1rem;">
-                            No visits recorded yet.<br>
-                            <small>Save calculations to build history</small>
+            <!-- ===== STANDARD MODE ===== -->
+            <div class="standard-mode" id="modeStandard">
+                <div class="comparison-view">
+                    <div class="comparison-header">
+                        <div class="comparison-title">Full Session</div>
+                        <div style="font-size: 0.875rem; color: #6b7280;">
+                            For complete documentation
                         </div>
                     </div>
                     
-                    <div class="btn-group mt-4">
-                        <button class="btn btn-outline" id="btnExportHistory">
-                            Export All as CSV
-                        </button>
-                        <button class="btn btn-outline" id="btnClearHistory">
-                            Clear History
+                    <!-- Scenario Selector -->
+                    <div class="scenario-selector">
+                        <div class="scenario-card active" data-scenario="routine">
+                            <div class="scenario-icon">📅</div>
+                            <div class="scenario-title">Routine</div>
+                            <div class="scenario-desc">Monthly follow-up</div>
+                        </div>
+                        <div class="scenario-card" data-scenario="concern">
+                            <div class="scenario-icon">🚨</div>
+                            <div class="scenario-title">Concern</div>
+                            <div class="scenario-desc">Symptomatic evaluation</div>
+                        </div>
+                        <div class="scenario-card" data-scenario="postTx">
+                            <div class="scenario-icon">💊</div>
+                            <div class="scenario-title">Post-Tx</div>
+                            <div class="scenario-desc">Treatment assessment</div>
+                        </div>
+                        <div class="scenario-card" data-scenario="annual">
+                            <div class="scenario-icon">📋</div>
+                            <div class="scenario-title">Annual</div>
+                            <div class="scenario-desc">Comprehensive review</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Full Form (Same as quick calc but with notes) -->
+                    <div class="live-calculator">
+                        <div class="calc-inputs">
+                            <div class="input-group">
+                                <div class="input-label">FEV₁</div>
+                                <input type="number" step="0.01" class="calc-input" 
+                                       placeholder="2.85" id="stdFev1">
+                                <span class="input-unit">L</span>
+                            </div>
+                            <div class="input-group">
+                                <div class="input-label">FVC</div>
+                                <input type="number" step="0.01" class="calc-input" 
+                                       placeholder="3.40" id="stdFvc">
+                                <span class="input-unit">L</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Clinical Notes -->
+                        <div style="margin-top: 1.5rem;">
+                            <div class="input-label">Clinical Notes</div>
+                            <textarea style="width: 100%; padding: 0.875rem; border: 2px solid #e5e7eb; border-radius: 12px; min-height: 80px; font-family: inherit;" 
+                                      placeholder="e.g., Patient reports increased dyspnea, on prednisone 20mg daily"
+                                      id="clinicalNotes"></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="quick-actions-bar">
+                        <button class="action-btn primary" id="saveFullBtn">
+                            💾 Save & Document
                         </button>
                     </div>
                 </div>
-            </section>
+            </div>
+            
+            <!-- ===== REVIEW MODE ===== -->
+            <div class="review-mode" id="modeReview">
+                <div class="comparison-view">
+                    <div class="comparison-header">
+                        <div class="comparison-title">Trend Analysis</div>
+                        <div style="font-size: 0.875rem; color: #6b7280;">
+                            Last 3 visits comparison
+                        </div>
+                    </div>
+                    
+                    <div class="comparison-grid">
+                        <!-- Visit 1 -->
+                        <div class="comparison-col">
+                            <div class="col-title">Visit 1</div>
+                            <div class="col-value">2.82 L</div>
+                            <div class="col-label">FEV₁</div>
+                            <div class="col-value negative">-1.1%</div>
+                            <div class="col-label">Change</div>
+                        </div>
+                        
+                        <!-- Visit 2 -->
+                        <div class="comparison-col">
+                            <div class="col-title">Visit 2</div>
+                            <div class="col-value">2.79 L</div>
+                            <div class="col-label">FEV₁</div>
+                            <div class="col-value negative">-2.1%</div>
+                            <div class="col-label">Change</div>
+                        </div>
+                        
+                        <!-- Visit 3 (Current) -->
+                        <div class="comparison-col current">
+                            <div class="col-title">Current</div>
+                            <div class="col-value">2.75 L</div>
+                            <div class="col-label">FEV₁</div>
+                            <div class="col-value negative">-3.5%</div>
+                            <div class="col-label">Change</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Trend Summary -->
+                    <div style="margin-top: 1.5rem; padding: 1rem; background: #f8fafc; border-radius: 12px; text-align: center;">
+                        <div style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.5rem;">
+                            Trend over 90 days
+                        </div>
+                        <div style="font-family: 'SF Mono', monospace; font-weight: 600; color: #dc2626;">
+                            Decline: -0.07 L (-2.4%)
+                        </div>
+                        <div style="font-size: 0.75rem; color: #9ca3af; margin-top: 0.25rem;">
+                            Rate: -0.023 L/month
+                        </div>
+                    </div>
+                </div>
+            </div>
         </main>
-        
-        <!-- Bottom Navigation -->
-        <nav class="bottom-nav">
-            <button class="nav-btn" data-section="calculator">
-                <i>🧮</i> Calculate
-            </button>
-            <button class="nav-btn" data-section="history">
-                <i>📊</i> History
-            </button>
-            <button class="nav-btn" data-section="export">
-                <i>📤</i> Export
-            </button>
-        </nav>
+    </div>
+    
+    <!-- Offline Indicator -->
+    <div class="offline-indicator" id="offlineIndicator">
+        ● Offline Mode
+    </div>
+    
+    <!-- Baseline Setup Modal -->
+    <div class="modal" id="baselineModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Set Baseline Values</div>
+            </div>
+            <div class="modal-body">
+                <div style="margin-bottom: 1rem;">
+                    <div class="input-label">FEV₁ Baseline (L)</div>
+                    <input type="number" step="0.01" class="calc-input" 
+                           style="width: 100%; text-align: center;" 
+                           id="modalBaselineFev1" value="2.85">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <div class="input-label">FVC Baseline (L)</div>
+                    <input type="number" step="0.01" class="calc-input" 
+                           style="width: 100%; text-align: center;" 
+                           id="modalBaselineFvc" value="3.40">
+                </div>
+                <div style="font-size: 0.75rem; color: #6b7280; text-align: center;">
+                    Typically established 3-6 months post-transplant
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="action-btn secondary" id="cancelBaselineBtn">
+                    Cancel
+                </button>
+                <button class="action-btn primary" id="saveBaselineBtn">
+                    Set Baseline
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Export Modal -->
+    <div class="modal" id="exportModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Export Results</div>
+            </div>
+            <div class="modal-body">
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <button class="action-btn secondary" id="exportCSVBtn">
+                        📊 Export as CSV
+                    </button>
+                    <button class="action-btn secondary" id="exportJSONBtn">
+                        📄 Export as JSON
+                    </button>
+                    <button class="action-btn primary" id="exportEHRBtn">
+                        🏥 Copy for EHR
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
     
     <!-- JavaScript -->
     <script>
     // ============================================
-    // NEUMOCALC - Objective Lung Transplant Calculator
+    // NEUMOCALC 10/10 - ULTIMATE CLINICAL CALCULATOR
     // ============================================
     
     // Clinical Constants
     const BOS_THRESHOLDS = {
-        0: 10,   // BOS 0-p threshold (% decline)
-        1: 20,   // BOS 1 threshold
-        2: 35    // BOS 2-3 threshold
-    };
-    
-    const MEDICAL_RANGES = {
-        FEV1: { min: 0.5, max: 8.0 },
-        FVC: { min: 0.5, max: 10.0 }
+        0: 10,   // BOS 0-p: 10-19% decline
+        1: 20,   // BOS 1: 20-34% decline
+        2: 35    // BOS 2-3: ≥35% decline
     };
     
     // App State
     const state = {
-        session: {
-            id: null,
-            patientId: null,
-            startedAt: null,
-            pathway: null // 'ehr' or 'establish'
+        // Current session
+        patient: {
+            id: 'NM-001',
+            baseline: {
+                fev1: 2.85,
+                fvc: 3.40,
+                date: '2024-01-15'
+            }
         },
-        baseline: {
-            date: null,
+        
+        // Current calculation
+        current: {
             fev1: null,
             fvc: null,
-            established: false
+            date: null,
+            context: 'routine'
         },
+        
+        // History
         visits: [],
-        currentPathway: null,
-        visitEntries: [] // For establishing baseline
+        
+        // Settings
+        settings: {
+            autoCalculate: true,
+            autoIncrementDate: true,
+            defaultExport: 'ehr',
+            offlineMode: true
+        },
+        
+        // UI State
+        mode: 'quick'
     };
     
     // DOM Elements
-    const dom = {};
+    const el = {};
     
     // Initialize
     document.addEventListener('DOMContentLoaded', () => {
+        initializeApp();
+    });
+    
+    function initializeApp() {
         cacheElements();
         setupEventListeners();
         setupPWA();
-        setDefaultDates();
+        loadFromStorage();
+        setupDefaults();
         
-        // Show welcome screen
-        showWelcome();
-    });
+        console.log('🚀 NeumoCalc 10/10 loaded');
+    }
     
     function cacheElements() {
         // Welcome screen
-        dom.startSessionBtn = document.getElementById('startSessionBtn');
-        dom.welcomeScreen = document.getElementById('welcomeScreen');
-        dom.mainApp = document.getElementById('mainApp');
+        el.startAppBtn = document.getElementById('startAppBtn');
+        el.welcomeScreen = document.getElementById('welcomeScreen');
+        el.mainApp = document.getElementById('mainApp');
         
-        // Session setup
-        dom.inputPatientId = document.getElementById('inputPatientId');
-        dom.pathEHR = document.getElementById('pathEHR');
-        dom.pathEstablish = document.getElementById('pathEstablish');
-        dom.btnStartSession = document.getElementById('btnStartSession');
-        dom.newSessionBtn = document.getElementById('newSessionBtn');
+        // Header
+        el.currentPatientId = document.getElementById('currentPatientId');
+        el.statusDot = document.getElementById('statusDot');
+        el.statusText = document.getElementById('statusText');
+        el.newPatientBtn = document.getElementById('newPatientBtn');
+        el.exportBtn = document.getElementById('exportBtn');
+        el.settingsBtn = document.getElementById('settingsBtn');
         
-        // Path A (EHR)
-        dom.baselineDate = document.getElementById('baselineDate');
-        dom.baselineFev1 = document.getElementById('baselineFev1');
-        dom.baselineFvc = document.getElementById('baselineFvc');
-        dom.btnSaveBaseline = document.getElementById('btnSaveBaseline');
+        // Mode selector
+        el.modeBtns = document.querySelectorAll('.mode-btn');
+        el.modeQuick = document.getElementById('modeQuick');
+        el.modeStandard = document.getElementById('modeStandard');
+        el.modeReview = document.getElementById('modeReview');
         
-        // Path B (Establish)
-        dom.visitEntries = document.getElementById('visitEntries');
-        dom.btnAddVisit = document.getElementById('btnAddVisit');
-        dom.btnAnalyzeStability = document.getElementById('btnAnalyzeStability');
-        dom.stabilityResults = document.getElementById('stabilityResults');
-        dom.suggestedFev1 = document.getElementById('suggestedFev1');
-        dom.suggestedFvc = document.getElementById('suggestedFvc');
-        dom.btnAcceptBaseline = document.getElementById('btnAcceptBaseline');
+        // Quick Calc Mode
+        el.inputFev1 = document.getElementById('inputFev1');
+        el.inputFvc = document.getElementById('inputFvc');
+        el.inputDate = document.getElementById('inputDate');
+        el.changeBaselineBtn = document.getElementById('changeBaselineBtn');
+        el.instantResults = document.getElementById('instantResults');
+        el.resultDate = document.getElementById('resultDate');
+        el.resultRatio = document.getElementById('resultRatio');
+        el.resultChange = document.getElementById('resultChange');
+        el.resultChangeLast = document.getElementById('resultChangeLast');
+        el.resultRate = document.getElementById('resultRate');
+        el.bosIndicator = document.getElementById('bosIndicator');
+        el.bosTitle = document.getElementById('bosTitle');
+        el.bosDesc = document.getElementById('bosDesc');
+        el.clearBtn = document.getElementById('clearBtn');
+        el.saveBtn = document.getElementById('saveBtn');
+        el.exportQuickBtn = document.getElementById('exportQuickBtn');
         
-        // Calculator
-        dom.measurementDate = document.getElementById('measurementDate');
-        dom.measurementFev1 = document.getElementById('measurementFev1');
-        dom.measurementFvc = document.getElementById('measurementFvc');
-        dom.measurementContext = document.getElementById('measurementContext');
-        dom.btnCalculate = document.getElementById('btnCalculate');
-        dom.btnClear = document.getElementById('btnClear');
-        dom.resultsCard = document.getElementById('resultsCard');
-        dom.btnSaveVisit = document.getElementById('btnSaveVisit');
-        dom.btnExportResults = document.getElementById('btnExportResults');
+        // Standard Mode
+        el.stdFev1 = document.getElementById('stdFev1');
+        el.stdFvc = document.getElementById('stdFvc');
+        el.clinicalNotes = document.getElementById('clinicalNotes');
+        el.saveFullBtn = document.getElementById('saveFullBtn');
         
-        // Display elements
-        dom.currentPatientId = document.getElementById('currentPatientId');
-        dom.sessionStatus = document.getElementById('sessionStatus');
-        dom.currentFev1Display = document.getElementById('currentFev1Display');
-        dom.currentFvcDisplay = document.getElementById('currentFvcDisplay');
-        dom.currentVisits = document.getElementById('currentVisits');
-        dom.currentDays = document.getElementById('currentDays');
-        dom.dateContext = document.getElementById('dateContext');
+        // Modals
+        el.baselineModal = document.getElementById('baselineModal');
+        el.modalBaselineFev1 = document.getElementById('modalBaselineFev1');
+        el.modalBaselineFvc = document.getElementById('modalBaselineFvc');
+        el.cancelBaselineBtn = document.getElementById('cancelBaselineBtn');
+        el.saveBaselineBtn = document.getElementById('saveBaselineBtn');
+        el.exportModal = document.getElementById('exportModal');
+        el.exportCSVBtn = document.getElementById('exportCSVBtn');
+        el.exportJSONBtn = document.getElementById('exportJSONBtn');
+        el.exportEHRBtn = document.getElementById('exportEHRBtn');
         
-        // Results
-        dom.resultRatio = document.getElementById('resultRatio');
-        dom.resultChangeBaseline = document.getElementById('resultChangeBaseline');
-        dom.resultChangeLast = document.getElementById('resultChangeLast');
-        dom.resultRate = document.getElementById('resultRate');
-        dom.bosIndicator = document.getElementById('bosIndicator');
-        dom.bosTitle = document.getElementById('bosTitle');
-        dom.bosDesc = document.getElementById('bosDesc');
+        // Offline indicator
+        el.offlineIndicator = document.getElementById('offlineIndicator');
         
-        // History
-        dom.historySummary = document.getElementById('historySummary');
-        dom.historyList = document.getElementById('historyList');
-        dom.btnExportHistory = document.getElementById('btnExportHistory');
-        dom.btnClearHistory = document.getElementById('btnClearHistory');
-        
-        // Analysis results
-        dom.analysisVariation = document.getElementById('analysisVariation');
-        dom.analysisVisits = document.getElementById('analysisVisits');
-        dom.analysisDays = document.getElementById('analysisDays');
-        dom.analysisScore = document.getElementById('analysisScore');
-        
-        // Bottom nav
-        dom.navBtns = document.querySelectorAll('.nav-btn');
+        // Context/scenario buttons
+        el.contextBtns = document.querySelectorAll('[data-context]');
+        el.scenarioCards = document.querySelectorAll('.scenario-card');
     }
     
     function setupEventListeners() {
         // Welcome screen
-        dom.startSessionBtn.addEventListener('click', startNewSession);
-        dom.newSessionBtn.addEventListener('click', showWelcome);
+        el.startAppBtn.addEventListener('click', startApp);
         
-        // Pathway selection
-        dom.pathEHR.addEventListener('click', () => selectPathway('ehr'));
-        dom.pathEstablish.addEventListener('click', () => selectPathway('establish'));
-        dom.btnStartSession.addEventListener('click', startSession);
+        // Header buttons
+        el.newPatientBtn.addEventListener('click', newPatient);
+        el.exportBtn.addEventListener('click', showExportModal);
+        el.settingsBtn.addEventListener('click', showSettings);
         
-        // Path A
-        dom.btnSaveBaseline.addEventListener('click', saveBaselineFromEHR);
-        
-        // Path B
-        dom.btnAddVisit.addEventListener('click', addVisitEntry);
-        dom.btnAnalyzeStability.addEventListener('click', analyzeStability);
-        dom.btnAcceptBaseline.addEventListener('click', acceptSuggestedBaseline);
-        
-        // Calculator
-        dom.btnCalculate.addEventListener('click', calculateMetrics);
-        dom.btnClear.addEventListener('click', clearMeasurement);
-        dom.btnSaveVisit.addEventListener('click', saveVisit);
-        dom.btnExportResults.addEventListener('click', exportResults);
-        
-        // History
-        dom.btnExportHistory.addEventListener('click', exportHistory);
-        dom.btnClearHistory.addEventListener('click', clearHistory);
-        
-        // Input events
-        dom.measurementDate.addEventListener('change', updateDateContext);
-        dom.measurementFev1.addEventListener('input', validateMedicalRange);
-        dom.measurementFvc.addEventListener('input', validateMedicalRange);
-        
-        // Bottom navigation
-        dom.navBtns.forEach(btn => {
+        // Mode selection
+        el.modeBtns.forEach(btn => {
             btn.addEventListener('click', function() {
-                const section = this.dataset.section;
-                showSection(section);
+                const mode = this.dataset.mode;
+                switchMode(mode);
             });
         });
+        
+        // Quick Calc inputs
+        el.inputFev1.addEventListener('input', handleQuickInput);
+        el.inputFvc.addEventListener('input', handleQuickInput);
+        el.inputDate.addEventListener('change', updateDateDisplay);
+        
+        // Context buttons
+        el.contextBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const context = this.dataset.context;
+                setContext(context);
+            });
+        });
+        
+        // Quick actions
+        el.changeBaselineBtn.addEventListener('click', showBaselineModal);
+        el.clearBtn.addEventListener('click', clearInputs);
+        el.saveBtn.addEventListener('click', saveCalculation);
+        el.exportQuickBtn.addEventListener('click', quickExport);
+        
+        // Standard mode
+        el.stdFev1.addEventListener('input', handleStandardInput);
+        el.stdFvc.addEventListener('input', handleStandardInput);
+        el.saveFullBtn.addEventListener('click', saveFullCalculation);
+        
+        // Scenario cards
+        el.scenarioCards.forEach(card => {
+            card.addEventListener('click', function() {
+                if (this.dataset.scenario) {
+                    selectScenario(this.dataset.scenario);
+                }
+            });
+        });
+        
+        // Modal buttons
+        el.cancelBaselineBtn.addEventListener('click', () => hideModal('baselineModal'));
+        el.saveBaselineBtn.addEventListener('click', saveBaseline);
+        el.exportCSVBtn.addEventListener('click', exportCSV);
+        el.exportJSONBtn.addEventListener('click', exportJSON);
+        el.exportEHRBtn.addEventListener('click', exportForEHR);
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', handleKeyboardShortcuts);
+        
+        // Offline/online detection
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
     }
     
     function setupPWA() {
@@ -1200,403 +1457,160 @@
             navigator.serviceWorker.register('sw.js');
         }
         
-        // Handle offline/online
-        window.addEventListener('online', () => {
-            showToast('Back online', 'success');
-        });
-        
-        window.addEventListener('offline', () => {
-            showToast('Working offline', 'warning');
+        // Setup beforeinstallprompt
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            // Can show install button if needed
         });
     }
     
-    function setDefaultDates() {
+    function setupDefaults() {
+        // Set today's date
         const today = new Date().toISOString().split('T')[0];
+        el.inputDate.value = today;
+        el.inputDate.max = today;
         
-        // Set measurement date to today
-        dom.measurementDate.value = today;
-        dom.measurementDate.max = today;
+        // Auto-focus FEV1 input
+        setTimeout(() => {
+            el.inputFev1.focus();
+        }, 100);
         
-        // Set baseline date to 6 months ago (typical stabilization)
-        const sixMonthsAgo = new Date();
-        sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-        dom.baselineDate.value = sixMonthsAgo.toISOString().split('T')[0];
+        // Update status
+        updateOnlineStatus();
     }
     
-    // ===== WELCOME FLOW =====
-    function showWelcome() {
-        dom.welcomeScreen.style.display = 'flex';
-        dom.mainApp.style.display = 'none';
-        
-        // Reset state
-        resetSession();
-    }
-    
-    function startNewSession() {
-        dom.welcomeScreen.style.display = 'none';
-        dom.mainApp.style.display = 'flex';
-        
-        // Show setup section
-        showSection('setup');
-    }
-    
-    // ===== SESSION MANAGEMENT =====
-    function selectPathway(pathway) {
-        state.currentPathway = pathway;
-        
-        // Update UI
-        dom.pathEHR.classList.remove('active');
-        dom.pathEstablish.classList.remove('active');
-        
-        if (pathway === 'ehr') {
-            dom.pathEHR.classList.add('active');
-        } else {
-            dom.pathEstablish.classList.add('active');
-        }
-    }
-    
-    function startSession() {
-        const patientId = dom.inputPatientId.value.trim();
-        
-        if (!patientId) {
-            showToast('Please enter a patient ID for session tracking', 'warning');
-            return;
-        }
-        
-        if (!state.currentPathway) {
-            showToast('Please select a clinical pathway', 'warning');
-            return;
-        }
-        
-        // Initialize session
-        state.session = {
-            id: 'session_' + Date.now(),
-            patientId: patientId,
-            startedAt: new Date().toISOString(),
-            pathway: state.currentPathway
-        };
-        
-        // Update UI
-        dom.currentPatientId.textContent = patientId;
-        dom.sessionStatus.textContent = 'Active session';
-        
-        // Show appropriate pathway
-        if (state.currentPathway === 'ehr') {
-            showSection('pathA');
-        } else {
-            // Initialize visit entries for establishing baseline
-            state.visitEntries = [];
-            addVisitEntry();
-            addVisitEntry();
-            addVisitEntry(); // Start with 3 entries
-            showSection('pathB');
-        }
-    }
-    
-    // ===== PATH A: BASELINE FROM EHR =====
-    function saveBaselineFromEHR() {
-        const date = dom.baselineDate.value;
-        const fev1 = parseFloat(dom.baselineFev1.value);
-        const fvc = parseFloat(dom.baselineFvc.value);
-        
-        // Validation
-        if (!date || !fev1 || !fvc) {
-            showToast('Please enter all baseline values', 'error');
-            return;
-        }
-        
-        if (fev1 < MEDICAL_RANGES.FEV1.min || fev1 > MEDICAL_RANGES.FEV1.max) {
-            showToast(`FEV₁ must be between ${MEDICAL_RANGES.FEV1.min} and ${MEDICAL_RANGES.FEV1.max} L`, 'error');
-            return;
-        }
-        
-        if (fvc < MEDICAL_RANGES.FVC.min || fvc > MEDICAL_RANGES.FVC.max) {
-            showToast(`FVC must be between ${MEDICAL_RANGES.FVC.min} and ${MEDICAL_RANGES.FVC.max} L`, 'error');
-            return;
-        }
-        
-        // Save baseline
-        state.baseline = {
-            date: date,
-            fev1: fev1,
-            fvc: fvc,
-            established: true,
-            source: 'ehr'
-        };
-        
-        // Update display
-        updateBaselineDisplay();
-        
-        // Show calculator
-        showSection('calculator');
-        showToast('Baseline saved. Ready for calculations.', 'success');
-    }
-    
-    // ===== PATH B: ESTABLISH BASELINE =====
-    function addVisitEntry() {
-        const index = state.visitEntries.length + 1;
-        
-        const html = `
-            <div class="visit-input-row" data-index="${index}">
-                <div class="visit-number">Visit ${index}</div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Date</label>
-                        <input type="date" class="form-control visit-date" 
-                               data-field="date" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">FEV₁ (L)</label>
-                        <input type="number" step="0.01" class="form-control visit-fev1" 
-                               data-field="fev1" placeholder="2.85" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">FVC (L)</label>
-                        <input type="number" step="0.01" class="form-control visit-fvc" 
-                               data-field="fvc" placeholder="3.40" required>
-                    </div>
-                </div>
-                ${index > 3 ? `
-                    <button type="button" class="btn btn-outline btn-sm mt-2 remove-visit" 
-                            onclick="removeVisitEntry(${index})">
-                        Remove
-                    </button>
-                ` : ''}
-            </div>
-        `;
-        
-        dom.visitEntries.insertAdjacentHTML('beforeend', html);
-        state.visitEntries.push({ index: index });
-        
-        // Set default date for new entry
-        const newEntry = dom.visitEntries.lastElementChild;
-        const dateInput = newEntry.querySelector('.visit-date');
-        if (dateInput) {
-            // Set date to ~1 month after previous visit
-            const prevEntry = state.visitEntries[state.visitEntries.length - 2];
-            if (prevEntry && prevEntry.date) {
-                const prevDate = new Date(prevEntry.date);
-                prevDate.setMonth(prevDate.getMonth() + 1);
-                dateInput.value = prevDate.toISOString().split('T')[0];
-            } else {
-                // First entry: set to 3 months post-TX (typical)
-                const threeMonthsAgo = new Date();
-                threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
-                dateInput.value = threeMonthsAgo.toISOString().split('T')[0];
+    function loadFromStorage() {
+        try {
+            const saved = localStorage.getItem('neumocalc_data');
+            if (saved) {
+                const data = JSON.parse(saved);
+                if (data.patient) state.patient = data.patient;
+                if (data.visits) state.visits = data.visits;
+                if (data.settings) state.settings = { ...state.settings, ...data.settings };
+                
+                console.log('📁 Loaded saved data');
             }
+        } catch (e) {
+            console.warn('Failed to load saved data:', e);
         }
     }
     
-    function removeVisitEntry(index) {
-        const entry = dom.visitEntries.querySelector(`[data-index="${index}"]`);
-        if (entry) {
-            entry.remove();
-            state.visitEntries = state.visitEntries.filter(v => v.index !== index);
+    function saveToStorage() {
+        try {
+            const data = {
+                patient: state.patient,
+                visits: state.visits,
+                settings: state.settings,
+                savedAt: new Date().toISOString()
+            };
+            localStorage.setItem('neumocalc_data', JSON.stringify(data));
+        } catch (e) {
+            console.warn('Failed to save data:', e);
         }
     }
     
-    function analyzeStability() {
-        // Collect visit data
-        const visits = [];
-        const entries = dom.visitEntries.querySelectorAll('.visit-input-row');
+    // ===== APP FLOW =====
+    function startApp() {
+        el.welcomeScreen.style.display = 'none';
+        el.mainApp.style.display = 'flex';
         
-        entries.forEach(entry => {
-            const date = entry.querySelector('.visit-date').value;
-            const fev1 = parseFloat(entry.querySelector('.visit-fev1').value);
-            const fvc = parseFloat(entry.querySelector('.visit-fvc').value);
+        // Auto-calculate if both inputs have values
+        if (el.inputFev1.value && el.inputFvc.value) {
+            calculateQuick();
+        }
+    }
+    
+    function switchMode(mode) {
+        state.mode = mode;
+        
+        // Update UI
+        el.modeBtns.forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.mode === mode);
+        });
+        
+        // Show/hide modes
+        el.modeQuick.style.display = mode === 'quick' ? 'block' : 'none';
+        el.modeStandard.style.display = mode === 'standard' ? 'block' : 'none';
+        el.modeReview.style.display = mode === 'review' ? 'block' : 'none';
+        
+        // Update review mode if needed
+        if (mode === 'review') {
+            updateReviewMode();
+        }
+        
+        // Focus appropriate input
+        if (mode === 'quick') {
+            setTimeout(() => el.inputFev1.focus(), 100);
+        } else if (mode === 'standard') {
+            setTimeout(() => el.stdFev1.focus(), 100);
+        }
+    }
+    
+    // ===== QUICK CALC MODE =====
+    function handleQuickInput(e) {
+        const fev1 = parseFloat(el.inputFev1.value);
+        const fvc = parseFloat(el.inputFvc.value);
+        
+        // Validate input
+        if (fev1 < 0.5 || fev1 > 8.0) {
+            el.inputFev1.classList.add('negative');
+            return;
+        } else {
+            el.inputFev1.classList.remove('negative');
+        }
+        
+        if (fvc < 0.5 || fvc > 10.0) {
+            el.inputFvc.classList.add('negative');
+            return;
+        } else {
+            el.inputFvc.classList.remove('negative');
+        }
+        
+        // Auto-calculate if both values exist
+        if (fev1 && fvc) {
+            state.current.fev1 = fev1;
+            state.current.fvc = fvc;
+            state.current.date = el.inputDate.value;
             
-            if (date && fev1 && fvc) {
-                visits.push({
-                    date: date,
-                    fev1: fev1,
-                    fvc: fvc,
-                    timestamp: new Date(date).getTime()
-                });
-            }
-        });
-        
-        if (visits.length < 3) {
-            showToast('Need at least 3 visits for stability analysis', 'warning');
-            return;
-        }
-        
-        // Sort by date
-        visits.sort((a, b) => a.timestamp - b.timestamp);
-        
-        // Calculate statistics
-        const fev1Values = visits.map(v => v.fev1);
-        const maxFev1 = Math.max(...fev1Values);
-        const minFev1 = Math.min(...fev1Values);
-        const variation = ((maxFev1 - minFev1) / maxFev1 * 100).toFixed(1);
-        
-        // Calculate time span
-        const firstDate = new Date(visits[0].date);
-        const lastDate = new Date(visits[visits.length - 1].date);
-        const daysDiff = Math.floor((lastDate - firstDate) / (1000 * 60 * 60 * 24));
-        
-        // Stability score (0-100, higher is more stable)
-        const stabilityScore = Math.max(0, 100 - parseFloat(variation) * 2);
-        
-        // Find top 2 FEV1 values for suggested baseline (ISHLT protocol)
-        const sortedByFev1 = [...visits].sort((a, b) => b.fev1 - a.fev1);
-        const topTwo = sortedByFev1.slice(0, 2);
-        const suggestedFev1 = (topTwo[0].fev1 + topTwo[1].fev1) / 2;
-        
-        // Find corresponding FVC (average of same visits)
-        const suggestedFvc = (topTwo[0].fvc + topTwo[1].fvc) / 2;
-        
-        // Update display
-        dom.analysisVariation.textContent = `${variation}%`;
-        dom.analysisVisits.textContent = visits.length;
-        dom.analysisDays.textContent = daysDiff;
-        dom.analysisScore.textContent = Math.round(stabilityScore);
-        dom.suggestedFev1.value = suggestedFev1.toFixed(2);
-        dom.suggestedFvc.value = suggestedFvc.toFixed(2);
-        
-        // Show results
-        dom.stabilityResults.classList.remove('hidden');
-        
-        // Scroll to results
-        dom.stabilityResults.scrollIntoView({ behavior: 'smooth' });
-    }
-    
-    function acceptSuggestedBaseline() {
-        const fev1 = parseFloat(dom.suggestedFev1.value);
-        const fvc = parseFloat(dom.suggestedFvc.value);
-        
-        if (!fev1 || !fvc) {
-            showToast('Invalid baseline values', 'error');
-            return;
-        }
-        
-        // Use last visit date as baseline date
-        const visits = [];
-        const entries = dom.visitEntries.querySelectorAll('.visit-input-row');
-        
-        entries.forEach(entry => {
-            const date = entry.querySelector('.visit-date').value;
-            if (date) {
-                visits.push({ date: date, timestamp: new Date(date).getTime() });
-            }
-        });
-        
-        visits.sort((a, b) => b.timestamp - a.timestamp);
-        const baselineDate = visits.length > 0 ? visits[0].date : new Date().toISOString().split('T')[0];
-        
-        // Save baseline
-        state.baseline = {
-            date: baselineDate,
-            fev1: fev1,
-            fvc: fvc,
-            established: true,
-            source: 'calculated',
-            basedOnVisits: state.visitEntries.length
-        };
-        
-        // Update display
-        updateBaselineDisplay();
-        
-        // Show calculator
-        showSection('calculator');
-        showToast('Baseline established using ISHLT protocol', 'success');
-    }
-    
-    // ===== CALCULATOR FUNCTIONS =====
-    function updateDateContext() {
-        const date = dom.measurementDate.value;
-        
-        if (!date || !state.baseline.date) {
-            dom.dateContext.textContent = '';
-            return;
-        }
-        
-        // Calculate days since baseline
-        const baselineDate = new Date(state.baseline.date + 'T00:00:00');
-        const measureDate = new Date(date + 'T00:00:00');
-        const daysDiff = Math.floor((measureDate - baselineDate) / (1000 * 60 * 60 * 24));
-        
-        let context = `${daysDiff} days since baseline`;
-        
-        if (daysDiff < 0) {
-            context = `${Math.abs(daysDiff)} days before baseline`;
-        } else if (daysDiff < 30) {
-            context += ' (<1 month)';
+            calculateQuick();
         } else {
-            const months = (daysDiff / 30.44).toFixed(1);
-            context += ` (${months} months)`;
+            el.instantResults.classList.add('hidden');
         }
-        
-        dom.dateContext.textContent = context;
     }
     
-    function validateMedicalRange() {
-        const fev1 = parseFloat(dom.measurementFev1.value);
-        const fvc = parseFloat(dom.measurementFvc.value);
+    function calculateQuick() {
+        const fev1 = state.current.fev1;
+        const fvc = state.current.fvc;
         
-        if (fev1 && (fev1 < MEDICAL_RANGES.FEV1.min || fev1 > MEDICAL_RANGES.FEV1.max)) {
-            showToast(`FEV₁ must be between ${MEDICAL_RANGES.FEV1.min}-${MEDICAL_RANGES.FEV1.max} L`, 'warning');
-            return false;
-        }
+        if (!fev1 || !fvc) return;
         
-        if (fvc && (fvc < MEDICAL_RANGES.FVC.min || fvc > MEDICAL_RANGES.FVC.max)) {
-            showToast(`FVC must be between ${MEDICAL_RANGES.FVC.min}-${MEDICAL_RANGES.FVC.max} L`, 'warning');
-            return false;
-        }
+        // Calculate ratio
+        const ratio = (fev1 / fvc * 100).toFixed(1);
         
-        return true;
-    }
-    
-    function calculateMetrics() {
-        // Validate baseline
-        if (!state.baseline.established) {
-            showToast('Please establish baseline first', 'error');
-            return;
-        }
-        
-        // Get inputs
-        const date = dom.measurementDate.value;
-        const fev1 = parseFloat(dom.measurementFev1.value);
-        const fvc = parseFloat(dom.measurementFvc.value);
-        const context = dom.measurementContext.value;
-        
-        // Validation
-        if (!date || !fev1 || !fvc) {
-            showToast('Please enter all measurement values', 'error');
-            return;
-        }
-        
-        if (!validateMedicalRange()) {
-            return;
-        }
-        
-        // Calculate metrics
-        const ratio = fvc > 0 ? ((fev1 / fvc) * 100).toFixed(1) : 0;
-        const changeFromBaseline = ((fev1 - state.baseline.fev1) / state.baseline.fev1 * 100).toFixed(1);
+        // Calculate change from baseline
+        const change = ((fev1 - state.patient.baseline.fev1) / state.patient.baseline.fev1 * 100).toFixed(1);
         
         // Calculate change from last visit
-        let changeFromLast = '--';
+        let changeLast = '--';
         if (state.visits.length > 0) {
             const lastVisit = state.visits[state.visits.length - 1];
-            changeFromLast = ((fev1 - lastVisit.fev1) / lastVisit.fev1 * 100).toFixed(1);
+            changeLast = ((fev1 - lastVisit.fev1) / lastVisit.fev1 * 100).toFixed(1);
         }
         
-        // Calculate rate of decline (L/month)
+        // Calculate rate (L/month)
         let rate = '--';
         if (state.visits.length > 0) {
             const lastVisit = state.visits[state.visits.length - 1];
-            const lastDate = new Date(lastVisit.date + 'T00:00:00');
-            const currentDate = new Date(date + 'T00:00:00');
-            const daysDiff = Math.floor((currentDate - lastDate) / (1000 * 60 * 60 * 24));
-            
+            const daysDiff = dateDiffInDays(state.current.date, lastVisit.date);
             if (daysDiff > 0) {
-                const fev1Change = fev1 - lastVisit.fev1;
                 const monthsDiff = daysDiff / 30.44;
-                rate = (fev1Change / monthsDiff).toFixed(3);
+                const fev1Diff = fev1 - lastVisit.fev1;
+                rate = (fev1Diff / monthsDiff).toFixed(3);
             }
         }
         
         // Determine BOS stage
-        const decline = Math.abs(parseFloat(changeFromBaseline));
+        const decline = Math.abs(parseFloat(change));
         let bosStage = 'BOS 0';
         let bosColor = 'bos0';
         let bosDescription = 'Normal (decline <10%)';
@@ -1615,197 +1629,313 @@
             bosDescription = 'Potential (decline ≥10%)';
         }
         
-        // Store current measurement
-        state.currentMeasurement = {
-            date: date,
-            fev1: fev1,
-            fvc: fvc,
-            ratio: ratio,
-            changeFromBaseline: changeFromBaseline,
-            changeFromLast: changeFromLast,
-            rate: rate,
-            bosStage: bosStage,
-            context: context,
-            timestamp: new Date().toISOString()
-        };
-        
-        // Update results display
-        dom.resultRatio.textContent = `${ratio}%`;
-        dom.resultChangeBaseline.textContent = `${parseFloat(changeFromBaseline) > 0 ? '+' : ''}${changeFromBaseline}%`;
-        dom.resultChangeLast.textContent = changeFromLast !== '--' ? 
-            `${parseFloat(changeFromLast) > 0 ? '+' : ''}${changeFromLast}%` : '--';
-        dom.resultRate.textContent = rate !== '--' ? `${parseFloat(rate) > 0 ? '+' : ''}${rate}` : '--';
+        // Update UI
+        el.resultRatio.textContent = `${ratio}%`;
+        el.resultChange.textContent = `${parseFloat(change) > 0 ? '+' : ''}${change}%`;
+        el.resultChangeLast.textContent = changeLast !== '--' ? `${parseFloat(changeLast) > 0 ? '+' : ''}${changeLast}%` : '--';
+        el.resultRate.textContent = rate !== '--' ? `${parseFloat(rate) > 0 ? '+' : ''}${rate}` : '--';
         
         // Update BOS indicator
-        dom.bosIndicator.className = `bos-indicator ${bosColor}`;
-        dom.bosTitle.textContent = bosStage;
-        dom.bosDesc.textContent = bosDescription;
+        el.bosIndicator.className = `bos-indicator ${bosColor}`;
+        el.bosTitle.textContent = bosStage;
+        el.bosDesc.textContent = bosDescription;
+        
+        // Update date display
+        updateDateDisplay();
         
         // Show results
-        dom.resultsCard.classList.remove('hidden');
+        el.instantResults.classList.remove('hidden');
         
-        // Scroll to results
-        dom.resultsCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        
-        showToast('Metrics calculated', 'success');
+        // Scroll results into view on mobile
+        if (window.innerWidth < 768) {
+            setTimeout(() => {
+                el.instantResults.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
+        }
     }
     
-    function saveVisit() {
-        if (!state.currentMeasurement) {
-            showToast('No calculation to save', 'error');
+    function updateDateDisplay() {
+        const date = el.inputDate.value;
+        if (!date) return;
+        
+        const today = new Date().toISOString().split('T')[0];
+        if (date === today) {
+            el.resultDate.textContent = 'Today';
+        } else {
+            const dateObj = new Date(date);
+            el.resultDate.textContent = dateObj.toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric' 
+            });
+        }
+    }
+    
+    function setContext(context) {
+        state.current.context = context;
+        
+        // Update UI
+        el.contextBtns.forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.context === context);
+        });
+        
+        // Add visual feedback
+        showToast(`Set to ${context} evaluation`, 'success');
+    }
+    
+    function clearInputs() {
+        el.inputFev1.value = '';
+        el.inputFvc.value = '';
+        el.instantResults.classList.add('hidden');
+        
+        // Set default date (today or auto-increment)
+        if (state.settings.autoIncrementDate && state.visits.length > 0) {
+            const lastVisit = state.visits[state.visits.length - 1];
+            const lastDate = new Date(lastVisit.date);
+            lastDate.setDate(lastDate.getDate() + 30); // +30 days
+            const nextDate = lastDate.toISOString().split('T')[0];
+            el.inputDate.value = nextDate;
+        } else {
+            el.inputDate.value = new Date().toISOString().split('T')[0];
+        }
+        
+        el.inputFev1.focus();
+        showToast('Cleared', 'success');
+    }
+    
+    function saveCalculation() {
+        if (!state.current.fev1 || !state.current.fvc) {
+            showToast('Enter values first', 'warning');
             return;
         }
         
-        // Add to visits
         const visit = {
-            ...state.currentMeasurement,
-            visitNumber: state.visits.length + 1
+            id: Date.now(),
+            date: state.current.date || new Date().toISOString().split('T')[0],
+            fev1: state.current.fev1,
+            fvc: state.current.fvc,
+            context: state.current.context,
+            calculatedAt: new Date().toISOString()
         };
         
         state.visits.push(visit);
-        state.currentMeasurement = null;
+        saveToStorage();
         
-        // Update UI
-        updateBaselineDisplay();
-        updateHistoryDisplay();
+        // Update status
+        updateStatus();
         
-        // Clear and hide results
-        clearMeasurement();
-        dom.resultsCard.classList.add('hidden');
+        showToast(`Visit ${state.visits.length} saved`, 'success');
         
-        showToast(`Visit ${visit.visitNumber} saved`, 'success');
+        // Clear for next entry (optional)
+        if (state.settings.autoIncrementDate) {
+            clearInputs();
+        }
     }
     
-    function clearMeasurement() {
-        dom.measurementFev1.value = '';
-        dom.measurementFvc.value = '';
-        dom.measurementContext.value = 'routine';
+    // ===== STANDARD MODE =====
+    function handleStandardInput() {
+        // Sync with quick calc inputs
+        el.inputFev1.value = el.stdFev1.value;
+        el.inputFvc.value = el.stdFvc.value;
         
-        // Keep date as is (usually current date)
-        setDefaultDates();
+        // Trigger calculation
+        handleQuickInput();
+    }
+    
+    function selectScenario(scenario) {
+        // Update UI
+        el.scenarioCards.forEach(card => {
+            card.classList.toggle('active', card.dataset.scenario === scenario);
+        });
+        
+        // Set context
+        setContext(scenario);
+        
+        // Auto-fill notes based on scenario
+        switch(scenario) {
+            case 'routine':
+                el.clinicalNotes.placeholder = 'Patient asymptomatic, routine follow-up';
+                break;
+            case 'concern':
+                el.clinicalNotes.placeholder = 'Patient reports increased dyspnea/cough';
+                break;
+            case 'postTx':
+                el.clinicalNotes.placeholder = 'Post-treatment assessment';
+                break;
+            case 'annual':
+                el.clinicalNotes.placeholder = 'Annual comprehensive review';
+                break;
+        }
+    }
+    
+    function saveFullCalculation() {
+        if (!el.stdFev1.value || !el.stdFvc.value) {
+            showToast('Enter values first', 'warning');
+            return;
+        }
+        
+        const visit = {
+            id: Date.now(),
+            date: el.inputDate.value,
+            fev1: parseFloat(el.stdFev1.value),
+            fvc: parseFloat(el.stdFvc.value),
+            context: state.current.context,
+            notes: el.clinicalNotes.value,
+            calculatedAt: new Date().toISOString()
+        };
+        
+        state.visits.push(visit);
+        saveToStorage();
+        
+        // Clear notes
+        el.clinicalNotes.value = '';
+        
+        showToast('Saved with clinical notes', 'success');
+    }
+    
+    // ===== REVIEW MODE =====
+    function updateReviewMode() {
+        if (state.visits.length < 3) return;
+        
+        // Show last 3 visits for comparison
+        const recentVisits = state.visits.slice(-3);
+        // In a real app, you'd update the comparison view here
+    }
+    
+    // ===== BASELINE MANAGEMENT =====
+    function showBaselineModal() {
+        el.modalBaselineFev1.value = state.patient.baseline.fev1;
+        el.modalBaselineFvc.value = state.patient.baseline.fvc;
+        showModal('baselineModal');
+    }
+    
+    function saveBaseline() {
+        const fev1 = parseFloat(el.modalBaselineFev1.value);
+        const fvc = parseFloat(el.modalBaselineFvc.value);
+        
+        if (!fev1 || !fvc) {
+            showToast('Enter valid baseline values', 'error');
+            return;
+        }
+        
+        if (fev1 < 0.5 || fev1 > 8.0) {
+            showToast('FEV₁ must be 0.5-8.0 L', 'error');
+            return;
+        }
+        
+        if (fvc < 0.5 || fvc > 10.0) {
+            showToast('FVC must be 0.5-10.0 L', 'error');
+            return;
+        }
+        
+        state.patient.baseline.fev1 = fev1;
+        state.patient.baseline.fvc = fvc;
+        state.patient.baseline.date = new Date().toISOString().split('T')[0];
+        
+        saveToStorage();
+        updateBaselineDisplay();
+        hideModal('baselineModal');
+        
+        showToast('Baseline updated', 'success');
     }
     
     function updateBaselineDisplay() {
-        if (state.baseline.established) {
-            dom.currentFev1Display.textContent = state.baseline.fev1.toFixed(2);
-            dom.currentFvcDisplay.textContent = state.baseline.fvc.toFixed(2);
-            dom.currentVisits.textContent = state.visits.length;
-            
-            // Calculate days since baseline
-            if (state.baseline.date) {
-                const baselineDate = new Date(state.baseline.date + 'T00:00:00');
-                const today = new Date();
-                const daysDiff = Math.floor((today - baselineDate) / (1000 * 60 * 60 * 24));
-                dom.currentDays.textContent = Math.max(0, daysDiff);
-            }
+        // Update baseline banner
+        const baselineEl = document.querySelector('.baseline-fev1');
+        const baselineFvcEl = document.querySelector('.baseline-fvc');
+        
+        if (baselineEl) {
+            baselineEl.textContent = `FEV₁: ${state.patient.baseline.fev1.toFixed(2)} L`;
         }
-    }
-    
-    // ===== HISTORY MANAGEMENT =====
-    function updateHistoryDisplay() {
-        if (state.visits.length === 0) {
-            dom.historySummary.textContent = 'No visits saved';
-            dom.historyList.innerHTML = `
-                <div class="text-center" style="color: #6b7280; padding: 3rem 1rem;">
-                    No visits recorded yet.<br>
-                    <small>Save calculations to build history</small>
-                </div>
-            `;
-            return;
+        if (baselineFvcEl) {
+            baselineFvcEl.textContent = `FVC: ${state.patient.baseline.fvc.toFixed(2)} L`;
         }
-        
-        // Update summary
-        const firstDate = new Date(state.visits[0].date);
-        const lastDate = new Date(state.visits[state.visits.length - 1].date);
-        const daysDiff = Math.floor((lastDate - firstDate) / (1000 * 60 * 60 * 24));
-        dom.historySummary.textContent = `${state.visits.length} visits over ${daysDiff} days`;
-        
-        // Build history list
-        let html = '';
-        
-        state.visits.slice().reverse().forEach((visit, index) => {
-            const displayIndex = state.visits.length - index;
-            const prevVisit = state.visits[displayIndex - 2]; // Previous chronological visit
-            
-            html += `
-                <div class="visit-input-row" style="margin-bottom: 1rem;">
-                    <div class="visit-number">Visit ${visit.visitNumber}</div>
-                    <div style="color: #6b7280; font-size: 0.875rem; margin-bottom: 0.75rem;">
-                        ${new Date(visit.date).toLocaleDateString()} • ${visit.context}
-                    </div>
-                    
-                    <div class="results-grid" style="grid-template-columns: repeat(4, 1fr);">
-                        <div class="result-card">
-                            <div class="result-value">${visit.fev1.toFixed(2)}</div>
-                            <div class="result-label">FEV₁</div>
-                        </div>
-                        <div class="result-card">
-                            <div class="result-value">${visit.fvc.toFixed(2)}</div>
-                            <div class="result-label">FVC</div>
-                        </div>
-                        <div class="result-card">
-                            <div class="result-value">${visit.changeFromBaseline}%</div>
-                            <div class="result-label">vs Baseline</div>
-                        </div>
-                        <div class="result-card">
-                            <div class="result-value">${visit.bosStage}</div>
-                            <div class="result-label">BOS</div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        });
-        
-        dom.historyList.innerHTML = html;
-    }
-    
-    function clearHistory() {
-        if (!confirm('Clear all visit history? This cannot be undone.')) {
-            return;
-        }
-        
-        state.visits = [];
-        updateBaselineDisplay();
-        updateHistoryDisplay();
-        
-        showToast('History cleared', 'success');
     }
     
     // ===== EXPORT FUNCTIONS =====
-    function exportResults() {
-        if (!state.currentMeasurement) {
-            showToast('No results to export', 'warning');
+    function showExportModal() {
+        showModal('exportModal');
+    }
+    
+    function quickExport() {
+        if (!state.current.fev1 || !state.current.fvc) {
+            showToast('Calculate first', 'warning');
             return;
         }
         
+        exportForEHR();
+    }
+    
+    function exportCSV() {
+        if (state.visits.length === 0) {
+            showToast('No visits to export', 'warning');
+            hideModal('exportModal');
+            return;
+        }
+        
+        let csv = 'Date,FEV₁ (L),FVC (L),FEV₁/FVC (%),Change from Baseline (%),Context\n';
+        
+        state.visits.forEach(visit => {
+            const ratio = (visit.fev1 / visit.fvc * 100).toFixed(1);
+            const change = ((visit.fev1 - state.patient.baseline.fev1) / state.patient.baseline.fev1 * 100).toFixed(1);
+            csv += `${visit.date},${visit.fev1},${visit.fvc},${ratio},${change},${visit.context}\n`;
+        });
+        
+        downloadFile(csv, `neumocalc-${state.patient.id}-${new Date().toISOString().split('T')[0]}.csv`, 'text/csv');
+        hideModal('exportModal');
+        showToast('Exported as CSV', 'success');
+    }
+    
+    function exportJSON() {
         const data = {
-            patientId: state.session.patientId,
-            baseline: state.baseline,
-            measurement: state.currentMeasurement,
+            patient: state.patient,
+            visits: state.visits,
             exportedAt: new Date().toISOString()
         };
         
         const json = JSON.stringify(data, null, 2);
-        downloadFile(json, `neumocalc-${state.session.patientId}-${new Date().toISOString().split('T')[0]}.json`, 'application/json');
-        
-        showToast('Results exported as JSON', 'success');
+        downloadFile(json, `neumocalc-${state.patient.id}-${new Date().toISOString().split('T')[0]}.json`, 'application/json');
+        hideModal('exportModal');
+        showToast('Exported as JSON', 'success');
     }
     
-    function exportHistory() {
-        if (state.visits.length === 0) {
-            showToast('No history to export', 'warning');
+    function exportForEHR() {
+        if (!state.current.fev1 || !state.current.fvc) {
+            showToast('Calculate first', 'warning');
+            hideModal('exportModal');
             return;
         }
         
-        let csv = 'Visit,Date,FEV₁ (L),FVC (L),Ratio (%),Change from Baseline (%),BOS Stage,Context\n';
+        // Calculate values
+        const ratio = (state.current.fev1 / state.current.fvc * 100).toFixed(1);
+        const change = ((state.current.fev1 - state.patient.baseline.fev1) / state.patient.baseline.fev1 * 100).toFixed(1);
         
-        state.visits.forEach(visit => {
-            csv += `${visit.visitNumber},${visit.date},${visit.fev1},${visit.fvc},${visit.ratio},${visit.changeFromBaseline},${visit.bosStage},${visit.context}\n`;
+        // Determine BOS stage
+        const decline = Math.abs(parseFloat(change));
+        let bosStage = 'BOS 0';
+        if (decline >= BOS_THRESHOLDS[2]) bosStage = 'BOS 2-3';
+        else if (decline >= BOS_THRESHOLDS[1]) bosStage = 'BOS 1';
+        else if (decline >= BOS_THRESHOLDS[0]) bosStage = 'BOS 0-p';
+        
+        // Create EHR-ready text
+        const ehrText = `Lung Transplant Monitoring - ${state.patient.id}
+Date: ${state.current.date}
+FEV₁: ${state.current.fev1.toFixed(2)} L (${change}% from baseline)
+FVC: ${state.current.fvc.toFixed(2)} L
+FEV₁/FVC: ${ratio}%
+BOS Stage: ${bosStage}
+Context: ${state.current.context}
+
+Baseline: FEV₁ ${state.patient.baseline.fev1.toFixed(2)} L, FVC ${state.patient.baseline.fvc.toFixed(2)} L
+---`;
+        
+        // Copy to clipboard
+        navigator.clipboard.writeText(ehrText).then(() => {
+            hideModal('exportModal');
+            showToast('Copied to clipboard for EHR', 'success');
+        }).catch(err => {
+            console.error('Failed to copy:', err);
+            showToast('Failed to copy', 'error');
         });
-        
-        downloadFile(csv, `neumocalc-${state.session.patientId}-history-${new Date().toISOString().split('T')[0]}.csv`, 'text/csv');
-        
-        showToast('History exported as CSV', 'success');
     }
     
     function downloadFile(content, filename, type) {
@@ -1820,23 +1950,63 @@
         URL.revokeObjectURL(url);
     }
     
-    // ===== UI UTILITIES =====
-    function showSection(sectionId) {
-        // Hide all sections
-        document.querySelectorAll('.section').forEach(section => {
-            section.classList.remove('active');
-        });
-        
-        // Show target section
-        const targetSection = document.getElementById(`section${sectionId.charAt(0).toUpperCase() + sectionId.slice(1)}`);
-        if (targetSection) {
-            targetSection.classList.add('active');
+    // ===== UTILITY FUNCTIONS =====
+    function dateDiffInDays(date1, date2) {
+        const d1 = new Date(date1);
+        const d2 = new Date(date2);
+        const diff = Math.abs(d1 - d2);
+        return Math.floor(diff / (1000 * 60 * 60 * 24));
+    }
+    
+    function newPatient() {
+        if (state.visits.length > 0 && !confirm('Start new patient? Current session will be saved.')) {
+            return;
         }
         
-        // Update bottom nav
-        dom.navBtns.forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.section === sectionId);
-        });
+        // Generate new patient ID
+        const randomNum = Math.floor(Math.random() * 999).toString().padStart(3, '0');
+        state.patient.id = `NM-${randomNum}`;
+        
+        // Reset current session
+        state.visits = [];
+        clearInputs();
+        
+        // Update UI
+        el.currentPatientId.textContent = state.patient.id;
+        updateStatus();
+        
+        showToast(`New patient: ${state.patient.id}`, 'success');
+    }
+    
+    function updateStatus() {
+        const visitCount = state.visits.length;
+        el.statusText.textContent = visitCount > 0 ? `${visitCount} visits` : 'Ready';
+    }
+    
+    function updateOnlineStatus() {
+        const isOnline = navigator.onLine;
+        
+        if (isOnline) {
+            el.statusDot.classList.remove('offline');
+            el.offlineIndicator.style.display = 'none';
+        } else {
+            el.statusDot.classList.add('offline');
+            el.offlineIndicator.style.display = 'block';
+        }
+    }
+    
+    function showModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.add('active');
+        }
+    }
+    
+    function hideModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.remove('active');
+        }
     }
     
     function showToast(message, type = 'info') {
@@ -1849,7 +2019,18 @@
         // Create toast
         const toast = document.createElement('div');
         toast.className = `toast ${type}`;
-        toast.textContent = message;
+        
+        const icons = {
+            success: '✅',
+            warning: '⚠️',
+            error: '❌',
+            info: 'ℹ️'
+        };
+        
+        toast.innerHTML = `
+            <span class="toast-icon">${icons[type] || icons.info}</span>
+            <span>${message}</span>
+        `;
         
         document.body.appendChild(toast);
         
@@ -1860,34 +2041,42 @@
         }, 3000);
     }
     
-    function resetSession() {
-        state.session = {
-            id: null,
-            patientId: null,
-            startedAt: null,
-            pathway: null
-        };
+    function handleKeyboardShortcuts(e) {
+        // Don't trigger if user is typing in an input
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+            return;
+        }
         
-        state.baseline = {
-            date: null,
-            fev1: null,
-            fvc: null,
-            established: false
-        };
+        // Ctrl/Cmd + S to save
+        if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+            e.preventDefault();
+            saveCalculation();
+        }
         
-        state.visits = [];
-        state.visitEntries = [];
-        state.currentPathway = null;
+        // Ctrl/Cmd + E to export
+        if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
+            e.preventDefault();
+            showExportModal();
+        }
         
-        // Reset UI
-        dom.inputPatientId.value = '';
-        dom.pathEHR.classList.remove('active');
-        dom.pathEstablish.classList.remove('active');
-        dom.currentPatientId.textContent = '--';
-        dom.sessionStatus.textContent = 'No active session';
+        // Ctrl/Cmd + N for new patient
+        if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+            e.preventDefault();
+            newPatient();
+        }
         
-        updateBaselineDisplay();
-        updateHistoryDisplay();
+        // Escape to clear
+        if (e.key === 'Escape') {
+            clearInputs();
+        }
+    }
+    
+    function showSettings() {
+        // Simple settings toggle
+        const autoCalc = !state.settings.autoCalculate;
+        state.settings.autoCalculate = autoCalc;
+        
+        showToast(`Auto-calculation ${autoCalc ? 'enabled' : 'disabled'}`, 'info');
     }
     
     // Fix iOS 100vh issue
@@ -1900,11 +2089,12 @@
     window.addEventListener('resize', setVH);
     window.addEventListener('orientationchange', setVH);
     
-    // Make functions available globally for inline event handlers
-    window.removeVisitEntry = removeVisitEntry;
-    window.showSection = showSection;
+    // Make functions available globally
+    window.switchMode = switchMode;
+    window.showModal = showModal;
+    window.hideModal = hideModal;
     
-    console.log('🚀 NeumoCalc PWA loaded successfully');
+    console.log('✨ NeumoCalc 10/10 ready');
     </script>
 </body>
 </html>
