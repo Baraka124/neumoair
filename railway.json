@@ -4,7 +4,9 @@
     "builder": "NIXPACKS"
   },
   "deploy": {
-    "startCommand": "echo 'Static site' && tail -f /dev/null",
+    "startCommand": "echo 'PWA running' && tail -f /dev/null",
+    "healthcheckPath": "/",
+    "restartPolicyType": "ON_FAILURE",
     "numReplicas": 1
   }
 }
