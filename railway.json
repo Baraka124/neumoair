@@ -4,9 +4,7 @@
     "builder": "NIXPACKS"
   },
   "deploy": {
-    "startCommand": "nginx -g 'daemon off;'",
-    "healthcheckPath": "/health",
-    "restartPolicyType": "ON_FAILURE",
+    "startCommand": "echo 'Static site deployed' && sleep infinity",
     "numReplicas": 1
   }
 }
