@@ -1,16 +1,58 @@
 {
   "name": "NeumoCalc Timeline",
   "short_name": "NeumoCalc",
-  "description": "Lung transplant timeline calculator",
+  "description": "Lung transplant calculation assistant with patient timeline tracking",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#f8fafc",
   "theme_color": "#1E6EA6",
+  "orientation": "portrait",
+  "lang": "en",
+  
   "icons": [
+    {
+      "src": "icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "type": "image/png", 
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    },
     {
       "src": "icon.svg",
       "type": "image/svg+xml",
       "sizes": "any"
+    }
+  ],
+  
+  "categories": ["medical", "productivity", "utilities"],
+  "shortcuts": [
+    {
+      "name": "New Calculation",
+      "short_name": "Calculate",
+      "description": "Enter new FEV₁/FVC values",
+      "url": "/?mode=quick",
+      "icons": [{ "src": "icon-96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Review Patients",
+      "short_name": "Review",
+      "description": "View all patient data",
+      "url": "/?mode=review",
+      "icons": [{ "src": "icon-96.png", "sizes": "96x96" }]
+    }
+  ],
+  
+  "screenshots": [
+    {
+      "src": "screenshot-1.png",
+      "type": "image/png",
+      "sizes": "1280x720"
     }
   ]
 }
