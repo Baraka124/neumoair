@@ -892,6 +892,195 @@ function hideModal(modalId) {
 }
 
 // ===== INITIALIZATION =====
+    // ============================================
+// PWA INSTALLATION & OFFLINE SUPPORT
+// ============================================
+
+// Register Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js', {
+      scope: '/'
+    }).then((registration) => {
+      console.log('SW registered:', registration.scope);
+      
+      // Check for updates every hour
+      setInterval(() => {
+        registration.update();
+      }, 60 * 60 * 1000);
+      
+    }).catch((error) => {
+      console.log('SW registration failed:', error);
+    });
+  });
+}
+
+// PWA Install Prompt
+let deferredPrompt;
+const installButton = document.createElement('button');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  // Prevent Chrome 67 and earlier from automatically showing prompt
+  e.preventDefault();
+  // Stash the event so it can be triggered later
+  deferredPrompt = e;
+  
+  // Show install button
+  installButton.textContent = '📱 Install App';
+  installButton.style.cssText = `
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    background: #1E6EA6;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    font-weight: bold;
+    z-index: 1000;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  `;
+  
+  installButton.onclick = () => {
+    installButton.style.display = 'none';
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then((choiceResult) => {
+      if (choiceResult.outcome === 'accepted') {
+        console.log('User accepted install');
+      }
+      deferredPrompt = null;
+    });
+  };
+  
+  document.body.appendChild(installButton);
+});
+
+// Detect if app is running as PWA
+function isRunningAsPWA() {
+  return window.matchMedia('(display-mode: standalone)').matches || 
+         window.navigator.standalone ||
+         document.referrer.includes('android-app://');
+}
+
+// Update UI for PWA mode
+if (isRunningAsPWA()) {
+  console.log('Running as installed PWA');
+  document.documentElement.classList.add('pwa-mode');
+  
+  // Hide browser UI elements
+  const meta = document.createElement('meta');
+  meta.name = 'apple-mobile-web-app-capable';
+  meta.content = 'yes';
+  document.head.appendChild(meta);
+}
+
+// Offline Detection
+function updateOnlineStatus() {
+  const isOnline = navigator.onLine;
+  const statusEl = document.getElementById('onlineStatus') || createStatusIndicator();
+  
+  if (isOnline) {
+    statusEl.textContent = '🟢 Online';
+    statusEl.style.background = '#d1fae5';
+  } else {
+    statusEl.textContent = '🔴 Offline (data saved locally)';
+    statusEl.style.background = '#fef3c7';
+  }
+}
+
+function createStatusIndicator() {
+  const el = document.createElement('div');
+  el.id = 'onlineStatus';
+  el.style.cssText = `
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    z-index: 9999;
+  `;
+  document.body.appendChild(el);
+  return el;
+}
+
+// Listen for online/offline events
+window.addEventListener('online', updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+updateOnlineStatus();
+
+// Periodic data backup
+setInterval(() => {
+  if (navigator.onLine) {
+    backupDataToCloud();
+  }
+}, 5 * 60 * 1000); // Every 5 minutes
+
+async function backupDataToCloud() {
+  // Backup localStorage to backend if connected
+  const data = localStorage.getItem('neumocalc_timeline');
+  if (data && window.BACKEND_URL) {
+    try {
+      await fetch(`${window.BACKEND_URL}/backup`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: data
+      });
+      console.log('Data backed up to cloud');
+    } catch (error) {
+      console.log('Cloud backup failed:', error);
+    }
+  }
+}
+
+// Export all data function (for user backup)
+function exportAllData() {
+  const data = {
+    app: 'NeumoCalc',
+    version: '2.0.0',
+    exportedAt: new Date().toISOString(),
+    patients: JSON.parse(localStorage.getItem('neumocalc_timeline') || '{}'),
+    settings: JSON.parse(localStorage.getItem('neumocalc_settings') || '{}')
+  };
+  
+  const blob = new Blob([JSON.stringify(data, null, 2)], 
+    { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `neumocalc-backup-${new Date().toISOString().split('T')[0]}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 100);
+}
+
+// Add backup button to UI
+function addBackupButton() {
+  const backupBtn = document.createElement('button');
+  backupBtn.textContent = '💾 Backup Data';
+  backupBtn.onclick = exportAllData;
+  backupBtn.style.cssText = `
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    padding: 10px 20px;
+    background: #059669;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    font-weight: bold;
+    z-index: 1000;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  `;
+  document.body.appendChild(backupBtn);
+}
+
+// Initialize PWA features
+addBackupButton();
 console.log('NeumoCalc Timeline Calculator loaded');
 </script>
 </body>
