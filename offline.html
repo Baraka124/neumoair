@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PulmoMetrics Pro - Offline</title>
     <style>
+        /* Medical Professional Design Matching PulmoMetrics */
         * {
             margin: 0;
             padding: 0;
@@ -12,106 +13,457 @@
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #F8FAFC;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #F8FAFC 0%, #EFF6FF 100%);
             color: #1F2937;
             height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            line-height: 1.6;
         }
         
-        .container {
+        .offline-container {
             max-width: 500px;
-            text-align: center;
+            width: 100%;
             background: white;
-            padding: 40px;
             border-radius: 16px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
             border: 1px solid #E5E7EB;
         }
         
-        .icon {
-            font-size: 64px;
-            margin-bottom: 24px;
-            color: #1A5F7A;
+        .header {
+            background: linear-gradient(135deg, #1A5F7A 0%, #0D4B63 100%);
+            padding: 30px;
+            text-align: center;
+            color: white;
         }
         
-        h1 {
-            font-size: 24px;
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        
+        .logo-text h1 {
+            font-size: 1.5rem;
             font-weight: 700;
-            color: #1A5F7A;
-            margin-bottom: 16px;
         }
         
-        p {
-            color: #6B7280;
-            line-height: 1.6;
-            margin-bottom: 24px;
+        .logo-text span {
+            font-size: 0.75rem;
+            opacity: 0.9;
+        }
+        
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            font-size: 0.875rem;
+            margin-top: 10px;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #FF9E6D;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1F2937;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .title-icon {
+            color: #1A5F7A;
+            font-size: 1.5rem;
+        }
+        
+        .description {
+            color: #4B5563;
+            margin-bottom: 25px;
+            font-size: 0.9375rem;
         }
         
         .features {
-            text-align: left;
-            background: #F9FAFB;
+            background: #F8FAFC;
+            border-radius: 12px;
             padding: 20px;
-            border-radius: 8px;
-            margin: 24px 0;
-            border-left: 4px solid #1A5F7A;
+            margin: 25px 0;
+            border-left: 4px solid #2D9596;
         }
         
-        .features li {
-            margin: 8px 0;
+        .features h3 {
+            font-size: 0.875rem;
+            color: #1A5F7A;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .feature-list {
+            list-style: none;
+        }
+        
+        .feature-list li {
+            margin-bottom: 8px;
+            font-size: 0.875rem;
             color: #4B5563;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
         }
         
-        .button {
-            display: inline-block;
-            background: #1A5F7A;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: background 0.2s;
+        .feature-list li::before {
+            content: "✓";
+            color: #059669;
+            font-weight: bold;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 14px;
             border: none;
+            border-radius: 10px;
+            font-size: 0.875rem;
+            font-weight: 600;
             cursor: pointer;
-            font-size: 16px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
         }
         
-        .button:hover {
-            background: #0D4B63;
+        .btn-primary {
+            background: linear-gradient(135deg, #1A5F7A 0%, #0D4B63 100%);
+            color: white;
         }
         
-        .note {
-            font-size: 14px;
-            color: #9CA3AF;
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(26, 95, 122, 0.3);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #4B5563;
+            border: 1px solid #E5E7EB;
+        }
+        
+        .btn-secondary:hover {
+            background: #F8FAFC;
+            border-color: #1A5F7A;
+            color: #1A5F7A;
+        }
+        
+        .connection-status {
             margin-top: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            background: #FEF3C7;
+            border: 1px solid #FBBF24;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.875rem;
+            color: #92400E;
+        }
+        
+        .connection-status.visible {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .connection-status.online {
+            background: #D1FAE5;
+            border-color: #059669;
+            color: #065F46;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(26, 95, 122, 0.3);
+            border-radius: 50%;
+            border-top-color: #1A5F7A;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .footer {
+            padding: 20px 30px;
+            background: #F8FAFC;
+            border-top: 1px solid #E5E7EB;
+            font-size: 0.75rem;
+            color: #9CA3AF;
+            text-align: center;
+        }
+        
+        @media (max-width: 480px) {
+            .offline-container {
+                margin: 10px;
+            }
+            
+            .header {
+                padding: 25px 20px;
+            }
+            
+            .content {
+                padding: 25px 20px;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="icon">🫁</div>
-        <h1>PulmoMetrics Pro is Offline</h1>
-        <p>You're currently offline. PulmoMetrics Pro can work without an internet connection once loaded.</p>
-        
-        <div class="features">
-            <p><strong>You can still:</strong></p>
-            <ul>
-                <li>View patient data already loaded</li>
-                <li>Add new measurements</li>
-                <li>Calculate FEV₁/FVC ratios</li>
-                <li>Monitor trends</li>
-                <li>Access saved patient records</li>
-            </ul>
+    <div class="offline-container">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">🫁</div>
+                <div class="logo-text">
+                    <h1>PulmoMetrics Pro</h1>
+                    <span>Lung Transplant Monitor</span>
+                </div>
+            </div>
+            <div class="status-indicator">
+                <div class="status-dot"></div>
+                <span>Offline Mode</span>
+            </div>
         </div>
         
-        <p>Your data will sync automatically when you're back online.</p>
+        <div class="content">
+            <div class="title">
+                <span class="title-icon">📶</span>
+                <span>Network Connection Required</span>
+            </div>
+            
+            <p class="description">
+                You are currently offline. PulmoMetrics Pro can still function with cached data. 
+                New data will sync automatically when connection is restored.
+            </p>
+            
+            <div class="features">
+                <h3>Available Offline Features</h3>
+                <ul class="feature-list">
+                    <li>View all saved patient records</li>
+                    <li>Perform FEV₁/FVC calculations</li>
+                    <li>Add new visits (will sync later)</li>
+                    <li>Generate PDF reports</li>
+                    <li>Review patient history and trends</li>
+                    <li>Update protocol settings</li>
+                </ul>
+            </div>
+            
+            <div class="actions">
+                <button id="reconnectBtn" class="btn btn-primary">
+                    <span>🔁</span>
+                    <span>Try to Reconnect</span>
+                </button>
+                <button id="continueBtn" class="btn btn-secondary">
+                    <span>🩺</span>
+                    <span>Continue Offline</span>
+                </button>
+            </div>
+            
+            <div id="connectionStatus" class="connection-status">
+                <div class="loading"></div>
+                <span id="statusMessage">Checking connection...</span>
+            </div>
+        </div>
         
-        <button class="button" onclick="location.reload()">Try Reconnect</button>
-        
-        <p class="note">PulmoMetrics Pro - Professional Lung Transplant Monitoring</p>
+        <div class="footer">
+            <p>PulmoMetrics Pro v3.0 • Professional Lung Function Monitoring</p>
+            <p>Data is securely stored locally and will sync when online</p>
+        </div>
     </div>
+
+    <script>
+        // DOM Elements
+        const reconnectBtn = document.getElementById('reconnectBtn');
+        const continueBtn = document.getElementById('continueBtn');
+        const connectionStatus = document.getElementById('connectionStatus');
+        const statusMessage = document.getElementById('statusMessage');
+        
+        // Connection status
+        let isChecking = false;
+        
+        // Update status display
+        function updateStatus(message, isOnline = false, showLoader = false) {
+            connectionStatus.classList.add('visible');
+            connectionStatus.classList.toggle('online', isOnline);
+            
+            if (showLoader) {
+                statusMessage.innerHTML = `<div class="loading" style="display: inline-block; margin-right: 8px;"></div>${message}`;
+            } else {
+                statusMessage.textContent = message;
+            }
+        }
+        
+        // Check connection by attempting to fetch
+        async function checkConnection() {
+            if (isChecking) return;
+            
+            isChecking = true;
+            updateStatus('Testing network connection...', false, true);
+            
+            try {
+                // Try to fetch a small resource with timeout
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000);
+                
+                const response = await fetch('./icon-192.png', {
+                    method: 'HEAD',
+                    cache: 'no-cache',
+                    signal: controller.signal
+                });
+                
+                clearTimeout(timeoutId);
+                
+                if (response.ok) {
+                    // Successfully connected
+                    updateStatus('✅ Connection restored! Redirecting to app...', true);
+                    
+                    // Wait a moment then redirect
+                    setTimeout(() => {
+                        window.location.href = './index.html';
+                    }, 1500);
+                } else {
+                    updateStatus('⚠️ Connection issue detected. Still offline.', false);
+                }
+            } catch (error) {
+                // Connection failed
+                if (error.name === 'AbortError') {
+                    updateStatus('⏱️ Connection timeout. Still offline.', false);
+                } else {
+                    updateStatus('❌ No network connection available.', false);
+                }
+            } finally {
+                isChecking = false;
+                
+                // Auto-hide status after 5 seconds
+                setTimeout(() => {
+                    if (!connectionStatus.classList.contains('online')) {
+                        connectionStatus.classList.remove('visible');
+                    }
+                }, 5000);
+            }
+        }
+        
+        // Event Listeners
+        reconnectBtn.addEventListener('click', checkConnection);
+        
+        continueBtn.addEventListener('click', () => {
+            window.location.href = './index.html';
+        });
+        
+        // Listen for online/offline events
+        window.addEventListener('online', () => {
+            updateStatus('🔄 Network connection detected. Syncing data...', true);
+            
+            // Auto-redirect after 2 seconds when coming back online
+            setTimeout(() => {
+                window.location.href = './index.html';
+            }, 2000);
+        });
+        
+        window.addEventListener('offline', () => {
+            updateStatus('📶 Lost network connection. Working offline.', false);
+            
+            // Auto-hide after 3 seconds
+            setTimeout(() => {
+                connectionStatus.classList.remove('visible');
+            }, 3000);
+        });
+        
+        // Check if we're already online
+        if (navigator.onLine) {
+            // If online, redirect immediately
+            setTimeout(() => {
+                window.location.href = './index.html';
+            }, 500);
+        } else {
+            // Initial check
+            setTimeout(checkConnection, 1000);
+        }
+        
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Ctrl/Cmd + R to reconnect
+            if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
+                e.preventDefault();
+                checkConnection();
+            }
+            
+            // Enter to continue offline
+            if (e.key === 'Enter') {
+                continueBtn.click();
+            }
+            
+            // Escape to dismiss status
+            if (e.key === 'Escape') {
+                connectionStatus.classList.remove('visible');
+            }
+        });
+    </script>
 </body>
 </html>
