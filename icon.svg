@@ -1,132 +1,78 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <defs>
-    <!-- Premium dark gradient -->
-    <linearGradient id="scientificGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0A3D4F"/>
-      <stop offset="50%" stop-color="#1A5F7A"/>
+    <!-- Elegant gradient -->
+    <radialGradient id="radialGradient" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#0D4B63"/>
+      <stop offset="70%" stop-color="#1A5F7A"/>
       <stop offset="100%" stop-color="#2D9596"/>
-    </linearGradient>
-    
-    <!-- Glossy effect -->
-    <radialGradient id="gloss" cx="30%" cy="30%" r="70%">
-      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.3"/>
-      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
     </radialGradient>
     
-    <!-- Subtle highlight -->
-    <filter id="highlight">
-      <feGaussianBlur in="SourceAlpha" stdDeviation="2" result="blur"/>
-      <feSpecularLighting in="blur" surfaceScale="5" specularConstant="0.5" specularExponent="20" lighting-color="#FFFFFF" result="spec">
-        <fePointLight x="100" y="100" z="200"/>
-      </feSpecularLighting>
-      <feComposite in="spec" in2="SourceAlpha" operator="in" result="spec"/>
-      <feComposite in="SourceGraphic" in2="spec" operator="arithmetic" k1="0" k2="1" k3="1" k4="0"/>
+    <!-- Modern shadow -->
+    <filter id="modernShadow">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0D4B63" flood-opacity="0.3"/>
     </filter>
   </defs>
   
-  <!-- Scientific dark background -->
-  <circle cx="256" cy="256" r="240" fill="url(#scientificGradient)"/>
-  <circle cx="256" cy="256" r="240" fill="url(#gloss)"/>
+  <!-- Modern circular background -->
+  <circle cx="256" cy="256" r="240" fill="url(#radialGradient)" filter="url(#modernShadow)"/>
   
-  <!-- Scientific lung diagram with alveoli detail -->
-  <g transform="translate(256 256)" filter="url(#highlight)">
-    <!-- Left lung with alveoli -->
-    <path d="M-80 -30 
-             Q-120 30 -110 90 
-             Q-100 150 -70 120 
-             Q-40 90 -50 40 
-             Q-60 -10 -80 -30Z" 
-          fill="#FFFFFF" fill-opacity="0.97"/>
+  <!-- Abstract lung representation - very modern -->
+  <g transform="translate(256 256)">
+    <!-- Left abstract lobe -->
+    <path d="M-80,-30 
+             Q-120,20 -100,80
+             Q-80,140 -50,100
+             Q-20,60 -40,20
+             Q-60,-20 -80,-30Z" 
+          fill="#FFFFFF" fill-opacity="0.95"/>
     
-    <!-- Alveoli clusters -->
-    <circle cx="-90" cy="30" r="6" fill="#FFFFFF"/>
-    <circle cx="-70" cy="70" r="6" fill="#FFFFFF"/>
-    <circle cx="-50" cy="20" r="6" fill="#FFFFFF"/>
+    <!-- Right abstract lobe -->
+    <path d="M80,-30 
+             Q120,20 100,80
+             Q80,140 50,100
+             Q20,60 40,20
+             Q60,-20 80,-30Z" 
+          fill="#FFFFFF" fill-opacity="0.95"/>
     
-    <!-- Right lung -->
-    <path d="M80 -30 
-             Q120 30 110 90 
-             Q100 150 70 120 
-             Q40 90 50 40 
-             Q60 -10 80 -30Z" 
-          fill="#FFFFFF" fill-opacity="0.97"/>
-    
-    <!-- Alveoli clusters -->
-    <circle cx="90" cy="30" r="6" fill="#FFFFFF"/>
-    <circle cx="70" cy="70" r="6" fill="#FFFFFF"/>
-    <circle cx="50" cy="20" r="6" fill="#FFFFFF"/>
-    
-    <!-- Medical precision symbol -->
+    <!-- Central medical symbol -->
     <g>
-      <!-- Sleek cross -->
-      <rect x="-16" y="-70" width="32" height="140" rx="4" fill="#FFFFFF"/>
-      <rect x="-70" y="-16" width="140" height="32" rx="4" fill="#FFFFFF"/>
+      <!-- Modern cross -->
+      <rect x="-18" y="-60" width="36" height="120" rx="8" fill="#FFFFFF"/>
+      <rect x="-60" y="-18" width="120" height="36" rx="8" fill="#FFFFFF"/>
       
-      <!-- Scientific accents -->
-      <line x1="-16" y1="-70" x2="16" y2="-70" stroke="#1A5F7A" stroke-width="2" stroke-opacity="0.3"/>
-      <line x1="-70" y1="-16" x2="-70" y2="16" stroke="#1A5F7A" stroke-width="2" stroke-opacity="0.3"/>
-      
-      <!-- Center dot with measurement lines -->
-      <circle cx="0" cy="0" r="4" fill="#2D9596"/>
-      <line x1="-8" y1="0" x2="8" y2="0" stroke="#2D9596" stroke-width="1" stroke-opacity="0.5"/>
-      <line x1="0" y1="-8" x2="0" y2="8" stroke="#2D9596" stroke-width="1" stroke-opacity="0.5"/>
+      <!-- Cross accent -->
+      <rect x="-18" y="-60" width="36" height="24" fill="#1A5F7A" fill-opacity="0.2"/>
+      <rect x="-60" y="-18" width="24" height="36" fill="#1A5F7A" fill-opacity="0.2"/>
     </g>
   </g>
   
-  <!-- Scientific data visualization -->
+  <!-- Data visualization arcs -->
   <g>
-    <!-- Grid lines -->
-    <line x1="100" y1="380" x2="412" y2="380" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.2"/>
-    <line x1="100" y1="320" x2="412" y2="320" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.2"/>
-    <line x1="100" y1="260" x2="412" y2="260" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.2"/>
-    
-    <!-- Data line with confidence intervals -->
-    <path d="M120 360 
-             Q200 340 256 320 
-             Q312 300 392 280" 
+    <!-- Trend arc -->
+    <path d="M100,380 
+             A180,80 0 0,1 412,380" 
           fill="none" 
           stroke="#FFFFFF" 
-          stroke-width="4" 
-          stroke-linecap="round"/>
+          stroke-width="6" 
+          stroke-linecap="round"
+          opacity="0.9"/>
     
-    <!-- Confidence band -->
-    <path d="M120 370 
-             Q200 350 256 330 
-             Q312 310 392 290 
-             L392 270 
-             Q312 290 256 310 
-             Q200 330 120 350Z" 
-          fill="#FFFFFF" fill-opacity="0.1"/>
+    <!-- Data points on arc -->
+    <circle cx="150" cy="360" r="8" fill="#FFFFFF"/>
+    <circle cx="256" cy="340" r="8" fill="#FFFFFF"/>
+    <circle cx="362" cy="360" r="8" fill="#FFFFFF"/>
     
-    <!-- Data points with error bars -->
-    <g>
-      <!-- Point 1 -->
-      <circle cx="200" cy="340" r="6" fill="#FFFFFF"/>
-      <line x1="200" y1="330" x2="200" y2="350" stroke="#FFFFFF" stroke-width="1"/>
-      
-      <!-- Point 2 -->
-      <circle cx="256" cy="320" r="6" fill="#FFFFFF"/>
-      <line x1="256" y1="310" x2="256" y2="330" stroke="#FFFFFF" stroke-width="1"/>
-      
-      <!-- Point 3 -->
-      <circle cx="312" cy="300" r="6" fill="#FFFFFF"/>
-      <line x1="312" y1="290" x2="312" y2="310" stroke="#FFFFFF" stroke-width="1"/>
-      
-      <!-- Inner scientific dots -->
-      <circle cx="200" cy="340" r="2" fill="#1A5F7A"/>
-      <circle cx="256" cy="320" r="2" fill="#2D9596"/>
-      <circle cx="312" cy="300" r="2" fill="#57C5B6"/>
-    </g>
+    <!-- Inner points -->
+    <circle cx="150" cy="360" r="3" fill="#1A5F7A"/>
+    <circle cx="256" cy="340" r="3" fill="#2D9596"/>
+    <circle cx="362" cy="360" r="3" fill="#57C5B6"/>
   </g>
   
-  <!-- Premium typography -->
-  <text x="256" y="100" text-anchor="middle" font-family="'Helvetica Neue', -apple-system, sans-serif" font-size="36" font-weight="800" fill="#FFFFFF" opacity="0.95" letter-spacing="1">
-    PULMO
+  <!-- Minimalist branding -->
+  <text x="256" y="120" text-anchor="middle" font-family="'SF Pro Display', -apple-system, sans-serif" font-size="48" font-weight="700" fill="#FFFFFF" opacity="0.95">
+    🫁
   </text>
-  <text x="256" y="130" text-anchor="middle" font-family="'Helvetica Neue', -apple-system, sans-serif" font-size="24" font-weight="600" fill="#57C5B6" opacity="0.9">
-    METRICS
-  </text>
-  <text x="256" y="160" text-anchor="middle" font-family="'Helvetica Neue', -apple-system, sans-serif" font-size="12" font-weight="500" fill="#FFFFFF" opacity="0.7" letter-spacing="3">
-    PROFESSIONAL EDITION
+  <text x="256" y="480" text-anchor="middle" font-family="'SF Pro Display', -apple-system, sans-serif" font-size="18" font-weight="600" fill="#FFFFFF" opacity="0.8" letter-spacing="1">
+    PulmoMetrics
   </text>
 </svg>
