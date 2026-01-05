@@ -9,7 +9,7 @@
   <!-- Background circle -->
   <circle cx="256" cy="256" r="256" fill="url(#gradient)"/>
   
-  <!-- Lung silhouette -->
+  <!-- Lung silhouette left -->
   <path d="M150 180 
            Q120 220, 150 260 
            Q180 300, 150 340 
@@ -25,6 +25,7 @@
            Q180 100, 150 180Z" 
         fill="#FFFFFF" fill-opacity="0.9"/>
   
+  <!-- Lung silhouette right -->
   <path d="M362 180 
            Q392 220, 362 260 
            Q332 300, 362 340 
