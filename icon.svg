@@ -1,118 +1,31 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-
   <defs>
-    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0D4B63"/>
-      <stop offset="60%" stop-color="#1F7A8C"/>
-      <stop offset="100%" stop-color="#57C5B6"/>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1A5F7A"/>
+      <stop offset="100%" stop-color="#2D9596"/>
     </linearGradient>
-
-    <linearGradient id="lungShade" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#FFFFFF"/>
-      <stop offset="100%" stop-color="#EAF6F6"/>
-    </linearGradient>
-
-    <filter id="softGlow" x="-15%" y="-15%" width="130%" height="130%">
-      <feGaussianBlur stdDeviation="4" result="blur"/>
-      <feFlood flood-color="#FFFFFF" flood-opacity="0.12"/>
-      <feComposite in2="blur" operator="in"/>
-      <feMerge>
-        <feMergeNode/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
-
-    <filter id="innerShadow">
-      <feOffset dx="1" dy="1"/>
-      <feGaussianBlur stdDeviation="2" result="blur"/>
-      <feComposite operator="out" in="SourceGraphic" in2="blur"/>
-      <feFlood flood-color="#000" flood-opacity="0.18"/>
-      <feComposite operator="in"/>
-      <feComposite operator="over" in2="SourceGraphic"/>
-    </filter>
   </defs>
-
-  <!-- Background -->
-  <circle cx="256" cy="256" r="240"
-          fill="url(#bgGradient)"
-          filter="url(#softGlow)"/>
-
-  <!-- Left lung -->
-  <path d="
-    M190 175
-    C160 210, 165 270, 170 320
-    C175 365, 165 410, 185 435
-    C205 460, 215 430, 210 400
-    C205 365, 215 330, 210 295
-    C205 260, 215 230, 205 200
-    C200 180, 195 165, 190 175 Z"
-    fill="url(#lungShade)"
-    stroke="#FFFFFF"
-    stroke-opacity="0.25"
-    stroke-width="1"
-    vector-effect="non-scaling-stroke"/>
-
-  <!-- Right lung -->
-  <path d="
-    M322 175
-    C352 210, 347 270, 342 320
-    C337 365, 347 410, 327 435
-    C307 460, 297 430, 302 400
-    C307 365, 297 330, 302 295
-    C307 260, 297 230, 307 200
-    C312 180, 317 165, 322 175 Z"
-    fill="url(#lungShade)"
-    stroke="#FFFFFF"
-    stroke-opacity="0.25"
-    stroke-width="1"
-    vector-effect="non-scaling-stroke"/>
-
-  <!-- Medical cross -->
-  <g transform="translate(256 256)" filter="url(#innerShadow)">
-    <rect x="-18" y="-70" width="36" height="140" rx="6"
-          fill="#FFFFFF"
-          fill-opacity="0.92"
-          stroke="#1A5F7A"
-          stroke-opacity="0.25"
-          stroke-width="1"/>
-    <rect x="-70" y="-18" width="140" height="36" rx="6"
-          fill="#FFFFFF"
-          fill-opacity="0.92"
-          stroke="#1A5F7A"
-          stroke-opacity="0.25"
-          stroke-width="1"/>
-    <circle cx="0" cy="0" r="7" fill="#1A5F7A" fill-opacity="0.35"/>
-  </g>
-
-  <!-- Subtle data trend -->
-  <path d="
-    M140 370
-    C190 340, 230 350, 270 315
-    C310 280, 350 295, 390 265"
-    fill="none"
-    stroke="#FFFFFF"
-    stroke-opacity="0.35"
-    stroke-width="6"
-    stroke-linecap="round"
-    vector-effect="non-scaling-stroke"/>
-
-  <!-- Data points -->
-  <g opacity="0.6">
-    <circle cx="230" cy="350" r="8" fill="#FFFFFF"/>
-    <circle cx="310" cy="315" r="8" fill="#FFFFFF"/>
-    <circle cx="390" cy="280" r="8" fill="#FFFFFF"/>
-  </g>
-
-  <!-- Typography -->
-  <text x="256" y="110"
-        text-anchor="middle"
-        font-family="Inter, -apple-system, sans-serif"
-        font-size="40"
-        font-weight="800"
-        letter-spacing="-0.5"
-        fill="#FFFFFF"
-        opacity="0.95">
-    Neumo
-  </text>
-
+  
+  <circle cx="256" cy="256" r="256" fill="url(#gradient)"/>
+  
+  <path d="M150 180 Q120 220, 150 260 Q180 300, 150 340 Q120 380, 150 420 Q180 460, 150 460 Q120 460, 110 430 Q100 400, 110 370 Q120 340, 110 310 Q100 280, 110 250 Q120 220, 110 190 Q100 160, 110 130 Q120 100, 150 100 Q180 100, 150 180Z" 
+        fill="#FFFFFF" fill-opacity="0.9"/>
+  
+  <path d="M362 180 Q392 220, 362 260 Q332 300, 362 340 Q392 380, 362 420 Q332 460, 362 460 Q392 460, 402 430 Q412 400, 402 370 Q392 340, 402 310 Q412 280, 402 250 Q392 220, 402 190 Q412 160, 402 130 Q392 100, 362 100 Q332 100, 362 180Z" 
+        fill="#FFFFFF" fill-opacity="0.9"/>
+  
+  <rect x="236" y="150" width="40" height="140" rx="5" fill="#FFFFFF"/>
+  <rect x="186" y="200" width="140" height="40" rx="5" fill="#FFFFFF"/>
+  
+  <path d="M120 360 L180 300 L240 340 L300 280 L360 320 L400 300" 
+        fill="none" 
+        stroke="#FFFFFF" 
+        stroke-width="8" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"/>
+  
+  <circle cx="180" cy="300" r="6" fill="#1A5F7A"/>
+  <circle cx="240" cy="340" r="6" fill="#1A5F7A"/>
+  <circle cx="300" cy="280" r="6" fill="#1A5F7A"/>
+  <circle cx="360" cy="320" r="6" fill="#1A5F7A"/>
 </svg>
