@@ -7,25 +7,28 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="description" content="Professional Lung Function Monitoring for Transplant Patients">
+    <meta name="description" content="Spirolite - Calculate and Track lung function">
     
-    <title>PulmoMetrics Pro | Lung Transplant Monitor</title>
+    <title>Spirolite | Calculate and Track</title>
     
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
     
     <!-- Professional App Icons -->
-    <link rel="icon" type="image/svg+xml" href="icon2.svg">
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
     <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
     <link rel="apple-touch-icon" href="icon-192.png">
-    <meta name="apple-mobile-web-app-title" content="PulmoMetrics Pro">
+    <meta name="apple-mobile-web-app-title" content="Spirolite">
     
     <!-- Chart.js for visualizations -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- jsPDF for PDF export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    
+    <!-- Professional Icons -->
+    <script src="icons.js"></script>
     
     <style>
         /* ===== CSS RESET & BASE ===== */
@@ -202,7 +205,7 @@
             position: absolute;
             width: 60px;
             height: 60px;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M8.5 13.5l2.5 3 3.5-4.5 4.5 6H5l3.5-4.5z'/%3E%3C/svg%3E");
+            background-image: url("icon2.svg");
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
@@ -395,7 +398,7 @@
             position: absolute;
             width: 24px;
             height: 24px;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M8.5 13.5l2.5 3 3.5-4.5 4.5 6H5l3.5-4.5z'/%3E%3C/svg%3E");
+            background-image: url("icon2.svg");
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
@@ -2107,7 +2110,7 @@
             
             <div class="loading-progress-container">
                 <div class="loading-progress-label">
-                    <span id="loadingStep">Initializing</span>
+                    <span id="loadingStep">Initializing Spirolite...</span>
                     <span id="loadingPercent">0%</span>
                 </div>
                 <div class="loading-progress">
@@ -2115,8 +2118,8 @@
                 </div>
             </div>
             
-            <div class="loading-text" id="loadingText">PulmoMetrics Pro v5.0</div>
-            <div class="loading-subtext" id="loadingSubtext">Professional Lung Transplant Monitoring Suite</div>
+            <div class="loading-text" id="loadingText">Spirolite v1.0</div>
+            <div class="loading-subtext" id="loadingSubtext">Calculate and Track Lung Function</div>
         </div>
     </div>
     
@@ -2142,10 +2145,10 @@
         <header class="app-header">
             <div class="header-content">
                 <div class="app-title">
-                    <div class="app-logo" title="PulmoMetrics Pro">PM</div>
+                    <div class="app-logo" title="Spirolite">SL</div>
                     <div class="app-name">
-                        <h1>PulmoMetrics Pro</h1>
-                        <span>Lung Transplant Monitor</span>
+                        <h1>Spirolite</h1>
+                        <span>Calculate and Track</span>
                     </div>
                 </div>
                 <div class="header-actions">
@@ -2157,10 +2160,10 @@
                         <span class="visual-toggle-label">Colors</span>
                     </div>
                     <button class="header-btn" id="protocolSettingsBtn" title="Protocol Settings">
-                        ⚙️
+                        <span class="icon-settings"></span>
                     </button>
                     <button class="header-btn" id="exportBtn" title="Export All Data">
-                        📤
+                        <span class="icon-export"></span>
                     </button>
                 </div>
             </div>
@@ -2173,19 +2176,19 @@
                 <div class="patient-info">
                     <span class="patient-id" id="patientId">Select Patient</span>
                     <div class="patient-meta">
-                        <span>🆔 <span id="patientIdDisplay">--</span></span>
-                        <span>📅 TX: <span id="txDateDisplay">--</span></span>
-                        <span>📊 Baseline: <span id="baselineDisplay">-- L</span></span>
-                        <span>🔄 Visits: <span id="visitsCount">0</span></span>
+                        <span><span class="icon-id"></span> <span id="patientIdDisplay">--</span></span>
+                        <span><span class="icon-calendar"></span> TX: <span id="txDateDisplay">--</span></span>
+                        <span><span class="icon-baseline"></span> Baseline: <span id="baselineDisplay">-- L</span></span>
+                        <span><span class="icon-visits"></span> Visits: <span id="visitsCount">0</span></span>
                         <span id="stabilityIndicator"></span>
                     </div>
                 </div>
                 <div class="patient-actions">
                     <button class="header-btn" id="newPatientBtn" title="New Patient">
-                        🆕
+                        <span class="icon-new-patient"></span>
                     </button>
                     <button class="header-btn" id="patientListBtn" title="Patient List">
-                        👥
+                        <span class="icon-patients"></span>
                     </button>
                 </div>
             </div>
@@ -2194,19 +2197,19 @@
         <!-- Navigation -->
         <nav class="app-navigation">
             <button class="nav-btn active" data-mode="quick">
-                <span class="nav-icon">⚡</span>
+                <span class="nav-icon icon-quick"></span>
                 <span>Quick Calc</span>
             </button>
             <button class="nav-btn" data-mode="monitor">
-                <span class="nav-icon">📈</span>
+                <span class="nav-icon icon-monitor"></span>
                 <span>Monitor</span>
             </button>
             <button class="nav-btn" data-mode="full">
-                <span class="nav-icon">📋</span>
+                <span class="nav-icon icon-full"></span>
                 <span>Full Study</span>
             </button>
             <button class="nav-btn" data-mode="review">
-                <span class="nav-icon">📊</span>
+                <span class="nav-icon icon-review"></span>
                 <span>Review</span>
             </button>
         </nav>
@@ -2262,7 +2265,7 @@
                     <!-- Comparison Selector -->
                     <div class="comparison-selector">
                         <div class="comparison-title">
-                            <span>📊 Comparison Reference</span>
+                            <span><span class="icon-compare"></span> Comparison Reference</span>
                         </div>
                         <div class="comparison-options">
                             <label class="comparison-option" id="optionNone">
@@ -2365,7 +2368,7 @@
                     <div class="protocol-context hidden" id="protocolContext">
                         <div class="protocol-header">
                             <div class="protocol-title">
-                                <span>📈 Protocol Context</span>
+                                <span><span class="icon-protocol"></span> Protocol Context</span>
                             </div>
                             <div class="threshold-display">
                                 <div class="threshold-badge monitor" id="thresholdMonitor">Monitor ≥<span>10</span>%</div>
@@ -2382,15 +2385,15 @@
                 <!-- Action Buttons -->
                 <div class="action-bar">
                     <button class="action-btn secondary" id="clearQuickBtn">
-                        <span>🗑️</span>
+                        <span class="icon-clear"></span>
                         <span>Clear</span>
                     </button>
                     <button class="action-btn secondary" id="saveQuickBtn">
-                        <span>💾</span>
+                        <span class="icon-save"></span>
                         <span>Save Visit</span>
                     </button>
                     <button class="action-btn primary" id="copyResultsBtn">
-                        <span>📋</span>
+                        <span class="icon-copy"></span>
                         <span>Copy Results</span>
                     </button>
                 </div>
@@ -2402,7 +2405,9 @@
                     <div class="section-title">
                         <span>First Year Monitoring</span>
                         <span class="badge" id="monitorPatientBadge">--</span>
-                        <span id="baselineReadyBadge" class="baseline-ready hidden">📐 Baseline Ready</span>
+                        <span id="baselineReadyBadge" class="baseline-ready hidden">
+                            <span class="icon-baseline-ready"></span> Baseline Ready
+                        </span>
                     </div>
                     
                     <!-- Visit Entry -->
@@ -2422,7 +2427,9 @@
                             <input type="number" step="0.01" min="0.5" max="10.0" 
                                    class="measurement-input compact" 
                                    id="visitFvc" placeholder="FVC (L) (optional)">
-                            <button class="header-btn" id="addVisitBtn" title="Add Visit">＋</button>
+                            <button class="header-btn" id="addVisitBtn" title="Add Visit">
+                                <span class="icon-add"></span>
+                            </button>
                         </div>
                         
                         <!-- Clinical Notes -->
@@ -2447,7 +2454,7 @@ Example:
 2024-01-15, 2.85, 3.40, Doing well
 2024-03-10, 3.10, 3.80, Post-antibiotics"></textarea>
                             <button class="action-btn secondary mt-2" id="importBulkBtn" style="width: 100%;">
-                                <span>📥</span>
+                                <span class="icon-import"></span>
                                 <span>Import Visits</span>
                             </button>
                         </div>
@@ -2459,9 +2466,13 @@ Example:
                             <span style="font-weight: 600; font-size: 0.875rem;">Visit History</span>
                             <div style="display: flex; gap: var(--space-2);">
                                 <button class="header-btn" id="calculateBaselineBtn" 
-                                        disabled title="Calculate Baseline">📐</button>
+                                        disabled title="Calculate Baseline">
+                                    <span class="icon-calculate"></span>
+                                </button>
                                 <button class="header-btn" id="togglePercentageView" 
-                                        title="Toggle percentage view">%</button>
+                                        title="Toggle percentage view">
+                                    <span class="icon-percent"></span>
+                                </button>
                             </div>
                         </div>
                         <div class="table-wrapper">
@@ -2543,15 +2554,15 @@ Example:
                 <!-- Monitor Actions -->
                 <div class="action-bar">
                     <button class="action-btn secondary" id="clearMonitorBtn">
-                        <span>🗑️</span>
+                        <span class="icon-clear"></span>
                         <span>Clear Table</span>
                     </button>
                     <button class="action-btn secondary" id="exportPDFBtn">
-                        <span>📄</span>
+                        <span class="icon-pdf"></span>
                         <span>Export PDF</span>
                     </button>
                     <button class="action-btn primary" id="toggleVisualizationBtn">
-                        <span>📈</span>
+                        <span class="icon-chart"></span>
                         <span>Show Charts</span>
                     </button>
                 </div>
@@ -2665,7 +2676,7 @@ Example:
                             </div>
                             <div class="metric-item">
                                 <span class="metric-label">Percentage Change</span>
-                                <span class="metric-value baseline-percent neutral" id="stdPercentDecline">--</span>
+                                <span class="metric-value baseline-percent neutral" id="stdPercentDecline">--%</span>
                                 <span class="metric-unit">%</span>
                             </div>
                             <div class="metric-item">
@@ -2679,7 +2690,7 @@ Example:
                     <div class="protocol-context">
                         <div class="protocol-header">
                             <div class="protocol-title">
-                                <span>📈 Long-term Trend</span>
+                                <span><span class="icon-protocol"></span> Long-term Trend</span>
                             </div>
                         </div>
                         
@@ -2692,11 +2703,11 @@ Example:
                 <!-- Full Study Actions -->
                 <div class="action-bar">
                     <button class="action-btn secondary" id="clearStdBtn">
-                        <span>🗑️</span>
+                        <span class="icon-clear"></span>
                         <span>Clear All</span>
                     </button>
                     <button class="action-btn primary" id="saveStudyBtn">
-                        <span>💾</span>
+                        <span class="icon-save"></span>
                         <span>Save Full Study</span>
                     </button>
                 </div>
@@ -2747,7 +2758,7 @@ Example:
                     <!-- Visit History -->
                     <div class="visits-list" id="visitsList">
                         <div class="empty-state">
-                            <div class="empty-state-icon">📊</div>
+                            <div class="empty-state-icon icon-no-data"></div>
                             <p>No visit history available</p>
                             <p class="notes-hint mt-2">Start by entering measurements in Quick Calc mode</p>
                         </div>
@@ -2757,11 +2768,11 @@ Example:
                 <!-- Review Actions -->
                 <div class="action-bar">
                     <button class="action-btn secondary" id="exportPatientPDFBtn">
-                        <span>📄</span>
+                        <span class="icon-pdf"></span>
                         <span>Export PDF</span>
                     </button>
                     <button class="action-btn primary" id="newAnalysisBtn">
-                        <span>📝</span>
+                        <span class="icon-new-analysis"></span>
                         <span>New Analysis</span>
                     </button>
                 </div>
@@ -2777,7 +2788,9 @@ Example:
         <div class="modal-content">
             <div class="modal-header">
                 <div class="modal-title">Protocol Settings</div>
-                <button class="modal-close" id="closeProtocolModal">&times;</button>
+                <button class="modal-close" id="closeProtocolModal">
+                    <span class="icon-close"></span>
+                </button>
             </div>
             <div class="modal-body">
                 <div class="protocol-settings">
@@ -2883,9 +2896,11 @@ Example:
             </div>
             <div class="modal-footer">
                 <button class="action-btn secondary" id="resetProtocolBtn">
+                    <span class="icon-reset"></span>
                     Reset to Defaults
                 </button>
                 <button class="action-btn primary" id="saveProtocolBtn">
+                    <span class="icon-save"></span>
                     Save Protocol
                 </button>
             </div>
@@ -2897,7 +2912,9 @@ Example:
         <div class="modal-content">
             <div class="modal-header">
                 <div class="modal-title">Create New Patient</div>
-                <button class="modal-close" id="closeNewPatientModal">&times;</button>
+                <button class="modal-close" id="closeNewPatientModal">
+                    <span class="icon-close"></span>
+                </button>
             </div>
             <div class="modal-body">
                 <div class="input-group mb-4">
@@ -2928,9 +2945,11 @@ Example:
             </div>
             <div class="modal-footer">
                 <button class="action-btn secondary" id="cancelNewPatientBtn">
+                    <span class="icon-cancel"></span>
                     Cancel
                 </button>
                 <button class="action-btn primary" id="createPatientBtn">
+                    <span class="icon-create"></span>
                     Create Patient
                 </button>
             </div>
@@ -2942,12 +2961,14 @@ Example:
         <div class="modal-content">
             <div class="modal-header">
                 <div class="modal-title">Select Patient</div>
-                <button class="modal-close" id="closePatientListModal">&times;</button>
+                <button class="modal-close" id="closePatientListModal">
+                    <span class="icon-close"></span>
+                </button>
             </div>
             <div class="modal-body">
                 <div class="visits-list" id="patientList">
                     <div class="empty-state" style="padding: var(--space-6);">
-                        <div class="empty-state-icon">👥</div>
+                        <div class="empty-state-icon icon-no-patients"></div>
                         <p>No patients yet</p>
                         <p class="notes-hint mt-2">Create your first patient to get started</p>
                     </div>
@@ -2955,7 +2976,8 @@ Example:
             </div>
             <div class="modal-footer">
                 <button class="action-btn primary" id="addNewPatientBtn">
-                    ＋ Add New Patient
+                    <span class="icon-add"></span>
+                    Add New Patient
                 </button>
             </div>
         </div>
@@ -2968,10 +2990,12 @@ Example:
                 <div class="modal-title">
                     <span>Baseline Calculation</span>
                     <span class="stability-indicator ready" id="baselineStabilityIndicator" style="margin-left: var(--space-2);">
-                        Stable Period Detected
+                        <span class="icon-stable"></span> Stable Period Detected
                     </span>
                 </div>
-                <button class="modal-close" id="closeBaselineModal">&times;</button>
+                <button class="modal-close" id="closeBaselineModal">
+                    <span class="icon-close"></span>
+                </button>
             </div>
             <div class="modal-body">
                 <div class="calculation-result">
@@ -3007,9 +3031,11 @@ Example:
             </div>
             <div class="modal-footer">
                 <button class="action-btn secondary" id="cancelBaselineBtn">
+                    <span class="icon-cancel"></span>
                     Cancel
                 </button>
                 <button class="action-btn primary" id="acceptBaselineBtn">
+                    <span class="icon-accept"></span>
                     Accept as Baseline
                 </button>
             </div>
@@ -3020,8 +3046,10 @@ Example:
     <div class="modal-overlay" id="duplicateDateModal">
         <div class="modal-content">
             <div class="modal-header">
-                <div class="modal-title">⚠️ Visit Already Exists</div>
-                <button class="modal-close" id="closeDuplicateModal">&times;</button>
+                <div class="modal-title"><span class="icon-warning"></span> Visit Already Exists</div>
+                <button class="modal-close" id="closeDuplicateModal">
+                    <span class="icon-close"></span>
+                </button>
             </div>
             <div class="modal-body">
                 <div style="margin-bottom: var(--space-4);">
@@ -3066,12 +3094,15 @@ Example:
             </div>
             <div class="modal-footer">
                 <button class="action-btn secondary" id="cancelDuplicateBtn">
+                    <span class="icon-cancel"></span>
                     Cancel
                 </button>
                 <button class="action-btn secondary" id="addAsNewBtn">
+                    <span class="icon-add"></span>
                     Add as New Entry
                 </button>
                 <button class="action-btn primary" id="replaceExistingBtn">
+                    <span class="icon-replace"></span>
                     Replace Existing
                 </button>
             </div>
@@ -3081,11 +3112,11 @@ Example:
     <!-- JavaScript -->
     <script>
     // ============================================
-    // PULMOMETRICS PRO v5.0 - COMPLETE EDITION
-    // Lung Transplant Monitoring Suite
+    // SPIRALITE v1.0 - Complete Edition
+    // Calculate and Track Lung Function
     // ============================================
 
-    class PulmoMetricsPro {
+    class SpiroliteApp {
         constructor() {
             this.state = {
                 mode: 'quick',
@@ -3137,7 +3168,7 @@ Example:
         }
         
         async init() {
-            this.showLoading('Initializing PulmoMetrics Pro...');
+            this.showLoading('Initializing Spirolite...');
             
             await this.cacheDOM();
             this.setupEventListeners();
@@ -3156,7 +3187,7 @@ Example:
                         this.updateLoading('Finalizing setup...', 90);
                         setTimeout(() => {
                             this.hideLoading();
-                            this.showToast('PulmoMetrics Pro v5.0 ready', 'success');
+                            this.showToast('Spirolite v1.0 ready', 'success');
                         }, 800);
                     }, 600);
                 }, 500);
@@ -3526,7 +3557,7 @@ Example:
         
         async loadState() {
             try {
-                const saved = localStorage.getItem('pulmometrics_pro_state_v5');
+                const saved = localStorage.getItem('spirolite_state_v1');
                 if (saved) {
                     const data = JSON.parse(saved);
                     
@@ -3567,11 +3598,11 @@ Example:
                     patients: Array.from(this.state.patients.values()),
                     currentPatient: this.state.currentPatient,
                     colorCoding: this.state.colorCoding,
-                    version: '5.0.0',
+                    version: '1.0.0',
                     savedAt: new Date().toISOString()
                 };
                 
-                localStorage.setItem('pulmometrics_pro_state_v5', JSON.stringify(data));
+                localStorage.setItem('spirolite_state_v1', JSON.stringify(data));
             } catch (error) {
                 console.error('Failed to save state:', error);
                 this.showToast('Failed to save data', 'error');
@@ -3625,8 +3656,12 @@ Example:
         
         togglePercentageView() {
             this.state.percentageView = !this.state.percentageView;
-            this.dom.togglePercentageView.innerHTML = this.state.percentageView ? 'L' : '%';
-            this.dom.togglePercentageView.title = this.state.percentageView ? 'Switch to liters view' : 'Switch to percentage view';
+            this.dom.togglePercentageView.innerHTML = this.state.percentageView 
+                ? '<span class="icon-liters"></span>' 
+                : '<span class="icon-percent"></span>';
+            this.dom.togglePercentageView.title = this.state.percentageView 
+                ? 'Switch to liters view' 
+                : 'Switch to percentage view';
             this.updateVisitsTable();
             this.showToast(`Now showing ${this.state.percentageView ? 'percentages' : 'liters'}`, 'info');
         }
@@ -3909,7 +3944,7 @@ Example:
                 baselineFev1: null,
                 baselineDate: null,
                 visits: [],
-                baselineHistory: [],
+                baselineHistory: [], // Audit trail added
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString()
             };
@@ -3933,7 +3968,7 @@ Example:
             if (this.state.patients.size === 0) {
                 this.dom.patientList.innerHTML = `
                     <div class="empty-state" style="padding: var(--space-6);">
-                        <div class="empty-state-icon">👥</div>
+                        <div class="empty-state-icon icon-no-patients"></div>
                         <p>No patients yet</p>
                         <p class="notes-hint mt-2">Create your first patient to get started</p>
                     </div>
@@ -4031,7 +4066,7 @@ Example:
             this.state.session.monitor.visits = [];
             this.updateVisitsTable();
             this.dom.visualizationSection.classList.remove('visible');
-            this.dom.toggleVisualizationBtn.innerHTML = `<span>📈</span><span>Show Charts</span>`;
+            this.dom.toggleVisualizationBtn.innerHTML = `<span class="icon-chart"></span><span>Show Charts</span>`;
             
             this.dom.txDate.value = '';
             this.dom.baselineDate.value = '';
@@ -4139,15 +4174,17 @@ Example:
             const avg = fev1Values.reduce((a, b) => a + b) / fev1Values.length;
             const variation = ((max - min) / avg) * 100;
             
+            // Calculate monthly rate between first and last in stable period
             let monthlyRate = null;
             if (lastVisits.length >= 2) {
                 const firstDate = new Date(lastVisits[0].date);
                 const lastDate = new Date(lastVisits[lastVisits.length - 1].date);
-                const months = (lastDate - firstDate) / (1000 * 60 * 60 * 24 * 30.44);
-                if (months > 0) {
+                const daysDiff = Math.abs(lastDate - firstDate) / (1000 * 60 * 60 * 24);
+                const monthsDiff = daysDiff / 30.44;
+                if (monthsDiff > 0) {
                     const firstFev1 = lastVisits[0].fev1;
                     const lastFev1 = lastVisits[lastVisits.length - 1].fev1;
-                    monthlyRate = (lastFev1 - firstFev1) / months;
+                    monthlyRate = (lastFev1 - firstFev1) / monthsDiff;
                 }
             }
             
@@ -4162,6 +4199,16 @@ Example:
                 fev1Values: fev1Values.map(v => v.toFixed(2)),
                 dates: lastVisits.map(v => v.date)
             };
+        }
+        
+        // FIX: Added missing method
+        calculateMonthlyRate(currentFev1, previousFev1, currentDate, previousDate) {
+            const date1 = new Date(previousDate);
+            const date2 = new Date(currentDate);
+            const daysDiff = Math.abs(date2 - date1) / (1000 * 60 * 60 * 24);
+            const monthsDiff = daysDiff / 30.44;
+            if (monthsDiff <= 0) return 0;
+            return (currentFev1 - previousFev1) / monthsDiff;
         }
         
         updateStabilityIndicator() {
@@ -4180,10 +4227,10 @@ Example:
             
             if (stability.stable) {
                 this.dom.stabilityIndicator.innerHTML = 
-                    `<span class="stability-indicator stable">✓ Stable</span>`;
+                    `<span class="stability-indicator stable"><span class="icon-stable"></span> Stable</span>`;
             } else {
                 this.dom.stabilityIndicator.innerHTML = 
-                    `<span class="stability-indicator monitoring">⚠ Monitoring</span>`;
+                    `<span class="stability-indicator monitoring"><span class="icon-monitoring"></span> Monitoring</span>`;
             }
         }
         
@@ -4294,6 +4341,7 @@ Example:
             let visitDelta = null;
             let visitPercent = null;
             let monthlyRate = null;
+            let monthlyRateDate = null;
             
             if (baselineValue) {
                 baselinePercent = (fev1 / baselineValue) * 100;
@@ -4318,8 +4366,12 @@ Example:
                 baselineCategory = 'neutral';
             }
             
-            // Update FEV1 percentage display
-            this.dom.resultFev1Percent.textContent = baselinePercent ? `${baselinePercent.toFixed(0)}%` : '--%';
+            // Update FEV1 percentage display with enhanced format
+            if (baselinePercent !== null) {
+                this.dom.resultFev1Percent.textContent = `${fev1.toFixed(2)} L (${baselinePercent.toFixed(0)}%)`;
+            } else {
+                this.dom.resultFev1Percent.textContent = `${fev1.toFixed(2)} L`;
+            }
             this.dom.resultFev1Percent.className = `percent-display ${baselineCategory}`;
             
             // Update comparison results
@@ -4385,15 +4437,15 @@ Example:
                 }
                 this.dom.protocolNote.innerHTML = note;
                 
-                // Show rate item if there's a date context
-                if (this.state.currentPatient) {
+                // Calculate and show monthly rate if applicable
+                if (this.state.currentPatient && baselineValue) {
                     const patient = this.state.patients.get(this.state.currentPatient);
                     if (patient && patient.baselineDate) {
                         const baselineDate = new Date(patient.baselineDate);
                         const currentDate = new Date();
                         const months = (currentDate - baselineDate) / (1000 * 60 * 60 * 24 * 30.44);
                         
-                        if (months > 0 && baselineValue) {
+                        if (months > 0) {
                             const rate = baselineDelta / months;
                             const rateClass = rate > 0 ? 'positive' : (rate < 0 ? 'negative' : 'neutral');
                             const rateArrow = rate > 0 ? '↗' : (rate < 0 ? '↘' : '→');
@@ -4507,8 +4559,8 @@ Example:
                 return;
             }
             
-            let text = `PulmoMetrics Pro Results\n`;
-            text += `=======================\n\n`;
+            let text = `Spirolite Results\n`;
+            text += `=================\n\n`;
             text += `FEV₁: ${this.state.session.quick.fev1.toFixed(2)} L\n`;
             
             if (this.state.session.quick.fvc) {
@@ -4817,18 +4869,27 @@ Example:
                 const baselineDelta = baseline ? (visit.fev1 - baseline) : 0;
                 const baselineDeltaStr = baseline ? `${baselineDelta >= 0 ? '+' : ''}${baselineDelta.toFixed(2)}` : '--';
                 const baselinePercent = baseline ? ((visit.fev1 / baseline) * 100) : null;
-                const baselinePercentStr = baselinePercent ? baselinePercent.toFixed(1) + '%' : '--';
                 
-                // Calculate monthly rate if applicable
+                // FIX: Enhanced percentage display format
+                let baselineDisplay = '--';
+                if (baselinePercent !== null) {
+                    if (this.state.percentageView) {
+                        baselineDisplay = `${baselinePercent.toFixed(1)}%`;
+                    } else {
+                        baselineDisplay = `${visit.fev1.toFixed(2)} L (${baselinePercent.toFixed(0)}%)`;
+                    }
+                }
+                
+                // FIX: Calculate monthly rate correctly
                 let monthlyRate = '--';
                 let rateArrow = '→';
-                if (prevVisit && baseline) {
-                    const daysBetween = (new Date(visit.date) - new Date(prevVisit.date)) / (1000 * 60 * 60 * 24);
-                    const monthsBetween = daysBetween / 30.44;
-                    if (monthsBetween > 0) {
-                        const rate = baselineDelta / monthsBetween;
+                let rateClass = 'neutral';
+                if (prevVisit) {
+                    const rate = this.calculateMonthlyRate(visit.fev1, prevVisit.fev1, visit.date, prevVisit.date);
+                    if (Math.abs(rate) > 0.001) { // Significant rate
                         monthlyRate = `${rate >= 0 ? '+' : ''}${rate.toFixed(3)}`;
-                        rateArrow = rate > 0 ? '↗' : (rate < 0 ? '↘' : '→');
+                        rateArrow = rate > 0 ? '↗' : '↘';
+                        rateClass = rate > 0 ? 'up' : 'down';
                     }
                 }
                 
@@ -4857,7 +4918,7 @@ Example:
                     <td>${daysFromTx !== null ? daysFromTx : '--'}</td>
                     <td>${visit.fev1.toFixed(2)}</td>
                     <td>
-                        ${this.state.percentageView ? baselinePercentStr : baselineDeltaStr} 
+                        ${baselineDisplay} 
                         ${!this.state.colorCoding ? '' : 
                             baselinePercentClass !== 'neutral' ? 
                             `<span class="baseline-percent ${baselinePercentClass}" style="margin-left: 4px;">●</span>` : ''
@@ -4873,15 +4934,18 @@ Example:
                         }
                     </td>
                     <td>${baselineDeltaStr}</td>
-                    <td>
+                    <td class="${!this.state.colorCoding ? '' : `visit-change ${visitDeltaClass}`}">
                         ${monthlyRate}
-                        ${rateArrow !== '→' ? `<span class="trend-arrow ${rateArrow === '↗' ? 'up' : 'down'}" style="margin-left: 4px;">${rateArrow}</span>` : ''}
+                        ${!this.state.colorCoding ? '' : 
+                            rateClass !== 'neutral' ? 
+                            `<span class="trend-arrow ${rateClass}" style="margin-left: 4px;">${rateArrow}</span>` : ''
+                        }
                     </td>
                     <td class="alert-cell">
                         <div class="alert-indicator ${alertLevel}" title="${alertLevel === 'review' ? 'Review required' : alertLevel === 'monitor' ? 'Monitor closely' : 'Within range'}"></div>
                     </td>
                     <td title="${visit.notes || 'No notes'}">
-                        ${visit.notes ? '📝' : ''}
+                        ${visit.notes ? '<span class="icon-notes"></span>' : ''}
                     </td>
                 `;
                 
@@ -4973,15 +5037,31 @@ Example:
                     container.appendChild(line);
                 }
                 
-                // Add dot
+                // Add dot with value tooltip
                 const dot = document.createElement('div');
                 dot.className = 'timeline-dot';
                 dot.style.left = `${position}%`;
                 dot.title = `${visit.date}: ${visit.fev1.toFixed(2)} L`;
+                
+                // Add warning for irregular intervals
+                if (index > 0) {
+                    const prevVisit = sortedVisits[index - 1];
+                    const prevDate = new Date(prevVisit.date);
+                    const daysBetween = Math.floor((visitDate - prevDate) / (1000 * 60 * 60 * 24));
+                    
+                    if (daysBetween < 7) {
+                        dot.style.backgroundColor = 'var(--alert)';
+                        dot.title += `\n⚠️ Short interval: ${daysBetween} days (should be ≥7)`;
+                    } else if (daysBetween > 90) {
+                        dot.style.backgroundColor = 'var(--warning)';
+                        dot.title += `\n⚠️ Long interval: ${daysBetween} days (should be ≤90)`;
+                    }
+                }
+                
                 container.appendChild(dot);
             });
             
-            // Add interval warnings
+            // Add interval warnings as colored segments
             for (let i = 1; i < sortedVisits.length; i++) {
                 const prevDate = new Date(sortedVisits[i - 1].date);
                 const currDate = new Date(sortedVisits[i].date);
@@ -5047,18 +5127,22 @@ Example:
             
             this.dom.calculatedBaseline.value = suggestedBaseline.toFixed(2);
             
-            // Update audit trail
+            // Update audit trail with enhanced information
+            const firstDate = new Date(lastVisits[0].date);
+            const lastDate = new Date(lastVisits[lastVisits.length - 1].date);
+            const daysStable = Math.floor((lastDate - firstDate) / (1000 * 60 * 60 * 24));
+            
             this.dom.stabilityCriteria.innerHTML = `
-                ✅ Stability criteria met: Last ${stability.visits} visits (±${this.state.protocol.stabilityThreshold}% variation)
+                ✅ Stability criteria met: Last ${stability.visits} visits over ${daysStable} days
             `;
             this.dom.stabilityVariation.innerHTML = `
-                📊 Actual variation: ${stability.variation}%
+                📊 Actual variation: ${stability.variation}% (threshold: ≤${this.state.protocol.stabilityThreshold}%)
             `;
             this.dom.stabilityRate.innerHTML = `
                 📈 Monthly rate: ${stability.monthlyRate ? `${stability.monthlyRate} L/mo` : 'N/A'}
             `;
             this.dom.baselineRecommendation.innerHTML = `
-                💡 Recommended baseline: ${suggestedBaseline.toFixed(2)} L (average of highest 2 values)
+                💡 Recommended baseline: ${suggestedBaseline.toFixed(2)} L (average of highest 2 values from stable period)
             `;
             
             this.showModal('baselineModal');
@@ -5083,16 +5167,23 @@ Example:
                 return;
             }
             
-            // Update patient baseline with audit trail
+            // Update patient baseline with complete audit trail
+            const previousBaseline = patient.baselineFev1;
             patient.baselineFev1 = baselineValue;
             patient.baselineDate = new Date().toISOString().split('T')[0];
+            
+            // Add to audit trail
             patient.baselineHistory.push({
                 value: baselineValue,
                 date: patient.baselineDate,
                 method: 'calculated_from_stable_period',
                 visitsUsed: this.state.protocol.stabilityVisits,
-                recordedAt: new Date().toISOString()
+                previousValue: previousBaseline,
+                variation: this.checkStability(patient.visits).variation,
+                recordedAt: new Date().toISOString(),
+                notes: 'Automatically calculated from stable period'
             });
+            
             patient.updatedAt = new Date().toISOString();
             
             this.state.patients.set(patient.id, patient);
@@ -5109,11 +5200,11 @@ Example:
             const isVisible = this.dom.visualizationSection.classList.toggle('visible');
             
             if (isVisible) {
-                this.dom.toggleVisualizationBtn.innerHTML = `<span>📉</span><span>Hide Charts</span>`;
+                this.dom.toggleVisualizationBtn.innerHTML = `<span class="icon-chart-hide"></span><span>Hide Charts</span>`;
                 this.updateChart();
                 this.updateTimelineVisualization(this.state.session.monitor.visits);
             } else {
-                this.dom.toggleVisualizationBtn.innerHTML = `<span>📈</span><span>Show Charts</span>`;
+                this.dom.toggleVisualizationBtn.innerHTML = `<span class="icon-chart"></span><span>Show Charts</span>`;
             }
         }
         
@@ -5128,7 +5219,7 @@ Example:
                 this.updateVisitsTable();
                 this.updateCalculateButton();
                 this.dom.visualizationSection.classList.remove('visible');
-                this.dom.toggleVisualizationBtn.innerHTML = `<span>📈</span><span>Show Charts</span>`;
+                this.dom.toggleVisualizationBtn.innerHTML = `<span class="icon-chart"></span><span>Show Charts</span>`;
                 this.showToast('Monitor data cleared', 'success');
             }
         }
@@ -5197,9 +5288,9 @@ Example:
             const monthlyRate = monthsFromBaseline > 0 ? (fev1 - baselineFev1) / monthsFromBaseline : 0;
             const currentPercent = (fev1 / baselineFev1) * 100;
             
-            // Update UI
+            // Update UI with enhanced formatting
             this.dom.stdCurrentFev1.textContent = fev1.toFixed(2);
-            this.dom.stdCurrentPercent.textContent = `${currentPercent.toFixed(1)}%`;
+            this.dom.stdCurrentPercent.textContent = `${fev1.toFixed(2)} L (${currentPercent.toFixed(1)}%)`;
             this.dom.stdCurrentPercent.className = `percent-display ${this.getBaselinePercentClass(currentPercent)}`;
             this.dom.stdBaseline.textContent = baselineFev1.toFixed(2);
             this.dom.stdTimePeriod.textContent = daysFromBaseline;
@@ -5286,10 +5377,24 @@ Example:
                 return;
             }
             
-            // Update patient information
+            // Update patient information with audit trail
+            const previousBaseline = patient.baselineFev1;
             patient.txDate = txDate;
             patient.baselineDate = baselineDate;
             patient.baselineFev1 = baselineFev1;
+            
+            // Add to baseline history if changed
+            if (previousBaseline !== baselineFev1) {
+                patient.baselineHistory.push({
+                    value: baselineFev1,
+                    date: baselineDate,
+                    method: 'manual_entry_full_study',
+                    previousValue: previousBaseline,
+                    recordedAt: new Date().toISOString(),
+                    notes: 'Manually entered in Full Study mode'
+                });
+            }
+            
             patient.updatedAt = new Date().toISOString();
             
             // Add as a visit if not already present
@@ -5350,7 +5455,7 @@ Example:
             
             this.dom.visitsList.innerHTML = `
                 <div class="empty-state">
-                    <div class="empty-state-icon">📊</div>
+                    <div class="empty-state-icon icon-no-data"></div>
                     <p>No visit history available</p>
                     <p class="notes-hint mt-2">Start by entering measurements in Quick Calc mode</p>
                 </div>
@@ -5393,9 +5498,11 @@ Example:
             this.dom.patientStatusText.textContent = statusText;
             
             if (stability.stable) {
-                this.dom.reviewStabilityIndicator.innerHTML = `<span class="stability-indicator stable">✓ Stable</span>`;
+                this.dom.reviewStabilityIndicator.innerHTML = 
+                    `<span class="stability-indicator stable"><span class="icon-stable"></span> Stable Function</span>`;
             } else if (patient.visits.length >= this.state.protocol.stabilityVisits) {
-                this.dom.reviewStabilityIndicator.innerHTML = `<span class="stability-indicator monitoring">⚠ Monitoring</span>`;
+                this.dom.reviewStabilityIndicator.innerHTML = 
+                    `<span class="stability-indicator monitoring"><span class="icon-monitoring"></span> Monitoring</span>`;
             } else {
                 this.dom.reviewStabilityIndicator.innerHTML = '';
             }
@@ -5444,7 +5551,8 @@ Example:
                 if (patient.baselineFev1) {
                     const percent = (visit.fev1 / patient.baselineFev1 * 100).toFixed(1);
                     const percentClass = this.getBaselinePercentClass(percent);
-                    const percentDisplay = !this.state.colorCoding ? percent : 
+                    const percentDisplay = !this.state.colorCoding ? 
+                        `${percent}%` : 
                         `<span class="baseline-percent ${percentClass}">${percent}%</span>`;
                     baselineInfo = `<div style="font-size: 0.75rem; color: var(--text-tertiary);">${percentDisplay} of baseline</div>`;
                 }
@@ -5457,7 +5565,9 @@ Example:
                             year: 'numeric'
                         })}</div>
                         ${baselineInfo}
-                        ${visit.notes ? `<div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px;">${visit.notes}</div>` : ''}
+                        ${visit.notes ? `<div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px;">
+                            <span class="icon-notes-small"></span> ${visit.notes}
+                        </div>` : ''}
                     </div>
                     <div class="visit-values">
                         <div class="visit-fev1">${visit.fev1.toFixed(2)} L</div>
@@ -5623,7 +5733,7 @@ Example:
             }
             
             const data = {
-                version: 'PulmoMetrics Pro v5.0',
+                version: 'Spirolite v1.0',
                 exportedAt: new Date().toISOString(),
                 patients: Array.from(this.state.patients.values()),
                 protocol: this.state.protocol,
@@ -5637,7 +5747,7 @@ Example:
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `pulmometrics_pro_export_${new Date().toISOString().split('T')[0]}.json`;
+            a.download = `spirolite_export_${new Date().toISOString().split('T')[0]}.json`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -5659,15 +5769,20 @@ Example:
             const patientId = this.state.currentPatient || 'Unknown';
             const patient = this.state.patients.get(this.state.currentPatient);
             
-            // Add header
+            // Add header with Spirolite branding
             doc.setFontSize(20);
-            doc.text('PulmoMetrics Pro Report', 20, 20);
+            doc.setTextColor(26, 95, 122);
+            doc.text('Spirolite Report', 20, 20);
             doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
             doc.text(`Patient: ${patientId}`, 20, 30);
             if (patient && patient.txDate) {
                 doc.text(`Transplant Date: ${new Date(patient.txDate).toLocaleDateString()}`, 20, 37);
             }
-            doc.text(`Generated: ${new Date().toLocaleString()}`, 20, 44);
+            if (patient && patient.baselineFev1) {
+                doc.text(`Baseline FEV₁: ${patient.baselineFev1.toFixed(2)} L`, 20, 44);
+            }
+            doc.text(`Generated: ${new Date().toLocaleString()}`, 20, 51);
             
             // Add visits table
             const visits = [...this.state.session.monitor.visits].sort((a, b) => new Date(a.date) - new Date(b.date));
@@ -5676,6 +5791,7 @@ Example:
                 const visitDelta = prevVisit ? (visit.fev1 - prevVisit.fev1).toFixed(2) : '--';
                 const baselineDelta = patient && patient.baselineFev1 ? (visit.fev1 - patient.baselineFev1).toFixed(2) : '--';
                 const baselinePercent = patient && patient.baselineFev1 ? ((visit.fev1 / patient.baselineFev1) * 100).toFixed(1) : '--';
+                const rate = prevVisit ? this.calculateMonthlyRate(visit.fev1, prevVisit.fev1, visit.date, prevVisit.date).toFixed(3) : '--';
                 
                 return [
                     new Date(visit.date).toLocaleDateString(),
@@ -5685,21 +5801,39 @@ Example:
                     visit.fvc ? ((visit.fev1 / visit.fvc) * 100).toFixed(1) + '%' : '--',
                     visitDelta,
                     baselineDelta,
+                    rate,
                     visit.notes || ''
                 ];
             });
             
             doc.autoTable({
-                head: [['Date', 'FEV₁ (L)', '% of PB', 'FVC', 'Ratio', 'Δ Visit', 'Δ Baseline', 'Notes']],
+                head: [['Date', 'FEV₁ (L)', '% of PB', 'FVC', 'Ratio', 'Δ Visit', 'Δ Baseline', 'Rate', 'Notes']],
                 body: tableData,
-                startY: 50,
+                startY: 60,
                 theme: 'grid',
                 headStyles: { fillColor: [26, 95, 122] },
                 alternateRowStyles: { fillColor: [240, 240, 240] }
             });
             
+            // Add clinical notes section
+            const finalY = doc.lastAutoTable.finalY || 60;
+            doc.setFontSize(14);
+            doc.text('Clinical Notes:', 20, finalY + 10);
+            
+            let notesY = finalY + 20;
+            visits.forEach(visit => {
+                if (visit.notes) {
+                    doc.setFontSize(10);
+                    const date = new Date(visit.date).toLocaleDateString();
+                    const notes = `• ${date}: ${visit.notes}`;
+                    const splitNotes = doc.splitTextToSize(notes, 170);
+                    doc.text(splitNotes, 20, notesY);
+                    notesY += splitNotes.length * 5;
+                }
+            });
+            
             // Save the PDF
-            doc.save(`pulmometrics_${patientId}_${new Date().toISOString().split('T')[0]}.pdf`);
+            doc.save(`spirolite_${patientId}_${new Date().toISOString().split('T')[0]}.pdf`);
             this.showToast('PDF exported successfully', 'success');
         }
         
@@ -5721,8 +5855,10 @@ Example:
             
             // Add header
             doc.setFontSize(20);
-            doc.text('PulmoMetrics Pro Patient Report', 20, 20);
+            doc.setTextColor(26, 95, 122);
+            doc.text('Spirolite Patient Report', 20, 20);
             doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
             doc.text(`Patient ID: ${patient.id}`, 20, 30);
             if (patient.description) {
                 doc.text(`Description: ${patient.description}`, 20, 37);
@@ -5742,8 +5878,10 @@ Example:
             const stability = this.checkStability(patient.visits);
             
             let startY = 75;
+            doc.setFontSize(14);
             doc.text('Summary Statistics:', 20, startY);
             startY += 7;
+            doc.setFontSize(12);
             doc.text(`Last FEV₁: ${lastVisit.fev1.toFixed(2)} L`, 25, startY);
             startY += 7;
             doc.text(`Best FEV₁: ${bestFev1.toFixed(2)} L`, 25, startY);
@@ -5756,8 +5894,25 @@ Example:
             doc.text(`Stability: ${stability.stable ? 'Stable' : 'Monitoring'}`, 25, startY);
             startY += 10;
             
+            // Add baseline audit trail if exists
+            if (patient.baselineHistory && patient.baselineHistory.length > 0) {
+                doc.setFontSize(14);
+                doc.text('Baseline History:', 20, startY);
+                startY += 7;
+                doc.setFontSize(10);
+                
+                patient.baselineHistory.forEach(history => {
+                    const date = new Date(history.date).toLocaleDateString();
+                    const text = `• ${date}: ${history.value.toFixed(2)} L (${history.method})`;
+                    const splitText = doc.splitTextToSize(text, 170);
+                    doc.text(splitText, 25, startY);
+                    startY += splitText.length * 5;
+                });
+                startY += 5;
+            }
+            
             // Add visits table
-            const sortedVisits = [...patient.visits].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 10);
+            const sortedVisits = [...patient.visits].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 15);
             const tableData = sortedVisits.map(visit => {
                 const baselinePercent = patient.baselineFev1 ? ((visit.fev1 / patient.baselineFev1) * 100).toFixed(1) : '--';
                 return [
@@ -5790,9 +5945,14 @@ Example:
             
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
+            
+            const icon = type === 'success' ? 'icon-success' : 
+                        type === 'error' ? 'icon-error' : 
+                        type === 'warning' ? 'icon-warning' : 'icon-info';
+            
             toast.innerHTML = `
                 <div class="toast-icon">
-                    ${type === 'success' ? '✓' : type === 'error' ? '✗' : type === 'warning' ? '⚠' : 'ℹ'}
+                    <span class="${icon}"></span>
                 </div>
                 <div class="toast-content">
                     <div class="toast-message">${message}</div>
@@ -5814,19 +5974,12 @@ Example:
         }
         
         // ===== UTILITY FUNCTIONS =====
-        
-        getBaselinePercentClass(percent) {
-            if (!this.state.colorCoding || percent === null) return 'neutral';
-            if (percent >= 95) return 'good';
-            if (percent >= 80) return 'warning';
-            return 'alert';
-        }
     }
     
     // Initialize the application when DOM is loaded
     document.addEventListener('DOMContentLoaded', () => {
         // Create and initialize the app
-        window.pulmoMetricsApp = new PulmoMetricsPro();
+        window.spiroliteApp = new SpiroliteApp();
         
         // Set current date as default for date inputs
         const today = new Date().toISOString().split('T')[0];
@@ -5852,10 +6005,10 @@ Example:
     
     // Handle beforeunload to warn about unsaved data
     window.addEventListener('beforeunload', (e) => {
-        const hasUnsavedData = window.pulmoMetricsApp && 
-            (window.pulmoMetricsApp.state.session.monitor.visits.length > 0 ||
-             window.pulmoMetricsApp.state.session.quick.fev1 !== null ||
-             window.pulmoMetricsApp.state.session.full.fev1 !== null);
+        const hasUnsavedData = window.spiroliteApp && 
+            (window.spiroliteApp.state.session.monitor.visits.length > 0 ||
+             window.spiroliteApp.state.session.quick.fev1 !== null ||
+             window.spiroliteApp.state.session.full.fev1 !== null);
         
         if (hasUnsavedData) {
             e.preventDefault();
@@ -5865,9 +6018,9 @@ Example:
     });
     
     // Make the app globally accessible
-    window.PulmoMetricsPro = PulmoMetricsPro;
+    window.SpiroliteApp = SpiroliteApp;
     
-    // End of PulmoMetrics Pro v5.0 JavaScript
+    // End of Spirolite v1.0 JavaScript
     </script>
 </body>
 </html>
