@@ -3578,7 +3578,9 @@ Example:
         // ===== KEYBOARD SHORTCUTS =====
         
         handleKeyboardShortcuts(e) {
-            if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) {
+            if (!e.target || e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+    return;
+}
                 return;
             }
             
