@@ -2,13 +2,11 @@
   "name": "Spirolite",
   "short_name": "Spirolite",
   "description": "Calculate and Track Lung Function",
-  "start_url": "/",
-  "scope": "/",
+  "start_url": ".",
   "display": "standalone",
-  "orientation": "portrait",
   "background_color": "#1A5F7A",
   "theme_color": "#1A5F7A",
-  "categories": ["medical", "health", "productivity"],
+  "orientation": "portrait-primary",
   "icons": [
     {
       "src": "icon-192.png",
@@ -21,53 +19,21 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
-    },
-    {
-      "src": "icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any"
     }
   ],
-  "screenshots": [
-    {
-      "src": "screenshot-desktop.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide",
-      "label": "Spirolite Desktop Interface"
-    },
-    {
-      "src": "screenshot-mobile.png",
-      "sizes": "750x1334",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Spirolite Mobile Interface"
-    }
-  ],
+  "categories": ["medical", "health", "productivity"],
   "shortcuts": [
     {
       "name": "Quick Calculation",
       "short_name": "Quick Calc",
-      "description": "Quick FEV1 calculation",
-      "url": "/#quick",
-      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+      "description": "Calculate FEV1 and FVC ratios",
+      "url": "./#modeQuick"
     },
     {
-      "name": "Monitor Mode",
+      "name": "Monitor Visits",
       "short_name": "Monitor",
-      "description": "Monitor patient visits",
-      "url": "/#monitor",
-      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+      "description": "Track patient visits over time",
+      "url": "./#modeMonitor"
     }
-  ],
-  "related_applications": [],
-  "prefer_related_applications": false,
-  "protocol_handlers": [],
-  "launch_handler": {
-    "client_mode": "focus-existing"
-  },
-  "edge_side_panel": {
-    "preferred_width": 400
-  }
+  ]
 }
