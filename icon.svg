@@ -6,27 +6,27 @@
       <stop offset="100%" stop-color="#2D9596"/>
     </radialGradient>
 
-    <!-- Lungs Base Gradient -->
-    <linearGradient id="lungBase" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.95"/>
-      <stop offset="50%" stop-color="#E6F7FA" stop-opacity="0.85"/>
-      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.7"/>
-    </linearGradient>
+    <!-- Enhanced Lung Gradient -->
+    <radialGradient id="lungBaseEnhanced" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#E0FAFF"/>
+      <stop offset="50%" stop-color="#C0F0F5"/>
+      <stop offset="100%" stop-color="#A0E5EA"/>
+    </radialGradient>
 
-    <!-- Lungs Highlight Overlay -->
+    <!-- Lung Highlight -->
     <radialGradient id="lungHighlight" cx="50%" cy="30%" r="50%">
       <stop offset="0%" stop-color="white" stop-opacity="0.15"/>
       <stop offset="100%" stop-color="white" stop-opacity="0"/>
     </radialGradient>
 
-    <!-- Trend Line Gradient -->
+    <!-- Trend Gradient -->
     <linearGradient id="trendGradient" x1="0%" y1="0%" x2="100%" y2="0%">
       <stop offset="0%" stop-color="#1A5F7A"/>
       <stop offset="50%" stop-color="#2D9596"/>
       <stop offset="100%" stop-color="#1A5F7A"/>
     </linearGradient>
 
-    <!-- Soft Shadow -->
+    <!-- Soft Shadow Filter -->
     <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
       <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#000000" flood-opacity="0.2"/>
     </filter>
@@ -40,7 +40,7 @@
       </feMerge>
     </filter>
 
-    <!-- Particle Effect -->
+    <!-- Particle Gradient -->
     <radialGradient id="particle" cx="50%" cy="50%" r="50%">
       <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.8"/>
       <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
@@ -52,35 +52,52 @@
       <stop offset="50%" stop-color="white" stop-opacity="0.15"/>
       <stop offset="100%" stop-color="white" stop-opacity="0"/>
     </linearGradient>
+
+    <!-- Define Left Lung Path for Reuse -->
+    <path id="leftLungPath" d="M170 120
+             C135 170, 135 240, 150 300
+             C160 340, 145 370, 160 390
+             C175 410, 195 395, 190 365
+             C185 330, 200 305, 195 255
+             C190 215, 205 180, 195 140
+             C185 120, 175 115, 170 120 Z"/>
+
+    <!-- Define Right Lung Path for Reuse -->
+    <path id="rightLungPath" d="M342 120
+             C377 170, 377 240, 362 300
+             C355 330, 370 360, 355 380
+             C340 400, 320 385, 325 355
+             C330 330, 315 305, 320 255
+             C325 215, 310 180, 320 140
+             C330 120, 337 115, 342 120 Z"/>
   </defs>
 
-  <!-- Background -->
+  <!-- Background Circle -->
   <circle cx="256" cy="256" r="256" fill="url(#bgGradient)"/>
 
-  <!-- Light rays behind lungs -->
+  <!-- Light Rays -->
   <g opacity="0.08">
     <circle cx="256" cy="256" r="220" fill="white"/>
     <circle cx="256" cy="256" r="180" fill="none" stroke="white" stroke-opacity="0.1" stroke-width="2"/>
   </g>
 
-  <!-- Lungs Group with breathing animation -->
-  <g id="lungs">
+  <!-- Lungs Group -->
+  <g id="lungs" filter="url(#softShadow)">
     <!-- Left Lung -->
-    <path d="M170 120 C135 170, 135 250, 150 310 C165 370, 150 420, 170 450 C190 475, 215 440, 205 395 C195 345, 215 300, 205 255 C195 210, 215 165, 195 130 C185 115, 175 115, 170 120 Z"
-      fill="url(#lungBase)" filter="url(#softShadow)"/>
-    <path d="M170 120 C135 170, 135 250, 150 310 C165 370, 150 420, 170 450 C190 475, 215 440, 205 395 C195 345, 215 300, 205 255 C195 210, 215 165, 195 130 C185 115, 175 115, 170 120 Z"
-      fill="url(#lungHighlight)" opacity="0.6"/>
+    <use href="#leftLungPath" fill="url(#lungBaseEnhanced)"/>
+    <use href="#leftLungPath" fill="url(#lungHighlight)" opacity="0.6"/>
 
     <!-- Right Lung -->
-    <path d="M342 120 C377 170, 377 250, 362 310 C347 370, 362 420, 342 450 C322 475, 297 440, 307 395 C317 345, 297 300, 307 255 C317 210, 297 165, 317 130 C327 115, 337 115, 342 120 Z"
-      fill="url(#lungBase)" filter="url(#softShadow)"/>
-    <path d="M342 120 C377 170, 377 250, 362 310 C347 370, 362 420, 342 450 C322 475, 297 440, 307 395 C317 345, 297 300, 307 255 C317 210, 297 165, 317 130 C327 115, 337 115, 342 120 Z"
-      fill="url(#lungHighlight)" opacity="0.6"/>
+    <use href="#rightLungPath" fill="url(#lungBaseEnhanced)"/>
+    <use href="#rightLungPath" fill="url(#lungHighlight)" opacity="0.6"/>
 
-    <!-- Breathing Scale Animation -->
+    <!-- Breathing Animation -->
     <animateTransform attributeName="transform" type="scale"
-      values="1;1.02;1" dur="3s" repeatCount="indefinite"
-      additive="sum" origin="256 256"/>
+                      values="1;1.02;1" dur="3s" repeatCount="indefinite"
+                      additive="sum" origin="256 256"/>
+    <animateTransform attributeName="transform" type="rotate"
+                      values="-1;1;-1" dur="3s" repeatCount="indefinite"
+                      additive="sum" origin="256 256"/>
   </g>
 
   <!-- Scan Overlay -->
@@ -90,35 +107,47 @@
 
   <!-- Medical Cross -->
   <rect x="236" y="150" width="40" height="140" rx="6" fill="white" fill-opacity="0.95"
-        stroke="#1A5F7A" stroke-opacity="0.4" stroke-width="2" filter="url(#softShadow)"/>
+        stroke="#1A5F7A" stroke-opacity="0.4" stroke-width="2"/>
   <rect x="186" y="200" width="140" height="40" rx="6" fill="white" fill-opacity="0.95"
-        stroke="#1A5F7A" stroke-opacity="0.4" stroke-width="2" filter="url(#softShadow)"/>
+        stroke="#1A5F7A" stroke-opacity="0.4" stroke-width="2"/>
 
   <!-- Trend Line -->
   <path d="M140 350 L200 310 L260 330 L320 290 L380 310" fill="none"
         stroke="url(#trendGradient)" stroke-width="6"
-        stroke-linecap="round" filter="url(#glow)" stroke-opacity="0.8"/>
+        stroke-linecap="round" filter="url(#glow)" stroke-opacity="0.8">
+    <animate attributeName="stroke-dasharray" values="0,400;400,0;0,400" dur="4s" repeatCount="indefinite"/>
+  </path>
 
-  <!-- Pulsing Data Points -->
-  <circle cx="200" cy="310" r="6" fill="#1A5F7A">
-    <animate attributeName="r" values="6;12;6" dur="1.8s" repeatCount="indefinite"/>
-    <animate attributeName="opacity" values="1;0.5;1" dur="1.8s" repeatCount="indefinite"/>
-  </circle>
-  <circle cx="260" cy="330" r="6" fill="#1A5F7A">
-    <animate attributeName="r" values="6;12;6" dur="2s" repeatCount="indefinite"/>
-    <animate attributeName="opacity" values="1;0.5;1" dur="2s" repeatCount="indefinite"/>
-  </circle>
-  <circle cx="320" cy="290" r="6" fill="#1A5F7A">
-    <animate attributeName="r" values="6;12;6" dur="2.2s" repeatCount="indefinite"/>
-    <animate attributeName="opacity" values="1;0.5;1" dur="2.2s" repeatCount="indefinite"/>
-  </circle>
-  <circle cx="380" cy="310" r="6" fill="#1A5F7A">
-    <animate attributeName="r" values="6;12;6" dur="2.4s" repeatCount="indefinite"/>
-    <animate attributeName="opacity" values="1;0.5;1" dur="2.4s" repeatCount="indefinite"/>
-  </circle>
+  <!-- Pulsing Data Points Group -->
+  <g id="pulses">
+    <circle cx="200" cy="310" r="6" fill="#1A5F7A">
+      <animate attributeName="r" values="6;12;6" dur="1.8s" repeatCount="indefinite" keyTimes="0;0.5;1"/>
+      <animate attributeName="opacity" values="1;0.5;1" dur="1.8s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="260" cy="330" r="6" fill="#1A5F7A">
+      <animate attributeName="r" values="6;12;6" dur="2s" repeatCount="indefinite" keyTimes="0;0.5;1"/>
+      <animate attributeName="opacity" values="1;0.5;1" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="320" cy="290" r="6" fill="#1A5F7A">
+      <animate attributeName="r" values="6;12;6" dur="2.2s" repeatCount="indefinite" keyTimes="0;0.5;1"/>
+      <animate attributeName="opacity" values="1;0.5;1" dur="2.2s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="380" cy="310" r="6" fill="#1A5F7A">
+      <animate attributeName="r" values="6;12;6" dur="2.4s" repeatCount="indefinite" keyTimes="0;0.5;1"/>
+      <animate attributeName="opacity" values="1;0.5;1" dur="2.4s" repeatCount="indefinite"/>
+    </circle>
+  </g>
 
   <!-- Background Particles -->
-  <circle cx="150" cy="150" r="4" fill="url(#particle)" opacity="0.1"/>
-  <circle cx="400" cy="200" r="3" fill="url(#particle)" opacity="0.1"/>
-  <circle cx="280" cy="400" r="5" fill="url(#particle)" opacity="0.08"/>
+  <g id="particles">
+    <circle cx="150" cy="150" r="4" fill="url(#particle)" opacity="0.1">
+      <animateTransform attributeName="transform" type="translate" values="0 0;5 5;0 0" dur="8s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="400" cy="200" r="3" fill="url(#particle)" opacity="0.1">
+      <animateTransform attributeName="transform" type="translate" values="0 0;-5 5;0 0" dur="10s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="280" cy="400" r="5" fill="url(#particle)" opacity="0.08">
+      <animateTransform attributeName="transform" type="translate" values="0 0;5 -5;0 0" dur="12s" repeatCount="indefinite"/>
+    </circle>
+  </g>
 </svg>
