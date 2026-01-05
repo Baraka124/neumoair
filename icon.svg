@@ -5,27 +5,62 @@
       <stop offset="100%" stop-color="#2D9596"/>
     </linearGradient>
   </defs>
-  
+
+  <!-- Background -->
   <circle cx="256" cy="256" r="256" fill="url(#gradient)"/>
-  
-  <path d="M150 180 Q120 220, 150 260 Q180 300, 150 340 Q120 380, 150 420 Q180 460, 150 460 Q120 460, 110 430 Q100 400, 110 370 Q120 340, 110 310 Q100 280, 110 250 Q120 220, 110 190 Q100 160, 110 130 Q120 100, 150 100 Q180 100, 150 180Z" 
-        fill="#FFFFFF" fill-opacity="0.9"/>
-  
-  <path d="M362 180 Q392 220, 362 260 Q332 300, 362 340 Q392 380, 362 420 Q332 460, 362 460 Q392 460, 402 430 Q412 400, 402 370 Q392 340, 402 310 Q412 280, 402 250 Q392 220, 402 190 Q412 160, 402 130 Q392 100, 362 100 Q332 100, 362 180Z" 
-        fill="#FFFFFF" fill-opacity="0.9"/>
-  
-  <rect x="236" y="150" width="40" height="140" rx="5" fill="#FFFFFF"/>
-  <rect x="186" y="200" width="140" height="40" rx="5" fill="#FFFFFF"/>
-  
-  <path d="M120 360 L180 300 L240 340 L300 280 L360 320 L400 300" 
-        fill="none" 
-        stroke="#FFFFFF" 
-        stroke-width="8" 
-        stroke-linecap="round" 
-        stroke-linejoin="round"/>
-  
-  <circle cx="180" cy="300" r="6" fill="#1A5F7A"/>
-  <circle cx="240" cy="340" r="6" fill="#1A5F7A"/>
-  <circle cx="300" cy="280" r="6" fill="#1A5F7A"/>
-  <circle cx="360" cy="320" r="6" fill="#1A5F7A"/>
+
+  <!-- Left lung -->
+  <path d="
+    M170 120
+    C135 170, 135 250, 150 310
+    C165 370, 150 420, 170 450
+    C190 475, 215 440, 205 395
+    C195 345, 215 300, 205 255
+    C195 210, 215 165, 195 130
+    C185 115, 175 115, 170 120 Z"
+    fill="#FFFFFF" fill-opacity="0.92"/>
+
+  <!-- Right lung -->
+  <path d="
+    M342 120
+    C377 170, 377 250, 362 310
+    C347 370, 362 420, 342 450
+    C322 475, 297 440, 307 395
+    C317 345, 297 300, 307 255
+    C317 210, 297 165, 317 130
+    C327 115, 337 115, 342 120 Z"
+    fill="#FFFFFF" fill-opacity="0.92"/>
+
+  <!-- Medical cross -->
+  <rect x="236" y="150" width="40" height="140" rx="6"
+        fill="#FFFFFF"
+        stroke="#1A5F7A"
+        stroke-opacity="0.35"
+        stroke-width="1"/>
+
+  <rect x="186" y="200" width="140" height="40" rx="6"
+        fill="#FFFFFF"
+        stroke="#1A5F7A"
+        stroke-opacity="0.35"
+        stroke-width="1"/>
+
+  <!-- Subtle data trend -->
+  <path d="
+    M140 350
+    L200 310
+    L260 330
+    L320 290
+    L380 310"
+    fill="none"
+    stroke="#FFFFFF"
+    stroke-width="6"
+    stroke-linecap="round"
+    stroke-opacity="0.4"/>
+
+  <!-- Data points -->
+  <circle cx="200" cy="310" r="6" fill="#1A5F7A"/>
+  <circle cx="260" cy="330" r="6" fill="#1A5F7A"/>
+  <circle cx="320" cy="290" r="6" fill="#1A5F7A"/>
+  <circle cx="380" cy="310" r="6" fill="#1A5F7A"/>
+
 </svg>
