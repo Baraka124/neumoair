@@ -285,7 +285,6 @@
         .loading-logo-inner {
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
             border-radius: var(--radius-xl);
             display: flex;
             align-items: center;
@@ -477,23 +476,15 @@
         .app-logo {
             width: 36px;
             height: 36px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            background: url("icon.svg") no-repeat center center;
+            background-size: contain;
             border-radius: var(--radius-lg);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-weight: 700;
-            font-size: 1rem;
             flex-shrink: 0;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 4px 12px rgba(26, 95, 122, 0.3);
-        }
-        
-        .app-logo::before {
-            content: 'SL';
-            font-weight: 700;
         }
         
         .app-name {
@@ -2681,8 +2672,7 @@
                                            step="0.01" 
                                            class="option-input" 
                                            id="baselineInput"
-                                           placeholder="Enter baseline FEV₁ (L)"
-                                           disabled>
+                                           placeholder="Enter baseline FEV₁ (L)">
                                     <div class="option-note">Compare to post-transplant baseline value</div>
                                 </div>
                             </label>
@@ -2748,7 +2738,7 @@
                             <div class="metric-item">
                                 <span class="metric-label">
                                     <span class="trend-arrow" id="baselineTrendArrow">→</span>
-                                    <span>% of Personal Best</span>
+                                    <span>% of Baseline</span>
                                 </span>
                                 <span class="metric-value baseline-percent neutral" id="resultBaselinePercent">--%</span>
                                 <span class="metric-unit" id="resultBaselineDelta">-- L</span>
@@ -3426,58 +3416,55 @@ Example:
         </div>
     </div>
     
-    <!-- Baseline Calculation Modal -->
-    <div class="modal-overlay" id="baselineModal">
+    <!-- Baseline Conflict Modal -->
+    <div class="modal-overlay" id="baselineConflictModal">
         <div class="modal-content glass-modal">
             <div class="modal-header">
                 <div class="modal-title">
-                    <span>Baseline Calculation</span>
+                    <span>⚠️</span> <span>Baseline Conflict</span>
                 </div>
-                <button class="modal-close" id="closeBaselineModal">
+                <button class="modal-close" id="closeBaselineConflictModal">
                     <span>×</span>
                 </button>
             </div>
             <div class="modal-body">
-                <!-- Mini Chart Visualization -->
-                <div class="baseline-chart-mini" id="baselineMiniChart">
-                    <!-- Stability visualization will be rendered here -->
-                </div>
-                
-                <div class="calculation-result">
-                    <div class="threshold-setting">
-                        <div class="threshold-header">
-                            <div class="threshold-label">Suggested Baseline:</div>
-                        </div>
-                        <div class="threshold-input-group">
-                            <input type="number" step="0.01" min="0.5" max="8.0"
-                                   class="threshold-input" id="calculatedBaseline" style="flex: 2;">
-                            <span class="threshold-percent">L</span>
-                        </div>
-                        
-                        <div class="mt-3" id="baselineAuditTrail">
-                            <div class="input-label" style="margin-bottom: var(--space-2);">Stability Analysis</div>
-                            <div style="font-size: 0.75rem; color: var(--text-secondary); line-height: 1.4;">
-                                <div id="stabilityCriteria"></div>
-                                <div id="stabilityVariation" class="mt-2"></div>
-                                <div id="stabilityRate" class="mt-2"></div>
-                                <div id="baselineRecommendation" class="mt-2" style="color: var(--success); font-weight: 600;"></div>
+                <div style="margin-bottom: var(--space-3);">
+                    <p id="baselineConflictMessage">Current patient has a different baseline. Which baseline would you like to use for this calculation?</p>
+                    <div class="current-measurements" style="margin: var(--space-3) 0;">
+                        <div style="display: flex; gap: var(--space-3);">
+                            <div style="flex: 1;">
+                                <div style="font-size: 0.75rem; color: var(--text-secondary);">Patient Baseline</div>
+                                <div style="font-family: var(--font-family-mono); font-size: 1.25rem; font-weight: 700; color: var(--primary);" id="patientBaselineValue">
+                                    --
+                                </div>
+                                <div style="font-size: 0.6875rem; color: var(--text-tertiary); margin-top: 2px;">From patient record</div>
+                            </div>
+                            <div style="flex: 1;">
+                                <div style="font-size: 0.75rem; color: var(--text-secondary);">Entered Baseline</div>
+                                <div style="font-family: var(--font-family-mono); font-size: 1.25rem; font-weight: 700; color: var(--secondary);" id="enteredBaselineValue">
+                                    --
+                                </div>
+                                <div style="font-size: 0.6875rem; color: var(--text-tertiary); margin-top: 2px;">From input field</div>
                             </div>
                         </div>
-                        
-                        <div class="threshold-description mt-3">
-                            This is calculated from stable period measurements. You must explicitly accept this baseline.
-                        </div>
+                    </div>
+                    <div class="notes-hint" style="font-size: 0.6875rem; color: var(--text-tertiary);">
+                        The selected baseline will be used for this calculation only.
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="action-btn secondary" id="cancelBaselineBtn">
-                    <span>✕</span>
-                    <span>Cancel</span>
+                <button class="action-btn secondary" id="usePatientBaselineBtn">
+                    <span>👤</span>
+                    <span>Use Patient Baseline</span>
                 </button>
-                <button class="action-btn primary" id="acceptBaselineBtn">
-                    <span>✓</span>
-                    <span>Accept as Baseline</span>
+                <button class="action-btn secondary" id="useEnteredBaselineBtn">
+                    <span>✏️</span>
+                    <span>Use Entered Baseline</span>
+                </button>
+                <button class="action-btn primary" id="updatePatientBaselineBtn">
+                    <span>💾</span>
+                    <span>Update Patient Record</span>
                 </button>
             </div>
         </div>
@@ -3553,7 +3540,7 @@ Example:
     <!-- JavaScript -->
     <script>
     // ============================================
-    // SPIRALITE v1.1 - COMPLETE REWRITE
+    // SPIRALITE v1.2 - SYNCED BASELINE EDITION
     // Calculate and Track Lung Function
     // ============================================
 
@@ -3578,6 +3565,7 @@ Example:
                         fvc: null,
                         comparison: 'none',
                         baseline: null,
+                        baselineSource: null, // 'patient' or 'entered' or null
                         lastVisit: null
                     },
                     full: {
@@ -3598,7 +3586,8 @@ Example:
                         timelineChart: null,
                         entryMode: 'single'
                     },
-                    duplicateDateData: null
+                    duplicateDateData: null,
+                    baselineConflictData: null
                 },
                 stability: {
                     currentStatus: 'unknown',
@@ -3631,7 +3620,7 @@ Example:
                         this.updateLoading('Finalizing setup...', 90);
                         setTimeout(() => {
                             this.hideLoading();
-                            this.showToast('Spirolite v1.1 ready', 'success');
+                            this.showToast('Spirolite v1.2 ready', 'success');
                         }, 800);
                     }, 600);
                 }, 500);
@@ -3843,17 +3832,14 @@ Example:
             this.dom.patientList = document.getElementById('patientList');
             this.dom.addNewPatientBtn = document.getElementById('addNewPatientBtn');
             
-            this.dom.baselineModal = document.getElementById('baselineModal');
-            this.dom.closeBaselineModal = document.getElementById('closeBaselineModal');
-            this.dom.calculatedBaseline = document.getElementById('calculatedBaseline');
-            this.dom.baselineStabilityIndicator = document.getElementById('baselineStabilityIndicator');
-            this.dom.baselineAuditTrail = document.getElementById('baselineAuditTrail');
-            this.dom.stabilityCriteria = document.getElementById('stabilityCriteria');
-            this.dom.stabilityVariation = document.getElementById('stabilityVariation');
-            this.dom.stabilityRate = document.getElementById('stabilityRate');
-            this.dom.baselineRecommendation = document.getElementById('baselineRecommendation');
-            this.dom.cancelBaselineBtn = document.getElementById('cancelBaselineBtn');
-            this.dom.acceptBaselineBtn = document.getElementById('acceptBaselineBtn');
+            this.dom.baselineConflictModal = document.getElementById('baselineConflictModal');
+            this.dom.closeBaselineConflictModal = document.getElementById('closeBaselineConflictModal');
+            this.dom.baselineConflictMessage = document.getElementById('baselineConflictMessage');
+            this.dom.patientBaselineValue = document.getElementById('patientBaselineValue');
+            this.dom.enteredBaselineValue = document.getElementById('enteredBaselineValue');
+            this.dom.usePatientBaselineBtn = document.getElementById('usePatientBaselineBtn');
+            this.dom.useEnteredBaselineBtn = document.getElementById('useEnteredBaselineBtn');
+            this.dom.updatePatientBaselineBtn = document.getElementById('updatePatientBaselineBtn');
             
             this.dom.duplicateDateModal = document.getElementById('duplicateDateModal');
             this.dom.closeDuplicateModal = document.getElementById('closeDuplicateModal');
@@ -4002,10 +3988,11 @@ Example:
                 this.showModal('newPatientModal');
             });
             
-            // Baseline modal
-            this.dom.closeBaselineModal.addEventListener('click', () => this.hideModal('baselineModal'));
-            this.dom.cancelBaselineBtn.addEventListener('click', () => this.hideModal('baselineModal'));
-            this.dom.acceptBaselineBtn.addEventListener('click', () => this.acceptBaseline());
+            // Baseline conflict modal
+            this.dom.closeBaselineConflictModal.addEventListener('click', () => this.hideModal('baselineConflictModal'));
+            this.dom.usePatientBaselineBtn.addEventListener('click', () => this.handleBaselineConflict('patient'));
+            this.dom.useEnteredBaselineBtn.addEventListener('click', () => this.handleBaselineConflict('entered'));
+            this.dom.updatePatientBaselineBtn.addEventListener('click', () => this.handleBaselineConflict('update'));
             
             // Duplicate date modal
             this.dom.closeDuplicateModal.addEventListener('click', () => this.hideModal('duplicateDateModal'));
@@ -4018,7 +4005,7 @@ Example:
             
             // Modal close on overlay click
             [this.dom.protocolModal, this.dom.newPatientModal, this.dom.patientListModal, 
-             this.dom.baselineModal, this.dom.duplicateDateModal].forEach(modal => {
+             this.dom.baselineConflictModal, this.dom.duplicateDateModal].forEach(modal => {
                 modal.addEventListener('click', (e) => {
                     if (e.target === modal) this.hideModal(modal.id);
                 });
@@ -4123,7 +4110,7 @@ Example:
         
         async loadState() {
             try {
-                const saved = localStorage.getItem('spirolite_state_v1.1');
+                const saved = localStorage.getItem('spirolite_state_v1.2');
                 if (saved) {
                     const data = JSON.parse(saved);
                     
@@ -4170,11 +4157,11 @@ Example:
                     currentPatient: this.state.currentPatient,
                     colorCoding: this.state.colorCoding,
                     language: this.state.language,
-                    version: '1.1.0',
+                    version: '1.2.0',
                     savedAt: new Date().toISOString()
                 };
                 
-                localStorage.setItem('spirolite_state_v1.1', JSON.stringify(data));
+                localStorage.setItem('spirolite_state_v1.2', JSON.stringify(data));
             } catch (error) {
                 console.error('Failed to save state:', error);
                 this.showToast('Failed to save data', 'error');
@@ -4822,9 +4809,11 @@ Example:
                 if (patient.baselineFev1) {
                     this.dom.manualBaselineInput.value = patient.baselineFev1.toFixed(2);
                     this.dom.setBaselineBtn.disabled = false;
+                    this.dom.baselineInput.value = patient.baselineFev1;
                 } else {
                     this.dom.manualBaselineInput.value = '';
                     this.dom.setBaselineBtn.disabled = true;
+                    this.dom.baselineInput.value = '';
                 }
                 
                 // Load visits to monitor session
@@ -4848,6 +4837,7 @@ Example:
             this.state.session.quick.fvc = null;
             this.state.session.quick.comparison = 'none';
             this.state.session.quick.baseline = null;
+            this.state.session.quick.baselineSource = null;
             this.state.session.quick.lastVisit = null;
             
             // Clear monitor mode
@@ -4876,7 +4866,6 @@ Example:
                 opt.classList.remove('selected');
             });
             this.dom.optionNone.classList.add('selected');
-            this.dom.baselineInput.disabled = true;
             
             // Update charts
             this.updateChart();
@@ -5012,26 +5001,101 @@ Example:
             e.currentTarget.classList.add('selected');
             
             this.state.session.quick.comparison = radio.value;
-            this.dom.baselineInput.disabled = radio.value !== 'baseline';
-            
-            if (radio.value === 'baseline') {
-                this.dom.baselineInput.focus();
-            }
             
             this.handleComparisonChange();
         }
         
         handleComparisonChange() {
             if (this.state.session.quick.comparison === 'baseline') {
-                const baseline = parseFloat(this.dom.baselineInput.value);
-                if (baseline && baseline > 0) {
-                    this.state.session.quick.baseline = baseline;
+                const enteredBaseline = parseFloat(this.dom.baselineInput.value);
+                
+                if (enteredBaseline && enteredBaseline > 0) {
+                    this.state.session.quick.baseline = enteredBaseline;
+                    this.state.session.quick.baselineSource = 'entered';
+                    
+                    // Check for baseline conflict if patient is selected
+                    if (this.state.currentPatient) {
+                        const patient = this.state.patients.get(this.state.currentPatient);
+                        if (patient && patient.baselineFev1 && 
+                            Math.abs(patient.baselineFev1 - enteredBaseline) > 0.01) {
+                            this.showBaselineConflictModal(patient.baselineFev1, enteredBaseline);
+                            return;
+                        }
+                    }
                 } else {
                     this.state.session.quick.baseline = null;
+                    this.state.session.quick.baselineSource = null;
                 }
             } else {
                 this.state.session.quick.baseline = null;
+                this.state.session.quick.baselineSource = null;
             }
+            
+            if (this.state.session.quick.fev1) {
+                this.calculateQuick();
+            }
+        }
+        
+        showBaselineConflictModal(patientBaseline, enteredBaseline) {
+            this.state.session.baselineConflictData = {
+                patientBaseline,
+                enteredBaseline
+            };
+            
+            this.dom.patientBaselineValue.textContent = `${patientBaseline.toFixed(2)} L`;
+            this.dom.enteredBaselineValue.textContent = `${enteredBaseline.toFixed(2)} L`;
+            
+            this.showModal('baselineConflictModal');
+        }
+        
+        handleBaselineConflict(choice) {
+            const data = this.state.session.baselineConflictData;
+            if (!data) return;
+            
+            switch(choice) {
+                case 'patient':
+                    this.state.session.quick.baseline = data.patientBaseline;
+                    this.state.session.quick.baselineSource = 'patient';
+                    this.dom.baselineInput.value = data.patientBaseline;
+                    break;
+                    
+                case 'entered':
+                    this.state.session.quick.baseline = data.enteredBaseline;
+                    this.state.session.quick.baselineSource = 'entered';
+                    break;
+                    
+                case 'update':
+                    this.state.session.quick.baseline = data.enteredBaseline;
+                    this.state.session.quick.baselineSource = 'entered';
+                    // Update patient baseline
+                    if (this.state.currentPatient) {
+                        const patient = this.state.patients.get(this.state.currentPatient);
+                        if (patient) {
+                            const previousBaseline = patient.baselineFev1;
+                            patient.baselineFev1 = data.enteredBaseline;
+                            patient.baselineDate = new Date().toISOString().split('T')[0];
+                            
+                            patient.baselineHistory.push({
+                                value: data.enteredBaseline,
+                                date: patient.baselineDate,
+                                method: 'quick_calc_update',
+                                previousValue: previousBaseline,
+                                recordedAt: new Date().toISOString(),
+                                notes: 'Updated from quick calculation'
+                            });
+                            
+                            patient.updatedAt = new Date().toISOString();
+                            this.state.patients.set(patient.id, patient);
+                            this.saveState();
+                            
+                            this.updatePatientContext();
+                            this.showToast('Patient baseline updated', 'success');
+                        }
+                    }
+                    break;
+            }
+            
+            this.hideModal('baselineConflictModal');
             
             if (this.state.session.quick.fev1) {
                 this.calculateQuick();
@@ -5047,6 +5111,8 @@ Example:
             const fev1 = this.state.session.quick.fev1;
             const fvc = this.state.session.quick.fvc;
             const comparison = this.state.session.quick.comparison;
+            const baseline = this.state.session.quick.baseline;
+            const baselineSource = this.state.session.quick.baselineSource;
             
             // Update basic results
             this.dom.resultFev1Liters.textContent = fev1.toFixed(2);
@@ -5061,7 +5127,6 @@ Example:
             this.dom.resultRatio.textContent = ratio;
             
             // Get comparison data
-            let baselineValue = null;
             let lastVisitValue = null;
             let comparisonTitle = 'Current values only';
             let comparisonSubtitle = '';
@@ -5069,11 +5134,7 @@ Example:
             if (this.state.currentPatient) {
                 const patient = this.state.patients.get(this.state.currentPatient);
                 if (patient) {
-                    if (comparison === 'baseline' && patient.baselineFev1) {
-                        baselineValue = patient.baselineFev1;
-                        comparisonTitle = 'vs Established Baseline';
-                        comparisonSubtitle = `${patient.baselineFev1.toFixed(2)} L`;
-                    } else if (comparison === 'last' && patient.visits.length > 0) {
+                    if (comparison === 'last' && patient.visits.length > 0) {
                         const lastVisit = patient.visits[patient.visits.length - 1];
                         lastVisitValue = lastVisit.fev1;
                         const lastDate = new Date(lastVisit.date);
@@ -5090,9 +5151,19 @@ Example:
             let visitDelta = null;
             let visitPercent = null;
             
-            if (baselineValue) {
-                baselinePercent = (fev1 / baselineValue) * 100;
-                baselineDelta = fev1 - baselineValue;
+            if (baseline) {
+                baselinePercent = (fev1 / baseline) * 100;
+                baselineDelta = fev1 - baseline;
+                fev1Percent = baselinePercent;
+                
+                // Set comparison title based on baseline source
+                if (baselineSource === 'patient') {
+                    comparisonTitle = 'vs Patient Baseline';
+                    comparisonSubtitle = `Patient record: ${baseline.toFixed(2)} L`;
+                } else if (baselineSource === 'entered') {
+                    comparisonTitle = 'vs Entered Baseline';
+                    comparisonSubtitle = `Entered value: ${baseline.toFixed(2)} L`;
+                }
             }
             
             if (lastVisitValue) {
@@ -5100,12 +5171,16 @@ Example:
                 visitPercent = lastVisitValue > 0 ? ((fev1 - lastVisitValue) / lastVisitValue) * 100 : 0;
             }
             
-            // Determine FEV1 percentage category
+            // Determine FEV1 percentage category based on protocol thresholds
             let baselineCategory = 'neutral';
             if (baselinePercent !== null) {
-                if (baselinePercent >= 95) baselineCategory = 'good';
-                else if (baselinePercent >= 80) baselineCategory = 'warning';
-                else baselineCategory = 'alert';
+                if (baselinePercent >= (100 - this.state.protocol.monitor)) {
+                    baselineCategory = 'good';
+                } else if (baselinePercent >= (100 - this.state.protocol.review)) {
+                    baselineCategory = 'warning';
+                } else {
+                    baselineCategory = 'alert';
+                }
             }
             
             // Apply color coding if enabled
@@ -5115,14 +5190,15 @@ Example:
             
             // Update FEV1 percentage display
             if (baselinePercent !== null) {
-                this.dom.resultFev1Percent.textContent = `${fev1.toFixed(2)} L (${baselinePercent.toFixed(0)}%)`;
+                this.dom.resultFev1Percent.textContent = `${baselinePercent.toFixed(0)}%`;
+                this.dom.resultFev1Percent.className = `percent-display ${baselineCategory}`;
             } else {
                 this.dom.resultFev1Percent.textContent = `${fev1.toFixed(2)} L`;
+                this.dom.resultFev1Percent.className = `percent-display neutral`;
             }
-            this.dom.resultFev1Percent.className = `percent-display ${baselineCategory}`;
             
             // Update comparison results
-            if (comparison !== 'none' && (baselineValue || lastVisitValue)) {
+            if (comparison !== 'none' && (baseline || lastVisitValue)) {
                 this.dom.comparisonResults.classList.remove('hidden');
                 this.dom.comparisonTitle.textContent = comparisonTitle;
                 this.dom.comparisonSubtitle.textContent = comparisonSubtitle;
@@ -5147,7 +5223,7 @@ Example:
                 }
                 
                 // Update baseline comparison
-                if (baselineValue !== null) {
+                if (baseline !== null) {
                     const arrow = baselineDelta > 0 ? '↗' : (baselineDelta < 0 ? '↘' : '→');
                     const arrowClass = baselineDelta > 0 ? 'up' : (baselineDelta < 0 ? 'down' : 'neutral');
                     
@@ -5172,15 +5248,15 @@ Example:
                 // Update protocol note
                 let note = '<strong>Note:</strong> ';
                 if (baselinePercent !== null) {
-                    if (baselinePercent >= 95) {
-                        note += 'FEV₁ is within normal range (>95% of baseline).';
-                    } else if (baselinePercent >= 80) {
-                        note += 'FEV₁ shows mild decline (80-94% of baseline). Monitor closely.';
+                    if (baselinePercent >= (100 - this.state.protocol.monitor)) {
+                        note += 'FEV₁ is within normal range.';
+                    } else if (baselinePercent >= (100 - this.state.protocol.review)) {
+                        note += `FEV₁ decline ≥${this.state.protocol.monitor}% (Monitor).`;
                     } else {
-                        note += 'FEV₁ shows significant decline (<80% of baseline). Review recommended.';
+                        note += `FEV₁ decline ≥${this.state.protocol.review}% (Review).`;
                     }
                 } else {
-                    note += 'Visit-to-visit changes (Δ) show direction only. Baseline comparisons use 95%/80% thresholds.';
+                    note += 'Visit-to-visit changes (Δ) show direction only.';
                 }
                 this.dom.protocolNote.innerHTML = note;
             } else {
@@ -5208,12 +5284,12 @@ Example:
                 opt.classList.remove('selected');
             });
             this.dom.optionNone.classList.add('selected');
-            this.dom.baselineInput.disabled = true;
             
             this.state.session.quick.fev1 = null;
             this.state.session.quick.fvc = null;
             this.state.session.quick.comparison = 'none';
             this.state.session.quick.baseline = null;
+            this.state.session.quick.baselineSource = null;
             this.state.session.quick.lastVisit = null;
             
             this.dom.inputFev1.focus();
@@ -5830,8 +5906,8 @@ Example:
         
         getBaselinePercentClass(percent) {
             if (!this.state.colorCoding || percent === null) return 'neutral';
-            if (percent >= 95) return 'good';
-            if (percent >= 80) return 'warning';
+            if (percent >= (100 - this.state.protocol.monitor)) return 'good';
+            if (percent >= (100 - this.state.protocol.review)) return 'warning';
             return 'alert';
         }
         
@@ -5980,12 +6056,12 @@ Example:
             
             // Update protocol note
             let note = '<strong>Note:</strong> ';
-            if (percentDecline <= 5) {
-                note += 'Minimal decline (<5% from baseline). Continue routine monitoring.';
-            } else if (percentDecline <= 20) {
-                note += 'Moderate decline (5-20% from baseline). Consider additional testing.';
+            if (percentDecline <= this.state.protocol.monitor) {
+                note += `Minimal decline (<${this.state.protocol.monitor}% from baseline). Continue routine monitoring.`;
+            } else if (percentDecline <= this.state.protocol.review) {
+                note += `Moderate decline (${this.state.protocol.monitor}-${this.state.protocol.review}% from baseline). Consider additional testing.`;
             } else {
-                note += 'Significant decline (>20% from baseline). Urgent clinical review recommended.';
+                note += `Significant decline (>${this.state.protocol.review}% from baseline). Urgent clinical review recommended.`;
             }
             this.dom.stdProtocolNote.innerHTML = note;
             
@@ -6050,10 +6126,10 @@ Example:
                 patient.baselineHistory.push({
                     value: baselineFev1,
                     date: baselineDate,
-                    method: 'manual_entry_full_study',
+                    method: 'full_study_update',
                     previousValue: previousBaseline,
                     recordedAt: new Date().toISOString(),
-                    notes: 'Manually entered in Full Study mode'
+                    notes: 'Updated from Full Study mode'
                 });
             }
             
@@ -6232,7 +6308,7 @@ Example:
             }
             
             const data = {
-                version: 'Spirolite v1.1',
+                version: 'Spirolite v1.2',
                 exportedAt: new Date().toISOString(),
                 patients: Array.from(this.state.patients.values()),
                 protocol: this.state.protocol,
