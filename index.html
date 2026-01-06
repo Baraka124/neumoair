@@ -1,12 +1,22 @@
+CONTINUE FROM...
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="theme-color" content="#1A5F7A">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#1A5F7A" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#0d2d3a" media="(prefers-color-scheme: dark)">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Spirolite">
+    <meta name="application-name" content="Spirolite">
     <meta name="mobile-web-app-capable" content="yes">
+    <meta name="msapplication-TileColor" content="#1A5F7A">
+    <meta name="msapplication-TileImage" content="icon-144.png">
+    <meta name="msapplication-config" content="none">
     <meta name="description" content="Spirolite - Calculate and Track lung function">
     
     <title>Spirolite | Calculate and Track</title>
@@ -19,16 +29,15 @@
     <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
     <link rel="apple-touch-icon" href="icon-192.png">
-    <meta name="apple-mobile-web-app-title" content="Spirolite">
+    <link rel="mask-icon" href="icon.svg" color="#1A5F7A">
     
-    <!-- Chart.js for visualizations -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- jsPDF for PDF export -->
+    <!-- Fix CDN URLs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
     
-    <!-- Professional Icons -->
-    <script src="icons.js"></script>
+    <!-- Load icons.js early -->
+    <script src="icons.js" defer></script>
     
     <style>
         /* ===== CSS RESET & BASE ===== */
@@ -164,6 +173,53 @@
             overflow: hidden;
             position: fixed;
             width: 100%;
+        }
+        
+        /* Accessibility: Skip link */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--primary);
+            color: white;
+            padding: 8px;
+            z-index: 1000;
+            text-decoration: none;
+            border-radius: var(--radius-md);
+        }
+        
+        .skip-link:focus {
+            top: 0;
+        }
+        
+        /* Accessibility: Focus styles */
+        *:focus {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+        
+        *:focus:not(.focus-visible) {
+            outline: none;
+        }
+        
+        /* Safari date input fix */
+        input[type="date"].safari-fallback {
+            position: relative;
+        }
+        
+        input[type="date"].safari-fallback::before {
+            content: attr(placeholder);
+            position: absolute;
+            top: 50%;
+            left: 12px;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            pointer-events: none;
+        }
+        
+        input[type="date"].safari-fallback:focus::before,
+        input[type="date"].safari-fallback:valid::before {
+            display: none;
         }
         
         /* ===== GLASS EFFECTS ===== */
@@ -2688,6 +2744,12 @@
     </style>
 </head>
 <body>
+    <!-- Accessibility: Skip to main content -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <!-- Main content with ID for skip link -->
+    <div id="main-content">
+    
     <!-- Professional Loading Overlay -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-content">
@@ -2706,7 +2768,7 @@
                 </div>
             </div>
             
-            <div class="loading-text" id="loadingText">Spirolite v1.0</div>
+            <div class="loading-text" id="loadingText">Spirolite v2.0</div>
             <div class="loading-subtext" id="loadingSubtext">Calculate and Track Lung Function</div>
         </div>
     </div>
@@ -3765,10 +3827,54 @@ Example:
         </div>
     </div>
     
+    </div> <!-- End of main-content -->
+    
+    <!-- Service Worker Registration -->
+    <script>
+    // Register service worker
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+            navigator.serviceWorker.register('sw.js')
+                .then(function(registration) {
+                    console.log('ServiceWorker registered:', registration.scope);
+                    
+                    // Check for updates
+                    registration.addEventListener('updatefound', () => {
+                        const newWorker = registration.installing;
+                        console.log('ServiceWorker update found:', newWorker.state);
+                        
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                console.log('New content available; please refresh.');
+                                // You could show a "Update available" toast here
+                            }
+                        });
+                    });
+                })
+                .catch(function(error) {
+                    console.log('ServiceWorker registration failed:', error);
+                });
+        });
+    }
+    
+    // Safari detection and polyfill
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    if (isSafari) {
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('input[type="date"]').forEach(input => {
+                input.classList.add('safari-fallback');
+                if (!input.hasAttribute('placeholder')) {
+                    input.setAttribute('placeholder', 'YYYY-MM-DD');
+                }
+            });
+        });
+    }
+    </script>
+    
     <!-- JavaScript -->
     <script>
     // ============================================
-    // SPIRALITE v1.0 - Enhanced Edition
+    // SPIRALITE v2.0 - Enhanced Professional Edition
     // Calculate and Track Lung Function
     // ============================================
 
@@ -3833,7 +3939,7 @@ Example:
                     loadingPatients: "Loading patient data...",
                     preparingUI: "Preparing interface...",
                     finalizing: "Finalizing setup...",
-                    ready: "Spirolite v1.0 ready",
+                    ready: "Spirolite v2.0 ready",
                     
                     // General
                     colors: "Colors",
@@ -4058,7 +4164,7 @@ Example:
                     loadingPatients: "Cargando datos de pacientes...",
                     preparingUI: "Preparando interfaz...",
                     finalizing: "Finalizando configuración...",
-                    ready: "Spirolite v1.0 listo",
+                    ready: "Spirolite v2.0 listo",
                     
                     // General
                     colors: "Colores",
@@ -4278,6 +4384,104 @@ Example:
             this.dom = {};
             this.init();
         }
+        
+        // ===== CORE UTILITIES (From requested improvements) =====
+        
+        // 1. Data validation for localStorage
+        validateLoadedData(data) {
+            if (!data || typeof data !== 'object') return false;
+            if (data.version !== '1.0') return false;
+            if (data.patients && !Array.isArray(data.patients)) return false;
+            
+            // Validate each patient
+            if (data.patients) {
+                for (const patient of data.patients) {
+                    if (!patient.id || typeof patient.id !== 'string') return false;
+                    if (!patient.name || typeof patient.name !== 'string') return false;
+                    if (patient.visits && !Array.isArray(patient.visits)) return false;
+                }
+            }
+            
+            return true;
+        }
+        
+        // 2. Input sanitization
+        sanitizeInput(value, type = 'text') {
+            if (value === null || value === undefined) return '';
+            
+            switch(type) {
+                case 'number':
+                    const num = parseFloat(value);
+                    return isNaN(num) ? '' : Math.max(0, num);
+                
+                case 'date':
+                    if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+                        const date = new Date(value);
+                        return isNaN(date.getTime()) ? '' : value;
+                    }
+                    return '';
+                
+                case 'text':
+                default:
+                    return String(value)
+                        .trim()
+                        .substring(0, 500) // Limit length
+                        .replace(/[<>]/g, ''); // Basic HTML escaping
+            }
+        }
+        
+        // 3. Data backup/export
+        exportBackup() {
+            const data = {
+                version: '1.0',
+                timestamp: new Date().toISOString(),
+                ...this.state
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], 
+                { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `spirolite-backup-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        // 4. Safe operation wrapper
+        safeOperation(operation, fallback = null, errorMessage = 'Operation failed') {
+            try {
+                return operation();
+            } catch (error) {
+                console.error(`${errorMessage}:`, error);
+                this.showToast(`${errorMessage}: ${error.message}`, 'error');
+                return fallback;
+            }
+        }
+        
+        // 5. Dependency check
+        checkDependencies() {
+            const missing = [];
+            
+            if (typeof Chart === 'undefined') {
+                missing.push('Chart.js');
+                console.error('Chart.js not loaded - charts will not work');
+            }
+            
+            if (typeof window.jspdf === 'undefined') {
+                missing.push('jsPDF');
+                console.error('jsPDF not loaded - PDF export will not work');
+            }
+            
+            if (missing.length > 0) {
+                this.showToast(`Missing: ${missing.join(', ')}. Check internet connection.`, 'warning');
+            }
+        }
+        
+        // ===== INITIALIZATION =====
         
         async init() {
             this.showLoading(this.t('initializing'));
@@ -5029,10 +5233,18 @@ Example:
         // ===== LOAD STATE =====
         
         async loadState() {
-            try {
+            return this.safeOperation(() => {
                 const saved = localStorage.getItem('spirolite_state_v1');
                 if (saved) {
                     const data = JSON.parse(saved);
+                    
+                    // ADD VALIDATION HERE
+                    if (!this.validateLoadedData(data)) {
+                        console.warn('Invalid stored data, resetting');
+                        localStorage.removeItem('spirolite_state_v1');
+                        this.showToast('Invalid saved data, starting fresh', 'warning');
+                        return this.initializeState();
+                    }
                     
                     if (data.protocol) {
                         this.state.protocol = { ...this.state.protocol, ...data.protocol };
@@ -5065,28 +5277,36 @@ Example:
                     
                     this.showToast('App state loaded', 'success');
                 }
-            } catch (error) {
-                console.error('Failed to load state:', error);
-                this.showToast('Starting with fresh state', 'warning');
-            }
+            }, this.initializeState(), 'Failed to load saved data');
+        }
+        
+        initializeState() {
+            return {
+                protocol: {
+                    monitor: 10,
+                    review: 20,
+                    stabilityVisits: 4,
+                    stabilityThreshold: 5
+                },
+                patients: new Map(),
+                currentPatient: null,
+                colorCoding: true
+            };
         }
         
         saveState() {
-            try {
+            this.safeOperation(() => {
                 const data = {
                     protocol: this.state.protocol,
                     patients: Array.from(this.state.patients.values()),
                     currentPatient: this.state.currentPatient,
                     colorCoding: this.state.colorCoding,
-                    version: '1.0.0',
+                    version: '1.0',
                     savedAt: new Date().toISOString()
                 };
                 
                 localStorage.setItem('spirolite_state_v1', JSON.stringify(data));
-            } catch (error) {
-                console.error('Failed to save state:', error);
-                this.showToast('Failed to save data', 'error');
-            }
+            }, null, 'Failed to save state');
         }
         
         updateUI() {
@@ -5556,7 +5776,7 @@ Example:
                     });
                     
                     this.dom.patientList.appendChild(card);
-                });
+            });
             }
             
             this.showModal('patientListModal');
@@ -5794,8 +6014,8 @@ Example:
         // ===== QUICK CALCULATION MODE =====
         
         handleQuickInput() {
-            const fev1 = parseFloat(this.dom.inputFev1.value);
-            const fvc = this.dom.inputFvc.value ? parseFloat(this.dom.inputFvc.value) : null;
+            const fev1 = this.sanitizeInput(this.dom.inputFev1.value, 'number');
+            const fvc = this.dom.inputFvc.value ? this.sanitizeInput(this.dom.inputFvc.value, 'number') : null;
             
             if (isNaN(fev1) || fev1 < 0.5 || fev1 > 8.0) {
                 this.state.session.quick.fev1 = null;
@@ -5831,7 +6051,7 @@ Example:
         
         handleComparisonChange() {
             if (this.state.session.quick.comparison === 'baseline') {
-                const baseline = parseFloat(this.dom.baselineInput.value);
+                const baseline = this.sanitizeInput(this.dom.baselineInput.value, 'number');
                 if (baseline && baseline > 0) {
                     this.state.session.quick.baseline = baseline;
                 } else {
@@ -6194,1437 +6414,1384 @@ Example:
             } else if (daysDiff > 90) {
                 this.dom.dateIntervalWarning.textContent = '⚠️ Long interval (>90 days)';
                 this.dom.dateIntervalWarning.className = 'date-warning';
-                this.dom.dateIntervalWarning.classList.remove('hidden');
-                this.dom.visitDate.classList.add('invalid');
-                return true; // Still valid, just warning
-            }
-            
+                this.dom.dateIntervalresetProtocol() {
+this.state.protocol = {
+monitor: 10,
+review: 20,
+stabilityVisits: 4,
+stabilityThreshold: 5
+}        this.updateProtocolUI();
+        this.showToast('Protocol reset to defaults', 'success');
+    }
+
+    // ===== MONITOR MODE VISITS =====
+
+    checkDateInterval() {
+        const selectedDate = new Date(this.dom.visitDate.value);
+        const today = new Date();
+        const todayStr = today.toISOString().split('T')[0];
+        
+        if (selectedDate > today) {
+            this.dom.dateIntervalWarning.textContent = '⚠️ Future date selected';
+            this.dom.dateIntervalWarning.className = 'date-warning error';
+            this.dom.dateIntervalWarning.classList.remove('hidden');
+            this.dom.visitDate.classList.add('invalid');
+            return false;
+        }
+        
+        if (!this.state.currentPatient) {
             this.dom.dateIntervalWarning.classList.add('hidden');
             this.dom.visitDate.classList.remove('invalid');
             return true;
         }
         
-        addVisit() {
-            if (!this.checkDateInterval()) {
-                this.showToast('Please check date selection', 'error');
-                return;
-            }
-            
-            const date = this.dom.visitDate.value;
-            const fev1 = parseFloat(this.dom.visitFev1.value);
-            const fvc = this.dom.visitFvc.value ? parseFloat(this.dom.visitFvc.value) : null;
-            const notes = this.dom.visitNotes.value.trim();
-            
-            if (!date || !fev1 || isNaN(fev1) || fev1 < 0.5 || fev1 > 8.0) {
-                this.showToast('Please enter valid date and FEV₁ measurement', 'error');
-                return;
-            }
-            
-            if (fvc && (isNaN(fvc) || fvc < 0.5 || fvc > 10.0)) {
-                this.showToast('Please enter valid FVC measurement', 'error');
-                return;
-            }
-            
-            if (!this.state.currentPatient) {
-                this.showToast('Please select a patient first', 'error');
-                return;
-            }
-            
+        const patient = this.state.patients.get(this.state.currentPatient);
+        if (!patient || patient.visits.length === 0) {
+            this.dom.dateIntervalWarning.classList.add('hidden');
+            this.dom.visitDate.classList.remove('invalid');
+            return true;
+        }
+        
+        const lastVisit = patient.visits[patient.visits.length - 1];
+        const lastDate = new Date(lastVisit.date);
+        const daysDiff = Math.floor((selectedDate - lastDate) / (1000 * 60 * 60 * 24));
+        
+        if (daysDiff < 0) {
+            this.dom.dateIntervalWarning.textContent = `⚠️ Date is before last visit (${lastDate.toLocaleDateString()})`;
+            this.dom.dateIntervalWarning.className = 'date-warning error';
+            this.dom.dateIntervalWarning.classList.remove('hidden');
+            this.dom.visitDate.classList.add('invalid');
+            return false;
+        } else if (daysDiff === 0) {
+            this.dom.dateIntervalWarning.textContent = '⚠️ Duplicate date (same as last visit)';
+            this.dom.dateIntervalWarning.className = 'date-warning error';
+            this.dom.dateIntervalWarning.classList.remove('hidden');
+            this.dom.visitDate.classList.add('invalid');
+            return false;
+        } else if (daysDiff < 7) {
+            this.dom.dateIntervalWarning.textContent = '⚠️ Short interval (<7 days)';
+            this.dom.dateIntervalWarning.className = 'date-warning';
+            this.dom.dateIntervalWarning.classList.remove('hidden');
+            this.dom.visitDate.classList.remove('invalid');
+            return true; // Still valid, just warning
+        } else if (daysDiff > 90) {
+            this.dom.dateIntervalWarning.textContent = '⚠️ Long interval (>90 days)';
+            this.dom.dateIntervalWarning.className = 'date-warning';
+            this.dom.dateIntervalWarning.classList.remove('hidden');
+            this.dom.visitDate.classList.remove('invalid');
+            return true; // Still valid, just warning
+        } else {
+            this.dom.dateIntervalWarning.classList.add('hidden');
+            this.dom.visitDate.classList.remove('invalid');
+            return true;
+        }
+    }
+
+    addVisit() {
+        // Validate date
+        if (!this.checkDateInterval()) {
+            return;
+        }
+        
+        const date = this.dom.visitDate.value;
+        const fev1 = this.sanitizeInput(this.dom.visitFev1.value, 'number');
+        const fvc = this.dom.visitFvc.value ? this.sanitizeInput(this.dom.visitFvc.value, 'number') : null;
+        const notes = this.dom.visitNotes.value.trim();
+        
+        if (!date) {
+            this.showToast('Please select a date', 'error');
+            return;
+        }
+        
+        if (!fev1 || isNaN(fev1) || fev1 < 0.5 || fev1 > 8.0) {
+            this.showToast('Please enter a valid FEV₁ (0.5-8.0 L)', 'error');
+            return;
+        }
+        
+        if (fvc && (isNaN(fvc) || fvc < 0.5 || fvc > 10.0)) {
+            this.showToast('Please enter a valid FVC (0.5-10.0 L)', 'error');
+            return;
+        }
+        
+        const visit = {
+            date,
+            fev1,
+            fvc,
+            notes,
+            recordedAt: new Date().toISOString()
+        };
+        
+        // Check for duplicates
+        if (this.state.currentPatient) {
             const patient = this.state.patients.get(this.state.currentPatient);
-            if (!patient) {
-                this.showToast('Patient not found', 'error');
+            if (patient) {
+                const existingIndex = patient.visits.findIndex(v => v.date === date);
+                if (existingIndex !== -1) {
+                    // Show duplicate modal
+                    this.state.session.duplicateDateData = {
+                        date,
+                        existingVisit: patient.visits[existingIndex],
+                        newVisit: visit
+                    };
+                    this.showDuplicateDateModal();
+                    return;
+                }
+            }
+        }
+        
+        // Add to monitor session
+        this.state.session.monitor.visits.push(visit);
+        
+        // Update patient if selected
+        if (this.state.currentPatient) {
+            const patient = this.state.patients.get(this.state.currentPatient);
+            if (patient) {
+                patient.visits.push(visit);
+                patient.updatedAt = new Date().toISOString();
+                this.state.patients.set(patient.id, patient);
+                this.saveState();
+            }
+        }
+        
+        this.updateVisitsTable();
+        this.updateCalculateButton();
+        this.updatePatientContext();
+        
+        // Clear form
+        this.dom.visitFev1.value = '';
+        this.dom.visitFvc.value = '';
+        this.dom.visitNotes.value = '';
+        this.dom.dateIntervalWarning.classList.add('hidden');
+        this.dom.visitDate.classList.remove('invalid');
+        
+        // Focus FEV1 for next entry
+        setTimeout(() => this.dom.visitFev1.focus(), 100);
+        
+        this.showToast('Visit added successfully', 'success');
+    }
+
+    importBulkVisits() {
+        const text = this.dom.bulkImport.value.trim();
+        if (!text) {
+            this.showToast('Please paste some data first', 'error');
+            return;
+        }
+        
+        const lines = text.split('\n');
+        const visits = [];
+        let errors = [];
+        
+        lines.forEach((line, index) => {
+            line = line.trim();
+            if (!line) return;
+            
+            // Try to parse line: date, fev1, fvc, notes
+            const parts = line.split(',').map(p => p.trim());
+            if (parts.length < 2) {
+                errors.push(`Line ${index + 1}: Not enough values`);
                 return;
             }
             
-            // Check for duplicate date
-            const existingVisitIndex = patient.visits.findIndex(v => v.date === date);
+            const date = parts[0];
+            const fev1 = parseFloat(parts[1]);
+            const fvc = parts[2] ? parseFloat(parts[2]) : null;
+            const notes = parts.slice(3).join(', ') || '';
             
-            if (existingVisitIndex !== -1) {
-                this.state.session.duplicateDateData = {
-                    date,
-                    existingVisit: patient.visits[existingVisitIndex],
-                    newVisit: { fev1, fvc, notes }
-                };
-                this.showDuplicateDateModal();
+            // Validate date
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+                errors.push(`Line ${index + 1}: Invalid date format (use YYYY-MM-DD)`);
                 return;
             }
             
-            // Add visit to monitor session
-            const visit = {
+            // Validate FEV1
+            if (isNaN(fev1) || fev1 < 0.5 || fev1 > 8.0) {
+                errors.push(`Line ${index + 1}: Invalid FEV₁ value (0.5-8.0 L)`);
+                return;
+            }
+            
+            // Validate FVC if provided
+            if (fvc && (isNaN(fvc) || fvc < 0.5 || fvc > 10.0)) {
+                errors.push(`Line ${index + 1}: Invalid FVC value (0.5-10.0 L)`);
+                return;
+            }
+            
+            visits.push({
                 date,
                 fev1,
                 fvc,
                 notes,
                 recordedAt: new Date().toISOString()
-            };
-            
-            this.state.session.monitor.visits.push(visit);
-            this.updateVisitsTable();
-            this.updateCalculateButton();
-            
-            // Clear form
-            this.dom.visitFev1.value = '';
-            this.dom.visitFvc.value = '';
-            this.dom.visitNotes.value = '';
-            this.dom.visitFev1.focus();
-            
-            this.showToast(`${this.t('visitSaved')}: ${date} - ${fev1.toFixed(2)} L`, 'success');
-            
-            // Update patient's visits if in patient context
-            if (this.state.currentPatient === patient.id) {
-                patient.visits.push(visit);
-                patient.updatedAt = new Date().toISOString();
-                this.state.patients.set(patient.id, patient);
-                this.saveState();
-                this.updatePatientContext();
-            }
-        }
-        
-        importBulkVisits() {
-            const text = this.dom.bulkImport.value.trim();
-            if (!text) {
-                this.showToast('Please paste visit data', 'error');
-                return;
-            }
-            
-            if (!this.state.currentPatient) {
-                this.showToast('Please select a patient first', 'error');
-                return;
-            }
-            
-            const patient = this.state.patients.get(this.state.currentPatient);
-            if (!patient) {
-                this.showToast('Patient not found', 'error');
-                return;
-            }
-            
-            const lines = text.split('\n');
-            let added = 0;
-            let skipped = 0;
-            let errors = [];
-            
-            lines.forEach((line, index) => {
-                line = line.trim();
-                if (!line || line.startsWith('#')) return;
-                
-                const parts = line.split(',').map(p => p.trim());
-                if (parts.length < 2) {
-                    errors.push(`Line ${index + 1}: Invalid format`);
-                    return;
-                }
-                
-                const date = parts[0];
-                const fev1 = parseFloat(parts[1]);
-                const fvc = parts.length > 2 ? parseFloat(parts[2]) : null;
-                const notes = parts.length > 3 ? parts.slice(3).join(', ') : '';
-                
-                // Validate date
-                if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-                    errors.push(`Line ${index + 1}: Invalid date format (YYYY-MM-DD)`);
-                    return;
-                }
-                
-                // Validate FEV1
-                if (isNaN(fev1) || fev1 < 0.5 || fev1 > 8.0) {
-                    errors.push(`Line ${index + 1}: Invalid FEV₁ value`);
-                    return;
-                }
-                
-                // Validate FVC if provided
-                if (fvc !== null && (isNaN(fvc) || fvc < 0.5 || fvc > 10.0)) {
-                    errors.push(`Line ${index + 1}: Invalid FVC value`);
-                    return;
-                }
-                
-                // Check for duplicate
-                const existingVisitIndex = patient.visits.findIndex(v => v.date === date);
-                if (existingVisitIndex !== -1) {
-                    skipped++;
-                    return;
-                }
-                
-                // Add visit
-                const visit = {
-                    date,
-                    fev1,
-                    fvc,
-                    notes,
-                    recordedAt: new Date().toISOString()
-                };
-                
-                this.state.session.monitor.visits.push(visit);
-                patient.visits.push(visit);
-                added++;
             });
-            
-            if (added > 0) {
-                patient.updatedAt = new Date().toISOString();
-                this.state.patients.set(patient.id, patient);
-                this.saveState();
-                
-                this.updateVisitsTable();
-                this.updateCalculateButton();
-                this.updatePatientContext();
-                
-                let message = `${this.t('dataImported').replace('visits imported', `${added} visit${added !== 1 ? 's' : ''} imported`)}`;
-                if (skipped > 0) message += `, skipped ${skipped} duplicate${skipped !== 1 ? 's' : ''}`;
-                if (errors.length > 0) message += `, ${errors.length} error${errors.length !== 1 ? 's' : ''}`;
-                
-                this.showToast(message, added > 0 ? 'success' : 'warning');
-                
-                if (errors.length > 0) {
-                    console.warn('Import errors:', errors);
-                }
-            } else {
-                this.showToast('No valid visits imported', 'warning');
-            }
-            
-            this.dom.bulkImport.value = '';
+        });
+        
+        if (errors.length > 0) {
+            this.showToast(`${errors.length} error${errors.length !== 1 ? 's' : ''} found in import`, 'error');
+            console.log('Import errors:', errors);
+            return;
         }
         
-        updateVisitsTable() {
-            const visits = this.state.session.monitor.visits;
-            const tbody = this.dom.visitsTableBody;
-            
-            if (visits.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="11" class="text-center" style="padding: var(--space-6); color: var(--text-tertiary);">
-                            ${this.t('noVisitsYet')}
-                        </td>
-                    </tr>
-                `;
-                this.updateTimelineVisualization([]);
-                return;
+        if (visits.length === 0) {
+            this.showToast('No valid visits found in import', 'warning');
+            return;
+        }
+        
+        // Check for duplicates
+        const duplicateVisits = [];
+        if (this.state.currentPatient) {
+            const patient = this.state.patients.get(this.state.currentPatient);
+            if (patient) {
+                visits.forEach(visit => {
+                    const existingIndex = patient.visits.findIndex(v => v.date === visit.date);
+                    if (existingIndex !== -1) {
+                        duplicateVisits.push(visit);
+                    }
+                });
             }
-            
-            // Sort visits by date
-            const sortedVisits = [...visits].sort((a, b) => new Date(a.date) - new Date(b.date));
-            
-            // Get baseline if available
-            let baseline = null;
+        }
+        
+        if (duplicateVisits.length > 0) {
+            // Handle duplicates - for now, just overwrite
             if (this.state.currentPatient) {
                 const patient = this.state.patients.get(this.state.currentPatient);
                 if (patient) {
-                    baseline = patient.baselineFev1;
-                }
-            }
-            
-            // Generate table rows
-            tbody.innerHTML = '';
-            
-            sortedVisits.forEach((visit, index) => {
-                const date = new Date(visit.date);
-                const daysFromTx = this.calculateDaysFromTx(visit.date);
-                const prevVisit = index > 0 ? sortedVisits[index - 1] : null;
-                
-                // Calculate metrics
-                const ratio = visit.fvc ? (visit.fev1 / visit.fvc * 100).toFixed(1) + '%' : '--';
-                const visitDelta = prevVisit ? (visit.fev1 - prevVisit.fev1) : 0;
-                const visitDeltaStr = prevVisit ? `${visitDelta >= 0 ? '+' : ''}${visitDelta.toFixed(2)}` : '--';
-                
-                const baselineDelta = baseline ? (visit.fev1 - baseline) : 0;
-                const baselineDeltaStr = baseline ? `${baselineDelta >= 0 ? '+' : ''}${baselineDelta.toFixed(2)}` : '--';
-                const baselinePercent = baseline ? ((visit.fev1 / baseline) * 100) : null;
-                
-                // Enhanced percentage display format
-                let baselineDisplay = '--';
-                if (baselinePercent !== null) {
-                    if (this.state.percentageView) {
-                        baselineDisplay = `${baselinePercent.toFixed(1)}%`;
-                    } else {
-                        baselineDisplay = `${visit.fev1.toFixed(2)} L (${baselinePercent.toFixed(0)}%)`;
-                    }
-                }
-                
-                // Calculate monthly rate correctly
-                let monthlyRate = '--';
-                let rateArrow = '→';
-                let rateClass = 'neutral';
-                if (prevVisit) {
-                    const rate = this.calculateMonthlyRate(visit.fev1, prevVisit.fev1, visit.date, prevVisit.date);
-                    if (Math.abs(rate) > 0.001) { // Significant rate
-                        monthlyRate = `${rate >= 0 ? '+' : ''}${rate.toFixed(3)}`;
-                        rateArrow = rate > 0 ? '↗' : '↘';
-                        rateClass = rate > 0 ? 'up' : 'down';
-                    }
-                }
-                
-                // Determine alert level for baseline comparison
-                let alertLevel = 'none';
-                if (baselinePercent !== null) {
-                    const percent = baselinePercent;
-                    const monitorThreshold = this.state.session.monitor.customThresholds.monitor;
-                    const reviewThreshold = this.state.session.monitor.customThresholds.review;
-                    
-                    if (percent <= (100 - reviewThreshold)) {
-                        alertLevel = 'review';
-                    } else if (percent <= (100 - monitorThreshold)) {
-                        alertLevel = 'monitor';
-                    }
-                }
-                
-                // Determine color classes
-                const visitDeltaClass = visitDelta > 0 ? 'positive' : (visitDelta < 0 ? 'negative' : 'neutral');
-                const baselinePercentClass = this.getBaselinePercentClass(baselinePercent);
-                
-                // Create row
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
-                    <td>${daysFromTx !== null ? daysFromTx : '--'}</td>
-                    <td>${visit.fev1.toFixed(2)}</td>
-                    <td>
-                        ${baselineDisplay} 
-                        ${!this.state.colorCoding ? '' : 
-                            baselinePercentClass !== 'neutral' ? 
-                            `<span class="baseline-percent ${baselinePercentClass}" style="margin-left: 4px;">●</span>` : ''
+                    duplicateVisits.forEach(visit => {
+                        const existingIndex = patient.visits.findIndex(v => v.date === visit.date);
+                        if (existingIndex !== -1) {
+                            patient.visits[existingIndex] = visit;
                         }
-                    </td>
-                    <td>${visit.fvc ? visit.fvc.toFixed(2) : '--'}</td>
-                    <td>${ratio}</td>
-                    <td class="${!this.state.colorCoding ? '' : `visit-change ${visitDeltaClass}`}">
-                        ${visitDeltaStr}
-                        ${!this.state.colorCoding ? '' : 
-                            visitDeltaClass !== 'neutral' ? 
-                            `<span class="trend-arrow ${visitDelta > 0 ? 'up' : 'down'}" style="margin-left: 4px;">${visitDelta > 0 ? '↗' : '↘'}</span>` : ''
-                        }
-                    </td>
-                    <td>${baselineDeltaStr}</td>
-                    <td class="${!this.state.colorCoding ? '' : `visit-change ${visitDeltaClass}`}">
-                        ${monthlyRate}
-                        ${!this.state.colorCoding ? '' : 
-                            rateClass !== 'neutral' ? 
-                            `<span class="trend-arrow ${rateClass}" style="margin-left: 4px;">${rateArrow}</span>` : ''
-                        }
-                    </td>
-                    <td class="alert-cell">
-                        <div class="alert-indicator ${alertLevel}" title="${alertLevel === 'review' ? 'Review required' : alertLevel === 'monitor' ? 'Monitor closely' : 'Within range'}"></div>
-                    </td>
-                    <td title="${visit.notes || 'No notes'}">
-                        ${visit.notes ? '<span class="icon-notes"></span>' : ''}
-                    </td>
-                `;
-                
-                // Add click handler to show notes tooltip
-                if (visit.notes) {
-                    row.addEventListener('click', () => {
-                        this.showToast(visit.notes, 'info', 5000);
                     });
                 }
-                
-                tbody.appendChild(row);
-            });
-            
-            // Update timeline visualization
-            this.updateTimelineVisualization(sortedVisits);
-            
-            // Update chart if visible
-            if (this.dom.visualizationSection.classList.contains('visible')) {
-                this.updateChart();
             }
         }
         
-        getBaselinePercentClass(percent) {
-            if (!this.state.colorCoding || percent === null) return 'neutral';
-            if (percent >= 95) return 'good';
-            if (percent >= 80) return 'warning';
-            return 'alert';
-        }
+        // Add to monitor session
+        this.state.session.monitor.visits.push(...visits);
         
-        calculateDaysFromTx(date) {
-            if (!this.state.currentPatient) return null;
-            
+        // Update patient if selected
+        if (this.state.currentPatient) {
             const patient = this.state.patients.get(this.state.currentPatient);
-            if (!patient || !patient.txDate) return null;
-            
-            const txDate = new Date(patient.txDate);
-            const visitDate = new Date(date);
-            const diffTime = Math.abs(visitDate - txDate);
-            return Math.floor(diffTime / (1000 * 60 * 60 * 24));
-        }
-        
-        updateTimelineVisualization(visits) {
-            const container = this.dom.timelineVisualization;
-            container.innerHTML = '';
-            
-            if (visits.length < 2) {
-                container.innerHTML = `
-                    <div style="text-align: center; color: var(--text-tertiary); font-size: 0.75rem; line-height: 40px;">
-                        ${this.t('noTimelineText')}
-                    </div>
-                `;
-                return;
-            }
-            
-            // Sort visits by date
-            const sortedVisits = [...visits].sort((a, b) => new Date(a.date) - new Date(b.date));
-            
-            // Calculate date range
-            const firstDate = new Date(sortedVisits[0].date);
-            const lastDate = new Date(sortedVisits[sortedVisits.length - 1].date);
-            const totalDays = Math.floor((lastDate - firstDate) / (1000 * 60 * 60 * 24));
-            
-            // Create optimal range indicator (30-90 days)
-            if (sortedVisits.length >= 2) {
-                const optimalRange = document.createElement('div');
-                optimalRange.className = 'timeline-optimal';
-                optimalRange.style.left = '10%';
-                optimalRange.style.width = '80%';
-                container.appendChild(optimalRange);
-            }
-            
-            // Create timeline dots and lines
-            sortedVisits.forEach((visit, index) => {
-                const visitDate = new Date(visit.date);
-                const daysFromFirst = Math.floor((visitDate - firstDate) / (1000 * 60 * 60 * 24));
-                const position = totalDays > 0 ? (daysFromFirst / totalDays) * 80 + 10 : 50;
-                
-                // Add connecting line between dots
-                if (index > 0) {
-                    const prevVisit = sortedVisits[index - 1];
-                    const prevDate = new Date(prevVisit.date);
-                    const prevDaysFromFirst = Math.floor((prevDate - firstDate) / (1000 * 60 * 60 * 24));
-                    const prevPosition = totalDays > 0 ? (prevDaysFromFirst / totalDays) * 80 + 10 : 50;
-                    
-                    const line = document.createElement('div');
-                    line.className = 'timeline-line';
-                    line.style.left = `${prevPosition}%`;
-                    line.style.width = `${position - prevPosition}%`;
-                    container.appendChild(line);
-                }
-                
-                // Add dot with value tooltip
-                const dot = document.createElement('div');
-                dot.className = 'timeline-dot';
-                dot.style.left = `${position}%`;
-                dot.title = `${visit.date}: ${visit.fev1.toFixed(2)} L`;
-                
-                // Add warning for irregular intervals
-                if (index > 0) {
-                    const prevVisit = sortedVisits[index - 1];
-                    const prevDate = new Date(prevVisit.date);
-                    const daysBetween = Math.floor((visitDate - prevDate) / (1000 * 60 * 60 * 24));
-                    
-                    if (daysBetween < 7) {
-                        dot.style.backgroundColor = 'var(--alert)';
-                        dot.title += `\n⚠️ Short interval: ${daysBetween} days (should be ≥7)`;
-                    } else if (daysBetween > 90) {
-                        dot.style.backgroundColor = 'var(--warning)';
-                        dot.title += `\n⚠️ Long interval: ${daysBetween} days (should be ≤90)`;
+            if (patient) {
+                // Add non-duplicate visits
+                visits.forEach(visit => {
+                    const existingIndex = patient.visits.findIndex(v => v.date === visit.date);
+                    if (existingIndex === -1) {
+                        patient.visits.push(visit);
                     }
-                }
-                
-                container.appendChild(dot);
-            });
-            
-            // Add interval warnings as colored segments
-            for (let i = 1; i < sortedVisits.length; i++) {
-                const prevDate = new Date(sortedVisits[i - 1].date);
-                const currDate = new Date(sortedVisits[i].date);
-                const daysBetween = Math.floor((currDate - prevDate) / (1000 * 60 * 60 * 24));
-                
-                if (daysBetween < 7 || daysBetween > 90) {
-                    const prevDaysFromFirst = Math.floor((prevDate - firstDate) / (1000 * 60 * 60 * 24));
-                    const currDaysFromFirst = Math.floor((currDate - firstDate) / (1000 * 60 * 60 * 24));
-                    const prevPosition = totalDays > 0 ? (prevDaysFromFirst / totalDays) * 80 + 10 : 50;
-                    const currPosition = totalDays > 0 ? (currDaysFromFirst / totalDays) * 80 + 10 : 50;
-                    
-                    const warning = document.createElement('div');
-                    warning.className = 'timeline-line';
-                    warning.style.left = `${prevPosition}%`;
-                    warning.style.width = `${currPosition - prevPosition}%`;
-                    warning.style.backgroundColor = daysBetween < 7 ? 'var(--alert)' : 'var(--warning)';
-                    warning.style.height = '3px';
-                    warning.title = `${daysBetween} days between visits (${daysBetween < 7 ? 'too short' : 'too long'})`;
-                    container.appendChild(warning);
-                }
+                });
+                patient.updatedAt = new Date().toISOString();
+                this.state.patients.set(patient.id, patient);
+                this.saveState();
             }
         }
         
-        updateCalculateButton() {
-            const visits = this.state.session.monitor.visits;
-            const stability = this.checkStability(visits);
-            
-            this.dom.calculateBaselineBtn.disabled = !stability.stable;
-            this.dom.calculateBaselineBtn.title = stability.stable 
-                ? 'Calculate baseline from stable period' 
-                : `Need ${this.state.protocol.stabilityVisits} stable visits`;
-            
-            // Update baseline ready badge
-            if (stability.stable) {
+        this.updateVisitsTable();
+        this.updateCalculateButton();
+        this.updatePatientContext();
+        
+        // Clear import field
+        this.dom.bulkImport.value = '';
+        
+        this.showToast(`${visits.length} visit${visits.length !== 1 ? 's' : ''} imported successfully`, 'success');
+    }
+
+    updateCalculateButton() {
+        const visits = this.state.session.monitor.visits;
+        const canCalculate = visits.length >= this.state.protocol.stabilityVisits;
+        this.dom.calculateBaselineBtn.disabled = !canCalculate;
+        
+        // Update baseline ready badge
+        if (this.state.currentPatient) {
+            const patient = this.state.patients.get(this.state.currentPatient);
+            if (patient && patient.baselineFev1) {
+                this.dom.baselineReadyBadge.classList.remove('hidden');
+            } else if (canCalculate) {
                 this.dom.baselineReadyBadge.classList.remove('hidden');
             } else {
                 this.dom.baselineReadyBadge.classList.add('hidden');
             }
         }
+    }
+
+    calculateBaseline() {
+        const visits = this.state.session.monitor.visits;
+        if (visits.length < this.state.protocol.stabilityVisits) {
+            this.showToast(`Need at least ${this.state.protocol.stabilityVisits} visits to calculate baseline`, 'error');
+            return;
+        }
         
-        calculateBaseline() {
-            const visits = this.state.session.monitor.visits;
-            const stability = this.checkStability(visits);
+        const sortedVisits = [...visits].sort((a, b) => new Date(a.date) - new Date(b.date));
+        const lastVisits = sortedVisits.slice(-this.state.protocol.stabilityVisits);
+        
+        const stability = this.checkStability(sortedVisits);
+        
+        // Populate baseline modal
+        this.dom.highestValuesList.innerHTML = '';
+        lastVisits.forEach((visit, index) => {
+            const div = document.createElement('div');
+            div.style.display = 'flex';
+            div.style.justifyContent = 'space-between';
+            div.style.marginBottom = '4px';
+            div.style.padding = '2px 4px';
+            div.style.borderRadius = '4px';
+            div.style.backgroundColor = index % 2 === 0 ? 'rgba(255,255,255,0.1)' : 'transparent';
             
-            if (!stability.stable) {
-                this.showToast(`Need ${this.state.protocol.stabilityVisits} stable visits`, 'error');
-                return;
-            }
+            const date = new Date(visit.date);
+            const dateStr = date.toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric',
+                year: 'numeric'
+            });
             
-            // Get the stable period visits
-            const lastVisits = visits.slice(-this.state.protocol.stabilityVisits);
-            const fev1Values = lastVisits.map(v => v.fev1);
-            
-            // Calculate suggested baseline (average of highest 2 values)
-            const sortedValues = [...fev1Values].sort((a, b) => b - a);
-            const topValues = sortedValues.slice(0, 2);
-            const suggestedBaseline = topValues.reduce((a, b) => a + b) / topValues.length;
-            
-            // Update modal content
-            this.dom.highestValuesList.innerHTML = topValues.map((value, index) => 
-                `<div>${index + 1}. ${value.toFixed(2)} L</div>`
-            ).join('');
-            
-            this.dom.calculatedBaseline.value = suggestedBaseline.toFixed(2);
-            
-            // Update audit trail with enhanced information
-            const firstDate = new Date(lastVisits[0].date);
-            const lastDate = new Date(lastVisits[lastVisits.length - 1].date);
-            const daysStable = Math.floor((lastDate - firstDate) / (1000 * 60 * 60 * 24));
-            
-            this.dom.stabilityCriteria.innerHTML = `
-                ✅ ${this.t('stabilityCriteria')}: Last ${stability.visits} visits over ${daysStable} days
+            div.innerHTML = `
+                <span>${dateStr}</span>
+                <span style="font-weight: 700; color: var(--primary);">${visit.fev1.toFixed(2)} L</span>
             `;
-            this.dom.stabilityVariation.innerHTML = `
-                📊 ${this.t('visitsVariation').replace('visits with variation ≤', 'Actual variation')}: ${stability.variation}% (threshold: ≤${this.state.protocol.stabilityThreshold}%)
-            `;
+            
+            this.dom.highestValuesList.appendChild(div);
+        });
+        
+        // Calculate suggested baseline (average of highest 2 values in stable period)
+        const fev1Values = lastVisits.map(v => v.fev1);
+        const sortedValues = [...fev1Values].sort((a, b) => b - a);
+        const topValues = sortedValues.slice(0, 2);
+        const suggestedBaseline = topValues.reduce((a, b) => a + b, 0) / topValues.length;
+        
+        this.dom.calculatedBaseline.value = suggestedBaseline.toFixed(2);
+        
+        // Update stability analysis
+        this.dom.stabilityCriteria.innerHTML = `
+            <strong>Stability Check:</strong> Last ${stability.visits} visits analyzed
+        `;
+        
+        this.dom.stabilityVariation.innerHTML = `
+            <strong>Variation:</strong> ${stability.variation}% (threshold: ${this.state.protocol.stabilityThreshold}%)
+        `;
+        
+        if (stability.monthlyRate) {
+            const rate = parseFloat(stability.monthlyRate);
+            const rateClass = rate > 0 ? 'positive' : (rate < 0 ? 'negative' : 'neutral');
+            const rateArrow = rate > 0 ? '↗' : (rate < 0 ? '↘' : '→');
             this.dom.stabilityRate.innerHTML = `
-                📈 ${this.t('monthlyRateFull')}: ${stability.monthlyRate ? `${stability.monthlyRate} L/mo` : 'N/A'}
+                <strong>Monthly Rate:</strong> <span class="visit-change ${rateClass}">${rate >= 0 ? '+' : ''}${rate.toFixed(3)} L/mo ${rateArrow}</span>
             `;
+        } else {
+            this.dom.stabilityRate.innerHTML = `
+                <strong>Monthly Rate:</strong> Not enough data
+            `;
+        }
+        
+        if (stability.stable) {
+            this.dom.baselineStabilityIndicator.classList.remove('hidden');
             this.dom.baselineRecommendation.innerHTML = `
-                💡 ${this.t('suggestedBaseline')}: ${suggestedBaseline.toFixed(2)} L (average of highest 2 values from stable period)
+                <strong>Recommendation:</strong> ✓ Stable period detected - baseline can be established
+            `;
+        } else {
+            this.dom.baselineStabilityIndicator.classList.add('hidden');
+            this.dom.baselineRecommendation.innerHTML = `
+                <strong>Recommendation:</strong> ⚠️ Variation exceeds threshold - consider waiting for more stable measurements
+            `;
+        }
+        
+        this.showModal('baselineModal');
+    }
+
+    acceptBaseline() {
+        const baselineValue = parseFloat(this.dom.calculatedBaseline.value);
+        
+        if (isNaN(baselineValue) || baselineValue < 0.5 || baselineValue > 8.0) {
+            this.showToast('Invalid baseline value', 'error');
+            return;
+        }
+        
+        if (!this.state.currentPatient) {
+            this.showToast('No patient selected', 'error');
+            return;
+        }
+        
+        const patient = this.state.patients.get(this.state.currentPatient);
+        if (!patient) {
+            this.showToast('Patient not found', 'error');
+            return;
+        }
+        
+        // Get the last visit date for baseline date
+        const visits = this.state.session.monitor.visits;
+        const sortedVisits = [...visits].sort((a, b) => new Date(a.date) - new Date(b.date));
+        const lastVisit = sortedVisits[sortedVisits.length - 1];
+        
+        patient.baselineFev1 = baselineValue;
+        patient.baselineDate = lastVisit ? lastVisit.date : new Date().toISOString().split('T')[0];
+        
+        // Add to baseline history
+        patient.baselineHistory.push({
+            value: baselineValue,
+            date: patient.baselineDate,
+            visitsUsed: this.state.protocol.stabilityVisits,
+            variation: this.checkStability(sortedVisits).variation,
+            establishedAt: new Date().toISOString()
+        });
+        
+        patient.updatedAt = new Date().toISOString();
+        this.state.patients.set(patient.id, patient);
+        this.saveState();
+        
+        this.updatePatientContext();
+        this.updateVisitsTable();
+        this.updateChart();
+        
+        this.hideModal('baselineModal');
+        this.showToast(`${this.t('baselineSet')} ${baselineValue.toFixed(2)} L for ${patient.id}`, 'success');
+    }
+
+    updateVisitsTable() {
+        const tbody = this.dom.visitsTableBody;
+        const visits = this.state.session.monitor.visits;
+        
+        if (visits.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="11" class="text-center" style="padding: var(--space-6); color: var(--text-tertiary);">
+                        ${this.t('noVisitsYet')}
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+        
+        // Sort visits by date
+        const sortedVisits = [...visits].sort((a, b) => new Date(a.date) - new Date(b.date));
+        
+        tbody.innerHTML = '';
+        
+        // Get patient baseline if available
+        let baseline = null;
+        if (this.state.currentPatient) {
+            const patient = this.state.patients.get(this.state.currentPatient);
+            if (patient) {
+                baseline = patient.baselineFev1;
+            }
+        }
+        
+        // Calculate custom thresholds
+        const monitorThreshold = this.state.session.monitor.customThresholds.monitor;
+        const reviewThreshold = this.state.session.monitor.customThresholds.review;
+        
+        sortedVisits.forEach((visit, index) => {
+            const date = new Date(visit.date);
+            const fev1 = visit.fev1;
+            const fvc = visit.fvc;
+            const ratio = fvc ? (fev1 / fvc * 100).toFixed(1) : '--';
+            
+            // Calculate days from first visit
+            const firstDate = new Date(sortedVisits[0].date);
+            const daysFromFirst = Math.floor((date - firstDate) / (1000 * 60 * 60 * 24));
+            
+            // Calculate percentage of baseline
+            let baselinePercent = null;
+            let baselinePercentDisplay = '--';
+            let baselinePercentClass = 'neutral';
+            
+            if (baseline) {
+                baselinePercent = (fev1 / baseline) * 100;
+                baselinePercentDisplay = this.state.percentageView ? 
+                    `${baselinePercent.toFixed(0)}%` : 
+                    fev1.toFixed(2);
+                
+                if (this.state.colorCoding) {
+                    if (baselinePercent >= 95) {
+                        baselinePercentClass = 'good';
+                    } else if (baselinePercent >= 80) {
+                        baselinePercentClass = 'warning';
+                    } else {
+                        baselinePercentClass = 'alert';
+                    }
+                }
+            }
+            
+            // Calculate visit-to-visit change
+            let visitDelta = null;
+            let visitDeltaDisplay = '--';
+            let visitDeltaClass = 'neutral';
+            let visitPercent = null;
+            
+            if (index > 0) {
+                const prevVisit = sortedVisits[index - 1];
+                const prevFev1 = prevVisit.fev1;
+                visitDelta = fev1 - prevFev1;
+                visitPercent = prevFev1 > 0 ? ((fev1 - prevFev1) / prevFev1) * 100 : 0;
+                
+                if (this.state.percentageView) {
+                    visitDeltaDisplay = `${visitPercent >= 0 ? '+' : ''}${visitPercent.toFixed(1)}%`;
+                } else {
+                    visitDeltaDisplay = `${visitDelta >= 0 ? '+' : ''}${visitDelta.toFixed(2)}`;
+                }
+                
+                if (this.state.colorCoding) {
+                    if (visitDelta > 0) {
+                        visitDeltaClass = 'positive';
+                    } else if (visitDelta < 0) {
+                        visitDeltaClass = 'negative';
+                    }
+                }
+            }
+            
+            // Calculate baseline delta
+            let baselineDelta = null;
+            let baselineDeltaDisplay = '--';
+            let baselineDeltaClass = 'neutral';
+            
+            if (baseline) {
+                baselineDelta = fev1 - baseline;
+                if (this.state.percentageView) {
+                    baselineDeltaDisplay = `${baselinePercent ? baselinePercent.toFixed(0) : '--'}%`;
+                } else {
+                    baselineDeltaDisplay = `${baselineDelta >= 0 ? '+' : ''}${baselineDelta.toFixed(2)}`;
+                }
+                
+                if (this.state.colorCoding) {
+                    if (baselineDelta > 0) {
+                        baselineDeltaClass = 'positive';
+                    } else if (baselineDelta < 0) {
+                        baselineDeltaClass = 'negative';
+                    }
+                }
+            }
+            
+            // Calculate monthly rate
+            let rateDisplay = '--';
+            let rateClass = 'neutral';
+            let rateArrow = '→';
+            
+            if (index > 0) {
+                const prevVisit = sortedVisits[index - 1];
+                const prevDate = new Date(prevVisit.date);
+                const daysDiff = Math.floor((date - prevDate) / (1000 * 60 * 60 * 24));
+                const monthsDiff = daysDiff / 30.44;
+                
+                if (monthsDiff > 0) {
+                    const monthlyRate = (fev1 - prevVisit.fev1) / monthsDiff;
+                    rateDisplay = `${monthlyRate >= 0 ? '+' : ''}${monthlyRate.toFixed(3)}`;
+                    
+                    if (this.state.colorCoding) {
+                        if (monthlyRate > 0) {
+                            rateClass = 'positive';
+                            rateArrow = '↗';
+                        } else if (monthlyRate < 0) {
+                            rateClass = 'negative';
+                            rateArrow = '↘';
+                        }
+                    }
+                }
+            }
+            
+            // Determine alert level
+            let alertLevel = null;
+            let alertDisplay = '';
+            
+            if (baselinePercent !== null) {
+                const decline = 100 - baselinePercent;
+                if (decline >= reviewThreshold) {
+                    alertLevel = 'review';
+                    alertDisplay = '<div class="alert-indicator review"></div>';
+                } else if (decline >= monitorThreshold) {
+                    alertLevel = 'monitor';
+                    alertDisplay = '<div class="alert-indicator monitor"></div>';
+                } else {
+                    alertDisplay = '<div class="alert-indicator"></div>';
+                }
+            }
+            
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</td>
+                <td style="font-family: var(--font-family-mono);">${daysFromFirst}</td>
+                <td style="font-family: var(--font-family-mono); font-weight: 700; color: var(--primary);">${fev1.toFixed(2)}</td>
+                <td>
+                    <span class="baseline-percent ${baselinePercentClass}">
+                        ${baselinePercentDisplay}
+                    </span>
+                </td>
+                <td style="font-family: var(--font-family-mono); color: var(--secondary);">${fvc ? fvc.toFixed(2) : '--'}</td>
+                <td style="font-family: var(--font-family-mono);">${ratio}${ratio !== '--' ? '%' : ''}</td>
+                <td style="font-family: var(--font-family-mono);">
+                    <span class="visit-change ${visitDeltaClass}">${visitDeltaDisplay}</span>
+                </td>
+                <td style="font-family: var(--font-family-mono);">
+                    <span class="visit-change ${baselineDeltaClass}">${baselineDeltaDisplay}</span>
+                </td>
+                <td style="font-family: var(--font-family-mono);">
+                    <span class="visit-change ${rateClass}">${rateDisplay} ${rateArrow}</span>
+                </td>
+                <td class="alert-cell">${alertDisplay}</td>
+                <td style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" 
+                    title="${visit.notes || ''}">${visit.notes || ''}</td>
             `;
             
-            // Create mini chart visualization
-            this.createBaselineMiniChart(lastVisits, suggestedBaseline);
-            
-            this.showModal('baselineModal');
+            tbody.appendChild(row);
+        });
+        
+        // Update timeline visualization
+        this.updateTimelineVisualization(sortedVisits);
+    }
+
+    updateTimelineVisualization(visits) {
+        const timeline = this.dom.timelineVisualization;
+        timeline.innerHTML = '';
+        
+        if (visits.length < 2) {
+            timeline.innerHTML = `
+                <div style="text-align: center; color: var(--text-tertiary); font-size: 0.75rem; line-height: 40px;">
+                    ${this.t('noTimelineText')}
+                </div>
+            `;
+            return;
         }
         
-        createBaselineMiniChart(visits, baseline) {
-            const container = document.getElementById('baselineMiniChart');
-            container.innerHTML = '';
+        // Calculate optimal spacing (30-90 days)
+        const firstDate = new Date(visits[0].date);
+        const lastDate = new Date(visits[visits.length - 1].date);
+        const totalDays = Math.floor((lastDate - firstDate) / (1000 * 60 * 60 * 24));
+        const totalWidth = timeline.offsetWidth - 24; // Account for dot radius
+        
+        // Create timeline line
+        const line = document.createElement('div');
+        line.className = 'timeline-line';
+        line.style.left = '12px';
+        line.style.right = '12px';
+        timeline.appendChild(line);
+        
+        // Create optimal zone (30-90 days)
+        const optimalZone = document.createElement('div');
+        optimalZone.className = 'timeline-optimal';
+        optimalZone.style.left = '12px';
+        optimalZone.style.right = '12px';
+        timeline.appendChild(optimalZone);
+        
+        // Add dots for each visit
+        visits.forEach((visit, index) => {
+            const date = new Date(visit.date);
+            const daysFromFirst = Math.floor((date - firstDate) / (1000 * 60 * 60 * 24));
+            const position = totalDays > 0 ? (daysFromFirst / totalDays) * totalWidth + 12 : 12;
             
-            if (visits.length === 0) return;
+            const dot = document.createElement('div');
+            dot.className = 'timeline-dot';
+            dot.style.left = `${position}px`;
+            dot.title = `${date.toLocaleDateString()}: ${visit.fev1.toFixed(2)} L`;
             
-            // Calculate positions
-            const fev1Values = visits.map(v => v.fev1);
-            const maxFev1 = Math.max(...fev1Values, baseline);
-            const minFev1 = Math.min(...fev1Values, baseline);
-            const range = maxFev1 - minFev1 || 1;
-            
-            // Create baseline line
-            const baselinePos = ((baseline - minFev1) / range) * 100;
-            const baselineLine = document.createElement('div');
-            baselineLine.className = 'baseline-line';
-            baselineLine.style.top = `${100 - baselinePos}%`;
-            container.appendChild(baselineLine);
-            
-            // Create stability zone (±5%)
-            const zoneTop = ((baseline * 1.05 - minFev1) / range) * 100;
-            const zoneBottom = ((baseline * 0.95 - minFev1) / range) * 100;
-            const zone = document.createElement('div');
-            zone.className = 'baseline-zone';
-            zone.style.top = `${100 - zoneTop}%`;
-            zone.style.height = `${zoneTop - zoneBottom}%`;
-            container.appendChild(zone);
-            
-            // Create visit dots
-            visits.forEach((visit, index) => {
-                const pos = ((visit.fev1 - minFev1) / range) * 100;
-                const xPos = (index / (visits.length - 1)) * 100;
+            // Color code based on interval
+            if (index > 0) {
+                const prevDate = new Date(visits[index - 1].date);
+                const intervalDays = daysFromFirst - Math.floor((prevDate - firstDate) / (1000 * 60 * 60 * 24));
                 
-                const dot = document.createElement('div');
-                dot.className = 'baseline-visit-dot';
-                if (Math.abs(visit.fev1 - baseline) / baseline <= 0.05) {
-                    dot.classList.add('stable');
+                if (intervalDays < 30) {
+                    dot.style.backgroundColor = 'var(--warning)';
+                } else if (intervalDays > 90) {
+                    dot.style.backgroundColor = 'var(--alert)';
+                } else {
+                    dot.style.backgroundColor = 'var(--success)';
                 }
-                dot.style.left = `${xPos}%`;
-                dot.style.top = `${100 - pos}%`;
-                dot.title = `${visit.date}: ${visit.fev1.toFixed(2)} L`;
-                container.appendChild(dot);
-            });
+            }
+            
+            timeline.appendChild(dot);
+        });
+    }
+
+    clearMonitorData() {
+        if (this.state.session.monitor.visits.length === 0) {
+            this.showToast('No data to clear', 'info');
+            return;
         }
         
-        acceptBaseline() {
-            const baselineValue = parseFloat(this.dom.calculatedBaseline.value);
-            
-            if (!baselineValue || isNaN(baselineValue) || baselineValue < 0.5 || baselineValue > 8.0) {
-                this.showToast('Please enter a valid baseline value', 'error');
-                return;
-            }
-            
-            if (!this.state.currentPatient) {
-                this.showToast('No patient selected', 'error');
-                return;
-            }
-            
-            const patient = this.state.patients.get(this.state.currentPatient);
-            if (!patient) {
-                this.showToast('Patient not found', 'error');
-                return;
-            }
-            
-            // Update patient baseline with complete audit trail
-            const previousBaseline = patient.baselineFev1;
-            patient.baselineFev1 = baselineValue;
-            patient.baselineDate = new Date().toISOString().split('T')[0];
-            
-            // Add to audit trail
-            patient.baselineHistory.push({
-                value: baselineValue,
-                date: patient.baselineDate,
-                method: 'calculated_from_stable_period',
-                visitsUsed: this.state.protocol.stabilityVisits,
-                previousValue: previousBaseline,
-                variation: this.checkStability(patient.visits).variation,
-                recordedAt: new Date().toISOString(),
-                notes: 'Automatically calculated from stable period'
-            });
-            
-            patient.updatedAt = new Date().toISOString();
-            
-            this.state.patients.set(patient.id, patient);
-            this.saveState();
-            
-            this.hideModal('baselineModal');
-            this.updatePatientContext();
+        if (confirm('Are you sure you want to clear all monitor data? This will not delete patient data.')) {
+            this.state.session.monitor.visits = [];
             this.updateVisitsTable();
-            
-            this.showToast(`${this.t('baselineSet')} ${baselineValue.toFixed(2)} L ${this.t('for')} ${patient.id}`, 'success');
+            this.updateChart();
+            this.updateCalculateButton();
+            this.showToast(this.t('dataCleared'), 'success');
         }
+    }
+
+    toggleVisualization() {
+        const isVisible = this.dom.visualizationSection.classList.toggle('visible');
+        this.dom.toggleVisualizationBtn.innerHTML = isVisible ? 
+            `<span class="icon-chart"></span><span>${this.t('hideCharts')}</span>` :
+            `<span class="icon-chart"></span><span>${this.t('showCharts')}</span>`;
         
-        toggleVisualization() {
-            const isVisible = this.dom.visualizationSection.classList.toggle('visible');
-            
-            if (isVisible) {
-                this.dom.toggleVisualizationBtn.innerHTML = `<span class="icon-chart-hide"></span><span>${this.t('hideCharts')}</span>`;
-                this.updateChart();
-                this.updateTimelineVisualization(this.state.session.monitor.visits);
-            } else {
-                this.dom.toggleVisualizationBtn.innerHTML = `<span class="icon-chart"></span><span>${this.t('showCharts')}</span>`;
-            }
+        if (isVisible) {
+            this.updateChart();
+            setTimeout(() => {
+                this.dom.timelineVisualization.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
         }
+    }
+
+    // ===== FULL STUDY MODE =====
+
+    updateTimeline() {
+        const txDate = this.dom.txDate.value;
+        const baselineDate = this.dom.baselineDate.value;
         
-        clearMonitorData() {
-            if (this.state.session.monitor.visits.length === 0) {
-                this.showToast(this.t('noData'), 'info');
-                return;
-            }
-            
-            if (confirm('Clear all visits from the monitor table? This will not delete saved patient visits.')) {
-                this.state.session.monitor.visits = [];
-                this.updateVisitsTable();
-                this.updateCalculateButton();
-                this.dom.visualizationSection.classList.remove('visible');
-                this.dom.toggleVisualizationBtn.innerHTML = `<span class="icon-chart"></span><span>${this.t('showCharts')}</span>`;
-                this.showToast(this.t('dataCleared'), 'success');
-            }
-        }
-        
-        // ===== FULL STUDY MODE =====
-        
-        updateTimeline() {
-            const txDate = this.dom.txDate.value;
-            const baselineDate = this.dom.baselineDate.value;
-            
-            if (txDate && baselineDate) {
-                const tx = new Date(txDate);
-                const baseline = new Date(baselineDate);
-                
-                if (baseline < tx) {
-                    this.showToast('Baseline date cannot be before transplant date', 'error');
-                    this.dom.baselineDate.value = '';
-                    return;
-                }
-                
-                const daysDiff = Math.floor((baseline - tx) / (1000 * 60 * 60 * 24));
-                if (daysDiff > 0) {
-                    this.dom.stdTimePeriod.textContent = daysDiff;
-                }
-            }
-        }
-        
-        handleFullInput() {
-            const fev1 = parseFloat(this.dom.stdFev1.value);
-            const baselineFev1 = parseFloat(this.dom.stdBaselineFev1.value);
-            
-            if (isNaN(fev1) || isNaN(baselineFev1)) {
-                this.dom.stdResultsPanel.classList.remove('visible');
-                return;
-            }
-            
-            this.state.session.full.fev1 = fev1;
-            this.state.session.full.baselineFev1 = baselineFev1;
-            
-            this.calculateFullStudy();
-        }
-        
-        calculateFullStudy() {
-            const fev1 = this.state.session.full.fev1;
-            const baselineFev1 = this.state.session.full.baselineFev1;
-            const txDate = this.dom.txDate.value;
-            const baselineDate = this.dom.baselineDate.value;
-            
-            if (!fev1 || !baselineFev1 || !txDate || !baselineDate) {
-                this.dom.stdResultsPanel.classList.remove('visible');
-                return;
-            }
-            
-            // Calculate time period
+        if (txDate && baselineDate) {
             const tx = new Date(txDate);
             const baseline = new Date(baselineDate);
-            const currentDate = new Date();
             
-            const daysFromTx = Math.floor((currentDate - tx) / (1000 * 60 * 60 * 24));
-            const daysFromBaseline = Math.floor((currentDate - baseline) / (1000 * 60 * 60 * 24));
-            const monthsFromBaseline = daysFromBaseline / 30.44;
-            
-            // Calculate metrics
-            const delta = fev1 - baselineFev1;
-            const percentDecline = ((baselineFev1 - fev1) / baselineFev1) * 100;
-            const monthlyRate = monthsFromBaseline > 0 ? (fev1 - baselineFev1) / monthsFromBaseline : 0;
-            const currentPercent = (fev1 / baselineFev1) * 100;
-            
-            // Update UI with enhanced formatting
-            this.dom.stdCurrentFev1.textContent = fev1.toFixed(2);
-            this.dom.stdCurrentPercent.textContent = `${fev1.toFixed(2)} L (${currentPercent.toFixed(1)}%)`;
-            this.dom.stdCurrentPercent.className = `percent-display ${this.getBaselinePercentClass(currentPercent)}`;
-            this.dom.stdBaseline.textContent = baselineFev1.toFixed(2);
-            this.dom.stdTimePeriod.textContent = daysFromBaseline;
-            
-            this.dom.stdComparisonSubtitle.textContent = 
-                `${baseline.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
-            
-            // Visit-to-visit comparison (direction-based)
-            const deltaClass = delta > 0 ? 'positive' : (delta < 0 ? 'negative' : 'neutral');
-            this.dom.stdCumulativeDelta.textContent = `${delta >= 0 ? '+' : ''}${delta.toFixed(2)}`;
-            this.dom.stdCumulativeDelta.className = `metric-value visit-change ${deltaClass}`;
-            
-            // Baseline comparison (threshold-based)
-            const percentClass = this.getBaselinePercentClass(currentPercent);
-            this.dom.stdPercentDecline.textContent = `${percentDecline.toFixed(1)}%`;
-            this.dom.stdPercentDecline.className = `metric-value baseline-percent ${percentClass}`;
-            
-            // Monthly rate (direction-based)
-            const rateClass = monthlyRate > 0 ? 'positive' : (monthlyRate < 0 ? 'negative' : 'neutral');
-            const rateArrow = monthlyRate > 0 ? '↗' : (monthlyRate < 0 ? '↘' : '→');
-            this.dom.stdMonthlyRate.textContent = `${monthlyRate >= 0 ? '+' : ''}${monthlyRate.toFixed(3)}`;
-            this.dom.stdMonthlyRate.className = `metric-value visit-change ${rateClass}`;
-            this.dom.stdRateArrow.textContent = rateArrow;
-            
-            // Update protocol note
-            let note = '<strong>Note:</strong> ';
-            if (percentDecline <= 5) {
-                note += 'Minimal decline (<5% from baseline). Continue routine monitoring.';
-            } else if (percentDecline <= 20) {
-                note += 'Moderate decline (5-20% from baseline). Consider additional testing.';
-            } else {
-                note += 'Significant decline (>20% from baseline). Urgent clinical review recommended.';
+            if (baseline < tx) {
+                this.showToast('Baseline date cannot be before transplant date', 'error');
+                this.dom.baselineDate.value = '';
+                return;
             }
-            this.dom.stdProtocolNote.innerHTML = note;
             
-            // Update timestamp
-            const now = new Date();
-            this.dom.stdResultsTimestamp.textContent = now.toLocaleTimeString('en-US', { 
-                hour: '2-digit', 
-                minute: '2-digit',
-                second: '2-digit'
-            });
-            
-            this.dom.stdResultsPanel.classList.add('visible');
+            const daysDiff = Math.floor((baseline - tx) / (1000 * 60 * 60 * 24));
+            if (daysDiff > 0) {
+                this.dom.baselineDate.title = `${daysDiff} days post-transplant`;
+            }
         }
         
-        clearFullStudy() {
-            this.dom.txDate.value = '';
-            this.dom.baselineDate.value = '';
-            this.dom.stdFev1.value = '';
-            this.dom.stdBaselineFev1.value = '';
-            this.dom.clinicalNotes.value = '';
+        this.handleFullInput();
+    }
+
+    handleFullInput() {
+        const fev1 = this.sanitizeInput(this.dom.stdFev1.value, 'number');
+        const baselineFev1 = this.sanitizeInput(this.dom.stdBaselineFev1.value, 'number');
+        const txDate = this.dom.txDate.value;
+        const baselineDate = this.dom.baselineDate.value;
+        
+        if (!fev1 || !baselineFev1 || !txDate || !baselineDate) {
             this.dom.stdResultsPanel.classList.remove('visible');
-            
-            this.state.session.full.txDate = null;
-            this.state.session.full.baselineDate = null;
-            this.state.session.full.fev1 = null;
-            this.state.session.full.baselineFev1 = null;
-            this.state.session.full.notes = '';
-            
-            this.showToast(this.t('clearAll'), 'info');
+            return;
         }
         
-        saveFullStudy() {
-            const txDate = this.dom.txDate.value;
-            const baselineDate = this.dom.baselineDate.value;
-            const fev1 = parseFloat(this.dom.stdFev1.value);
-            const baselineFev1 = parseFloat(this.dom.stdBaselineFev1.value);
-            const notes = this.dom.clinicalNotes.value.trim();
-            
-            if (!txDate || !baselineDate || !fev1 || !baselineFev1) {
-                this.showToast('Please complete all required fields', 'error');
-                return;
-            }
-            
-            if (!this.state.currentPatient) {
-                this.showToast('Please select a patient first', 'error');
-                return;
-            }
-            
-            const patient = this.state.patients.get(this.state.currentPatient);
-            if (!patient) {
-                this.showToast('Patient not found', 'error');
-                return;
-            }
-            
-            // Update patient information with audit trail
-            const previousBaseline = patient.baselineFev1;
-            patient.txDate = txDate;
-            patient.baselineDate = baselineDate;
-            patient.baselineFev1 = baselineFev1;
-            
-            // Add to baseline history if changed
-            if (previousBaseline !== baselineFev1) {
-                patient.baselineHistory.push({
-                    value: baselineFev1,
-                    date: baselineDate,
-                    method: 'manual_entry_full_study',
-                    previousValue: previousBaseline,
-                    recordedAt: new Date().toISOString(),
-                    notes: 'Manually entered in Full Study mode'
-                });
-            }
-            
-            patient.updatedAt = new Date().toISOString();
-            
-            // Add as a visit if not already present
-            const today = new Date().toISOString().split('T')[0];
-            const existingVisitIndex = patient.visits.findIndex(v => v.date === today);
-            
-            if (existingVisitIndex === -1) {
-                patient.visits.push({
-                    date: today,
-                    fev1,
-                    fvc: null,
-                    notes,
-                    recordedAt: new Date().toISOString()
-                });
-            }
-            
-            this.state.patients.set(patient.id, patient);
-            this.saveState();
-            
-            this.updatePatientContext();
-            this.showToast(`${this.t('saveFullStudy')} ${patient.id}`, 'success');
+        if (isNaN(fev1) || fev1 < 0.5 || fev1 > 8.0) {
+            this.dom.stdResultsPanel.classList.remove('visible');
+            return;
         }
         
-        // ===== REVIEW MODE =====
-        
-        updateReviewMode() {
-            if (!this.state.currentPatient) {
-                this.showNoDataState();
-                return;
-            }
-            
-            const patient = this.state.patients.get(this.state.currentPatient);
-            if (!patient || patient.visits.length === 0) {
-                this.showNoDataState();
-                return;
-            }
-            
-            // Update patient status
-            this.updatePatientStatus(patient);
-            
-            // Update summary metrics
-            this.updateReviewSummary(patient);
-            
-            // Update visits list
-            this.updateReviewVisitsList(patient);
+        if (isNaN(baselineFev1) || baselineFev1 < 0.5 || baselineFev1 > 8.0) {
+            this.dom.stdResultsPanel.classList.remove('visible');
+            return;
         }
         
-        showNoDataState() {
+        this.state.session.full.fev1 = fev1;
+        this.state.session.full.baselineFev1 = baselineFev1;
+        this.state.session.full.txDate = txDate;
+        this.state.session.full.baselineDate = baselineDate;
+        this.state.session.full.notes = this.dom.clinicalNotes.value;
+        
+        this.calculateFullStudy();
+    }
+
+    calculateFullStudy() {
+        const fev1 = this.state.session.full.fev1;
+        const baselineFev1 = this.state.session.full.baselineFev1;
+        const txDate = new Date(this.state.session.full.txDate);
+        const baselineDate = new Date(this.state.session.full.baselineDate);
+        const currentDate = new Date();
+        
+        // Calculate time periods
+        const daysFromTx = Math.floor((currentDate - txDate) / (1000 * 60 * 60 * 24));
+        const daysFromBaseline = Math.floor((currentDate - baselineDate) / (1000 * 60 * 60 * 24));
+        const monthsFromBaseline = daysFromBaseline / 30.44;
+        
+        // Calculate changes
+        const cumulativeDelta = fev1 - baselineFev1;
+        const percentDecline = ((baselineFev1 - fev1) / baselineFev1) * 100;
+        const percentOfBaseline = (fev1 / baselineFev1) * 100;
+        const monthlyRate = monthsFromBaseline > 0 ? cumulativeDelta / monthsFromBaseline : 0;
+        
+        // Update display
+        this.dom.stdCurrentFev1.textContent = fev1.toFixed(2);
+        this.dom.stdCurrentPercent.textContent = `${percentOfBaseline.toFixed(0)}%`;
+        this.dom.stdBaseline.textContent = baselineFev1.toFixed(2);
+        this.dom.stdTimePeriod.textContent = daysFromBaseline;
+        
+        // Determine percentage category
+        let percentClass = 'neutral';
+        if (this.state.colorCoding) {
+            if (percentOfBaseline >= 95) {
+                percentClass = 'good';
+            } else if (percentOfBaseline >= 80) {
+                percentClass = 'warning';
+            } else {
+                percentClass = 'alert';
+            }
+        }
+        this.dom.stdCurrentPercent.className = `percent-display ${percentClass}`;
+        
+        // Update comparison results
+        this.dom.stdComparisonSubtitle.textContent = 
+            `Baseline established ${baselineDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+        
+        // Cumulative change
+        let cumulativeClass = 'neutral';
+        if (this.state.colorCoding) {
+            cumulativeClass = cumulativeDelta > 0 ? 'positive' : (cumulativeDelta < 0 ? 'negative' : 'neutral');
+        }
+        this.dom.stdCumulativeDelta.textContent = `${cumulativeDelta >= 0 ? '+' : ''}${cumulativeDelta.toFixed(2)}`;
+        this.dom.stdCumulativeDelta.className = `metric-value visit-change ${cumulativeClass}`;
+        
+        // Percent decline
+        this.dom.stdPercentDecline.textContent = `${percentDecline.toFixed(1)}%`;
+        this.dom.stdPercentDecline.className = `metric-value baseline-percent ${percentClass}`;
+        
+        // Monthly rate
+        let rateClass = 'neutral';
+        let rateArrow = '→';
+        if (this.state.colorCoding) {
+            rateClass = monthlyRate > 0 ? 'positive' : (monthlyRate < 0 ? 'negative' : 'neutral');
+            rateArrow = monthlyRate > 0 ? '↗' : (monthlyRate < 0 ? '↘' : '→');
+        }
+        this.dom.stdMonthlyRate.textContent = `${monthlyRate >= 0 ? '+' : ''}${monthlyRate.toFixed(3)}`;
+        this.dom.stdMonthlyRate.className = `metric-value visit-change ${rateClass}`;
+        this.dom.stdRateArrow.textContent = rateArrow;
+        
+        // Update timestamp
+        this.dom.stdResultsTimestamp.textContent = currentDate.toLocaleTimeString('en-US', { 
+            hour: '2-digit', 
+            minute: '2-digit',
+            second: '2-digit'
+        });
+        
+        this.dom.stdResultsPanel.classList.add('visible');
+    }
+
+    clearFullStudy() {
+        this.dom.txDate.value = '';
+        this.dom.baselineDate.value = '';
+        this.dom.stdFev1.value = '';
+        this.dom.stdBaselineFev1.value = '';
+        this.dom.clinicalNotes.value = '';
+        this.dom.stdResultsPanel.classList.remove('visible');
+        
+        this.state.session.full.txDate = null;
+        this.state.session.full.baselineDate = null;
+        this.state.session.full.fev1 = null;
+        this.state.session.full.baselineFev1 = null;
+        this.state.session.full.notes = '';
+        
+        this.showToast(this.t('clear'), 'info');
+    }
+
+    saveFullStudy() {
+        const txDate = this.dom.txDate.value;
+        const baselineDate = this.dom.baselineDate.value;
+        const fev1 = this.sanitizeInput(this.dom.stdFev1.value, 'number');
+        const baselineFev1 = this.sanitizeInput(this.dom.stdBaselineFev1.value, 'number');
+        const notes = this.dom.clinicalNotes.value;
+        
+        if (!txDate || !baselineDate || !fev1 || !baselineFev1) {
+            this.showToast('Please fill all required fields', 'error');
+            return;
+        }
+        
+        if (!this.state.currentPatient) {
+            this.showToast('Please select a patient first', 'error');
+            return;
+        }
+        
+        const patient = this.state.patients.get(this.state.currentPatient);
+        if (!patient) {
+            this.showToast('Patient not found', 'error');
+            return;
+        }
+        
+        // Update patient data
+        patient.txDate = txDate;
+        patient.baselineDate = baselineDate;
+        patient.baselineFev1 = baselineFev1;
+        patient.updatedAt = new Date().toISOString();
+        
+        // Add to baseline history
+        patient.baselineHistory.push({
+            value: baselineFev1,
+            date: baselineDate,
+            visitsUsed: 0, // Manual entry
+            variation: null,
+            establishedAt: new Date().toISOString(),
+            notes: 'Manual entry from Full Study'
+        });
+        
+        this.state.patients.set(patient.id, patient);
+        this.saveState();
+        
+        this.updatePatientContext();
+        this.showToast(`${this.t('baselineSet')} ${baselineFev1.toFixed(2)} L for ${patient.id}`, 'success');
+    }
+
+    // ===== REVIEW MODE =====
+
+    updateReviewMode() {
+        if (!this.state.currentPatient) {
+            this.showEmptyReviewState();
+            return;
+        }
+        
+        const patient = this.state.patients.get(this.state.currentPatient);
+        if (!patient) {
+            this.showEmptyReviewState();
+            return;
+        }
+        
+        if (patient.visits.length === 0) {
+            this.showEmptyReviewState();
+            return;
+        }
+        
+        // Update summary
+        const now = new Date();
+        const txDate = patient.txDate ? new Date(patient.txDate) : null;
+        const daysPostTx = txDate ? Math.floor((now - txDate) / (1000 * 60 * 60 * 24)) : '--';
+        const lastVisit = patient.visits[patient.visits.length - 1];
+        const bestVisit = [...patient.visits].sort((a, b) => b.fev1 - a.fev1)[0];
+        
+        this.dom.reviewTxDays.textContent = daysPostTx;
+        this.dom.reviewVisits.textContent = patient.visits.length;
+        this.dom.reviewLastFev1.textContent = lastVisit ? lastVisit.fev1.toFixed(2) : '--';
+        this.dom.reviewBestFev1.textContent = bestVisit ? bestVisit.fev1.toFixed(2) : '--';
+        
+        // Update last updated
+        if (patient.updatedAt) {
+            const updated = new Date(patient.updatedAt);
+            this.dom.lastUpdatedDate.textContent = updated.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric'
+            });
+        } else {
+            this.dom.lastUpdatedDate.textContent = '--';
+        }
+        
+        // Update status
+        this.updateReviewStatus(patient);
+        
+        // Update visits list
+        this.updateReviewVisitsList(patient);
+    }
+
+    updateReviewStatus(patient) {
+        const lastVisit = patient.visits[patient.visits.length - 1];
+        
+        if (!patient.baselineFev1) {
             this.dom.patientStatusDot.className = 'patient-status-dot';
             this.dom.patientStatusText.textContent = this.t('noData');
             this.dom.reviewStabilityIndicator.innerHTML = '';
-            this.dom.lastUpdatedDate.textContent = '--';
-            
-            this.dom.reviewTxDays.textContent = '--';
-            this.dom.reviewVisits.textContent = '--';
-            this.dom.reviewLastFev1.textContent = '--';
-            this.dom.reviewBestFev1.textContent = '--';
-            
-            this.dom.visitsList.innerHTML = `
+            return;
+        }
+        
+        const percent = (lastVisit.fev1 / patient.baselineFev1) * 100;
+        
+        // Status dot
+        if (percent >= 95) {
+            this.dom.patientStatusDot.className = 'patient-status-dot good';
+            this.dom.patientStatusText.textContent = this.t('goodFunction');
+        } else if (percent >= 80) {
+            this.dom.patientStatusDot.className = 'patient-status-dot warning';
+            this.dom.patientStatusText.textContent = this.t('monitorClosely');
+        } else {
+            this.dom.patientStatusDot.className = 'patient-status-dot alert';
+            this.dom.patientStatusText.textContent = this.t('reviewNeeded');
+        }
+        
+        // Stability indicator
+        const stability = this.checkStability(patient.visits);
+        if (stability.stable) {
+            this.dom.patientStatusDot.className = 'patient-status-dot stable';
+            this.dom.reviewStabilityIndicator.innerHTML = 
+                `<span class="stability-indicator stable"><span class="icon-stable"></span> ${this.t('stableFunction')}</span>`;
+        } else {
+            this.dom.reviewStabilityIndicator.innerHTML = 
+                `<span class="stability-indicator monitoring"><span class="icon-monitoring"></span> ${this.t('monitoring')}</span>`;
+        }
+    }
+
+    updateReviewVisitsList(patient) {
+        const list = this.dom.visitsList;
+        list.innerHTML = '';
+        
+        if (patient.visits.length === 0) {
+            list.innerHTML = `
                 <div class="empty-state">
                     <div class="empty-state-icon icon-no-data"></div>
                     <p>${this.t('noReviewData')}</p>
                     <p class="notes-hint mt-2">${this.t('reviewHint')}</p>
                 </div>
             `;
+            return;
         }
         
-        updatePatientStatus(patient) {
-            const lastVisit = patient.visits[patient.visits.length - 1];
-            const stability = this.checkStability(patient.visits);
+        const sortedVisits = [...patient.visits].sort((a, b) => new Date(b.date) - new Date(a.date));
+        
+        sortedVisits.forEach(visit => {
+            const date = new Date(visit.date);
+            const card = document.createElement('div');
+            card.className = 'visit-card';
             
-            let status = 'unknown';
-            let statusText = this.t('noData');
-            let statusClass = '';
-            
-            if (patient.baselineFev1) {
-                const percent = (lastVisit.fev1 / patient.baselineFev1) * 100;
-                
-                if (percent >= 95) {
-                    status = 'good';
-                    statusText = this.t('goodFunction');
-                    statusClass = 'good';
-                } else if (percent >= 80) {
-                    status = 'warning';
-                    statusText = this.t('monitorClosely');
-                    statusClass = 'warning';
-                } else {
-                    status = 'alert';
-                    statusText = this.t('reviewNeeded');
-                    statusClass = 'alert';
-                }
-                
-                if (stability.stable) {
-                    status = 'stable';
-                    statusText = this.t('stableFunction');
-                    statusClass = 'stable';
-                }
+            let fvcHtml = '';
+            if (visit.fvc) {
+                fvcHtml = `<span class="visit-fvc"> / ${visit.fvc.toFixed(2)}</span>`;
             }
             
-            this.dom.patientStatusDot.className = `patient-status-dot ${statusClass}`;
-            this.dom.patientStatusText.textContent = statusText;
-            
-            if (stability.stable) {
-                this.dom.reviewStabilityIndicator.innerHTML = 
-                    `<span class="stability-indicator stable"><span class="icon-stable"></span> ${this.t('stableFunction')}</span>`;
-            } else if (patient.visits.length >= this.state.protocol.stabilityVisits) {
-                this.dom.reviewStabilityIndicator.innerHTML = 
-                    `<span class="stability-indicator monitoring"><span class="icon-monitoring"></span> ${this.t('monitoring')}</span>`;
-            } else {
-                this.dom.reviewStabilityIndicator.innerHTML = '';
-            }
-            
-            // Update last updated date
-            const lastDate = new Date(lastVisit.date);
-            this.dom.lastUpdatedDate.textContent = lastDate.toLocaleDateString('en-US', { 
-                month: 'short', 
-                day: 'numeric',
-                year: 'numeric'
-            });
-        }
-        
-        updateReviewSummary(patient) {
-            // Calculate days post-transplant
-            let txDays = '--';
-            if (patient.txDate) {
-                const tx = new Date(patient.txDate);
-                const today = new Date();
-                txDays = Math.floor((today - tx) / (1000 * 60 * 60 * 24));
-            }
-            
-            // Get last and best FEV1
-            const lastFev1 = patient.visits[patient.visits.length - 1].fev1;
-            const bestFev1 = Math.max(...patient.visits.map(v => v.fev1));
-            
-            this.dom.reviewTxDays.textContent = txDays;
-            this.dom.reviewVisits.textContent = patient.visits.length;
-            this.dom.reviewLastFev1.textContent = lastFev1.toFixed(2);
-            this.dom.reviewBestFev1.textContent = bestFev1.toFixed(2);
-        }
-        
-        updateReviewVisitsList(patient) {
-            const visitsList = this.dom.visitsList;
-            visitsList.innerHTML = '';
-            
-            // Sort visits by date (newest first)
-            const sortedVisits = [...patient.visits].sort((a, b) => new Date(b.date) - new Date(a.date));
-            
-            sortedVisits.forEach(visit => {
-                const date = new Date(visit.date);
-                const card = document.createElement('div');
-                card.className = 'visit-card';
-                
-                let baselineInfo = '';
-                if (patient.baselineFev1) {
-                    const percent = (visit.fev1 / patient.baselineFev1 * 100).toFixed(1);
-                    const percentClass = this.getBaselinePercentClass(percent);
-                    const percentDisplay = !this.state.colorCoding ? 
-                        `${percent}%` : 
-                        `<span class="baseline-percent ${percentClass}">${percent}%</span>`;
-                    baselineInfo = `<div style="font-size: 0.75rem; color: var(--text-tertiary);">${percentDisplay} of baseline</div>`;
-                }
-                
-                card.innerHTML = `
-                    <div>
-                        <div class="visit-date">${date.toLocaleDateString('en-US', { 
-                            month: 'short', 
-                            day: 'numeric',
-                            year: 'numeric'
-                        })}</div>
-                        ${baselineInfo}
-                        ${visit.notes ? `<div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px;">
-                            <span class="icon-notes-small"></span> ${visit.notes}
-                        </div>` : ''}
-                    </div>
-                    <div class="visit-values">
-                        <div class="visit-fev1">${visit.fev1.toFixed(2)} L</div>
-                        ${visit.fvc ? `<div class="visit-fvc">${visit.fvc.toFixed(2)} L</div>` : ''}
-                    </div>
-                `;
-                
-                visitsList.appendChild(card);
-            });
-        }
-        
-        // ===== PROTOCOL MANAGEMENT =====
-        
-        updateProtocolUI() {
-            this.dom.monitorSlider.value = this.state.protocol.monitor;
-            this.dom.monitorInput.value = this.state.protocol.monitor;
-            this.dom.monitorValue.textContent = `${this.state.protocol.monitor}%`;
-            
-            this.dom.reviewSlider.value = this.state.protocol.review;
-            this.dom.reviewInput.value = this.state.protocol.review;
-            this.dom.reviewValue.textContent = `${this.state.protocol.review}%`;
-            
-            this.dom.stabilityVisits.value = this.state.protocol.stabilityVisits;
-            this.dom.stabilityThreshold.value = this.state.protocol.stabilityThreshold;
-        }
-        
-        resetProtocol() {
-            this.state.protocol = {
-                monitor: 10,
-                review: 20,
-                stabilityVisits: 4,
-                stabilityThreshold: 5
-            };
-            
-            this.updateProtocolUI();
-            this.showToast(this.t('resetToDefaults'), 'info');
-        }
-        
-        saveProtocol() {
-            this.state.protocol.monitor = parseInt(this.dom.monitorInput.value) || 10;
-            this.state.protocol.review = parseInt(this.dom.reviewInput.value) || 20;
-            this.state.protocol.stabilityVisits = parseInt(this.dom.stabilityVisits.value) || 4;
-            this.state.protocol.stabilityThreshold = parseInt(this.dom.stabilityThreshold.value) || 5;
-            
-            this.saveState();
-            this.hideModal('protocolModal');
-            
-            this.updateVisitsTable();
-            this.updateCalculateButton();
-            
-            this.showToast(this.t('protocolSaved'), 'success');
-        }
-        
-        // ===== DUPLICATE DATE HANDLING =====
-        
-        showDuplicateDateModal() {
-            const data = this.state.session.duplicateDateData;
-            if (!data) return;
-            
-            const existing = data.existingVisit;
-            const newVisit = data.newVisit;
-            
-            this.dom.duplicateDateMessage.textContent = 
-                `A visit already exists for ${data.date}.`;
-            this.dom.existingFev1.textContent = `${existing.fev1.toFixed(2)} L`;
-            this.dom.existingFvc.textContent = existing.fvc ? `${existing.fvc.toFixed(2)} L` : '--';
-            this.dom.newFev1.textContent = `${newVisit.fev1.toFixed(2)} L`;
-            this.dom.newFvc.textContent = newVisit.fvc ? `${newVisit.fvc.toFixed(2)} L` : '--';
-            
-            this.showModal('duplicateDateModal');
-        }
-        
-        handleDuplicateAddAsNew() {
-            const data = this.state.session.duplicateDateData;
-            if (!data) return;
-            
-            // Add with modified date (add 1 day)
-            const originalDate = new Date(data.date);
-            originalDate.setDate(originalDate.getDate() + 1);
-            const newDate = originalDate.toISOString().split('T')[0];
-            
-            this.addVisitWithDate(newDate, data.newVisit);
-            this.hideModal('duplicateDateModal');
-        }
-        
-        handleDuplicateReplace() {
-            const data = this.state.session.duplicateDateData;
-            if (!data) return;
-            
-            // Replace existing visit
-            this.addVisitWithDate(data.date, data.newVisit, true);
-            this.hideModal('duplicateDateModal');
-        }
-        
-        addVisitWithDate(date, visitData, replace = false) {
-            if (!this.state.currentPatient) return;
-            
-            const patient = this.state.patients.get(this.state.currentPatient);
-            if (!patient) return;
-            
-            const visit = {
-                date,
-                fev1: visitData.fev1,
-                fvc: visitData.fvc,
-                notes: visitData.notes || '',
-                recordedAt: new Date().toISOString()
-            };
-            
-            if (replace) {
-                // Replace existing visit
-                const existingIndex = patient.visits.findIndex(v => v.date === date);
-                if (existingIndex !== -1) {
-                    patient.visits[existingIndex] = visit;
-                    this.showToast(`Visit replaced for ${date}: ${visit.fev1.toFixed(2)} L`, 'success');
-                }
-            } else {
-                // Add as new visit
-                patient.visits.push(visit);
-                this.showToast(`Visit added for ${date}: ${visit.fev1.toFixed(2)} L`, 'success');
-            }
-            
-            patient.updatedAt = new Date().toISOString();
-            this.state.patients.set(patient.id, patient);
-            this.saveState();
-            
-            // Update monitor session if active
-            const monitorIndex = this.state.session.monitor.visits.findIndex(v => v.date === date);
-            if (replace && monitorIndex !== -1) {
-                this.state.session.monitor.visits[monitorIndex] = visit;
-            } else if (!replace) {
-                this.state.session.monitor.visits.push(visit);
-            }
-            
-            this.updatePatientContext();
-            this.updateVisitsTable();
-            this.updateCalculateButton();
-        }
-        
-        // ===== MODAL MANAGEMENT =====
-        
-        showModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal) {
-                modal.classList.add('active');
-                document.body.style.overflow = 'hidden';
-            }
-        }
-        
-        hideModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal) {
-                modal.classList.remove('active');
-                document.body.style.overflow = '';
-            }
-        }
-        
-        // ===== EXPORT FUNCTIONS =====
-        
-        exportAllData() {
-            if (this.state.patients.size === 0) {
-                this.showToast('No patient data to export', 'warning');
-                return;
-            }
-            
-            const data = {
-                version: 'Spirolite v1.0',
-                exportedAt: new Date().toISOString(),
-                patients: Array.from(this.state.patients.values()),
-                protocol: this.state.protocol,
-                settings: {
-                    colorCoding: this.state.colorCoding,
-                    percentageView: this.state.percentageView,
-                    language: this.state.language
-                }
-            };
-            
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `spirolite_export_${new Date().toISOString().split('T')[0]}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            this.showToast(this.t('allDataExported'), 'success');
-        }
-        
-        exportMonitorPDF() {
-            if (this.state.session.monitor.visits.length === 0) {
-                this.showToast('No visits to export', 'warning');
-                return;
-            }
-            
-            // Create PDF using jsPDF
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            
-            const patientId = this.state.currentPatient || 'Unknown';
-            const patient = this.state.patients.get(this.state.currentPatient);
-            
-            // Add header with Spirolite branding
-            doc.setFontSize(20);
-            doc.setTextColor(26, 95, 122);
-            doc.text('Spirolite Report', 20, 20);
-            doc.setFontSize(12);
-            doc.setTextColor(0, 0, 0);
-            doc.text(`Patient: ${patientId}`, 20, 30);
-            if (patient && patient.txDate) {
-                doc.text(`Transplant Date: ${new Date(patient.txDate).toLocaleDateString()}`, 20, 37);
-            }
-            if (patient && patient.baselineFev1) {
-                doc.text(`Baseline FEV₁: ${patient.baselineFev1.toFixed(2)} L`, 20, 44);
-            }
-            doc.text(`Generated: ${new Date().toLocaleString()}`, 20, 51);
-            
-            // Add visits table
-            const visits = [...this.state.session.monitor.visits].sort((a, b) => new Date(a.date) - new Date(b.date));
-            const tableData = visits.map((visit, index) => {
-                const prevVisit = index > 0 ? visits[index - 1] : null;
-                const visitDelta = prevVisit ? (visit.fev1 - prevVisit.fev1).toFixed(2) : '--';
-                const baselineDelta = patient && patient.baselineFev1 ? (visit.fev1 - patient.baselineFev1).toFixed(2) : '--';
-                const baselinePercent = patient && patient.baselineFev1 ? ((visit.fev1 / patient.baselineFev1) * 100).toFixed(1) : '--';
-                const rate = prevVisit ? this.calculateMonthlyRate(visit.fev1, prevVisit.fev1, visit.date, prevVisit.date).toFixed(3) : '--';
-                
-                return [
-                    new Date(visit.date).toLocaleDateString(),
-                    visit.fev1.toFixed(2),
-                    baselinePercent + '%',
-                    visit.fvc ? visit.fvc.toFixed(2) : '--',
-                    visit.fvc ? ((visit.fev1 / visit.fvc) * 100).toFixed(1) + '%' : '--',
-                    visitDelta,
-                    baselineDelta,
-                    rate,
-                    visit.notes || ''
-                ];
-            });
-            
-            doc.autoTable({
-                head: [['Date', 'FEV₁ (L)', '% of PB', 'FVC', 'Ratio', 'Δ Visit', 'Δ Baseline', 'Rate', 'Notes']],
-                body: tableData,
-                startY: 60,
-                theme: 'grid',
-                headStyles: { fillColor: [26, 95, 122] },
-                alternateRowStyles: { fillColor: [240, 240, 240] }
-            });
-            
-            // Add clinical notes section
-            const finalY = doc.lastAutoTable.finalY || 60;
-            doc.setFontSize(14);
-            doc.text('Clinical Notes:', 20, finalY + 10);
-            
-            let notesY = finalY + 20;
-            visits.forEach(visit => {
-                if (visit.notes) {
-                    doc.setFontSize(10);
-                    const date = new Date(visit.date).toLocaleDateString();
-                    const notes = `• ${date}: ${visit.notes}`;
-                    const splitNotes = doc.splitTextToSize(notes, 170);
-                    doc.text(splitNotes, 20, notesY);
-                    notesY += splitNotes.length * 5;
-                }
-            });
-            
-            // Save the PDF
-            doc.save(`spirolite_${patientId}_${new Date().toISOString().split('T')[0]}.pdf`);
-            this.showToast(this.t('pdfExported'), 'success');
-        }
-        
-        exportPatientPDF() {
-            if (!this.state.currentPatient) {
-                this.showToast('No patient selected', 'error');
-                return;
-            }
-            
-            const patient = this.state.patients.get(this.state.currentPatient);
-            if (!patient || patient.visits.length === 0) {
-                this.showToast('No patient data to export', 'warning');
-                return;
-            }
-            
-            // Create PDF using jsPDF
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            
-            // Add header
-            doc.setFontSize(20);
-            doc.setTextColor(26, 95, 122);
-            doc.text('Spirolite Patient Report', 20, 20);
-            doc.setFontSize(12);
-            doc.setTextColor(0, 0, 0);
-            doc.text(`Patient ID: ${patient.id}`, 20, 30);
-            if (patient.description) {
-                doc.text(`Description: ${patient.description}`, 20, 37);
-            }
-            if (patient.txDate) {
-                doc.text(`Transplant Date: ${new Date(patient.txDate).toLocaleDateString()}`, 20, 44);
-            }
-            if (patient.baselineFev1) {
-                doc.text(`Baseline FEV₁: ${patient.baselineFev1.toFixed(2)} L`, 20, 51);
-            }
-            doc.text(`Total Visits: ${patient.visits.length}`, 20, 58);
-            doc.text(`Generated: ${new Date().toLocaleString()}`, 20, 65);
-            
-            // Add summary statistics
-            const lastVisit = patient.visits[patient.visits.length - 1];
-            const bestFev1 = Math.max(...patient.visits.map(v => v.fev1));
-            const stability = this.checkStability(patient.visits);
-            
-            let startY = 75;
-            doc.setFontSize(14);
-            doc.text('Summary Statistics:', 20, startY);
-            startY += 7;
-            doc.setFontSize(12);
-            doc.text(`Last FEV₁: ${lastVisit.fev1.toFixed(2)} L`, 25, startY);
-            startY += 7;
-            doc.text(`Best FEV₁: ${bestFev1.toFixed(2)} L`, 25, startY);
-            startY += 7;
-            if (patient.baselineFev1) {
-                const currentPercent = (lastVisit.fev1 / patient.baselineFev1 * 100).toFixed(1);
-                doc.text(`Current % of Baseline: ${currentPercent}%`, 25, startY);
-                startY += 7;
-            }
-            doc.text(`Stability: ${stability.stable ? 'Stable' : 'Monitoring'}`, 25, startY);
-            startY += 10;
-            
-            // Add baseline audit trail if exists
-            if (patient.baselineHistory && patient.baselineHistory.length > 0) {
-                doc.setFontSize(14);
-                doc.text('Baseline History:', 20, startY);
-                startY += 7;
-                doc.setFontSize(10);
-                
-                patient.baselineHistory.forEach(history => {
-                    const date = new Date(history.date).toLocaleDateString();
-                    const text = `• ${date}: ${history.value.toFixed(2)} L (${history.method})`;
-                    const splitText = doc.splitTextToSize(text, 170);
-                    doc.text(splitText, 25, startY);
-                    startY += splitText.length * 5;
-                });
-                startY += 5;
-            }
-            
-            // Add visits table
-            const sortedVisits = [...patient.visits].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 15);
-            const tableData = sortedVisits.map(visit => {
-                const baselinePercent = patient.baselineFev1 ? ((visit.fev1 / patient.baselineFev1) * 100).toFixed(1) : '--';
-                return [
-                    new Date(visit.date).toLocaleDateString(),
-                    visit.fev1.toFixed(2),
-                    baselinePercent + '%',
-                    visit.fvc ? visit.fvc.toFixed(2) : '--',
-                    visit.notes.substring(0, 30) + (visit.notes.length > 30 ? '...' : '')
-                ];
-            });
-            
-            doc.autoTable({
-                head: [['Date', 'FEV₁ (L)', '% of PB', 'FVC', 'Notes']],
-                body: tableData,
-                startY: startY,
-                theme: 'grid',
-                headStyles: { fillColor: [26, 95, 122] },
-                alternateRowStyles: { fillColor: [240, 240, 240] }
-            });
-            
-            // Save the PDF
-            doc.save(`patient_${patient.id}_report_${new Date().toISOString().split('T')[0]}.pdf`);
-            this.showToast(this.t('pdfExported'), 'success');
-        }
-        
-        // ===== TOAST NOTIFICATIONS =====
-        
-        showToast(message, type = 'info', duration = 3000) {
-            const toastContainer = this.dom.toastContainer;
-            
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            
-            const icon = type === 'success' ? 'icon-success' : 
-                        type === 'error' ? 'icon-error' : 
-                        type === 'warning' ? 'icon-warning' : 'icon-info';
-            
-            toast.innerHTML = `
-                <div class="toast-icon">
-                    <span class="${icon}"></span>
+            card.innerHTML = `
+                <div>
+                    <div class="visit-date">${date.toLocaleDateString('en-US', { 
+                        month: 'short', 
+                        day: 'numeric',
+                        year: 'numeric'
+                    })}</div>
+                    ${visit.notes ? `<div style="font-size: 0.75rem; color: var(--text-tertiary); margin-top: 4px;">${visit.notes}</div>` : ''}
                 </div>
-                <div class="toast-content">
-                    <div class="toast-message">${message}</div>
+                <div class="visit-values">
+                    <span class="visit-fev1">${visit.fev1.toFixed(2)}</span>
+                    ${fvcHtml}
                 </div>
             `;
             
-            toastContainer.appendChild(toast);
-            
-            // Remove toast after duration
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateX(30px)';
-                setTimeout(() => {
-                    if (toastContainer.contains(toast)) {
-                        toastContainer.removeChild(toast);
-                    }
-                }, 300);
-            }, duration);
-        }
+            list.appendChild(card);
+        });
     }
-    
-    // Initialize the application when DOM is loaded
-    document.addEventListener('DOMContentLoaded', () => {
-        // Create and initialize the app
-        window.spiroliteApp = new SpiroliteApp();
+
+    showEmptyReviewState() {
+        this.dom.patientStatusDot.className = 'patient-status-dot';
+        this.dom.patientStatusText.textContent = this.t('noData');
+        this.dom.reviewStabilityIndicator.innerHTML = '';
+        this.dom.lastUpdatedDate.textContent = '--';
+        this.dom.reviewTxDays.textContent = '--';
+        this.dom.reviewVisits.textContent = '--';
+        this.dom.reviewLastFev1.textContent = '--';
+        this.dom.reviewBestFev1.textContent = '--';
+        this.dom.visitsList.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon icon-no-data"></div>
+                <p>${this.t('noReviewData')}</p>
+                <p class="notes-hint mt-2">${this.t('reviewHint')}</p>
+            </div>
+        `;
+    }
+
+    // ===== DUPLICATE DATE HANDLING =====
+
+    showDuplicateDateModal() {
+        const data = this.state.session.duplicateDateData;
+        if (!data) return;
         
-        // Set current date as default for date inputs
-        const today = new Date().toISOString().split('T')[0];
-        const dateInputs = document.querySelectorAll('input[type="date"]');
-        dateInputs.forEach(input => {
-            if (!input.value) {
-                input.value = today;
-                input.max = today;
+        const date = new Date(data.date);
+        this.dom.duplicateDateMessage.textContent = 
+            `A visit already exists for ${date.toLocaleDateString('en-US', { 
+                month: 'long', 
+                day: 'numeric',
+                year: 'numeric'
+            })}.`;
+        
+        this.dom.existingFev1.textContent = data.existingVisit.fev1.toFixed(2);
+        this.dom.existingFvc.textContent = data.existingVisit.fvc ? data.existingVisit.fvc.toFixed(2) : '--';
+        this.dom.newFev1.textContent = data.newVisit.fev1.toFixed(2);
+        this.dom.newFvc.textContent = data.newVisit.fvc ? data.newVisit.fvc.toFixed(2) : '--';
+        
+        this.showModal('duplicateDateModal');
+    }
+
+    handleDuplicateAddAsNew() {
+        const data = this.state.session.duplicateDateData;
+        if (!data) return;
+        
+        // Add as new entry with slightly modified date
+        const originalDate = new Date(data.date);
+        const newDate = new Date(originalDate);
+        newDate.setDate(newDate.getDate() + 1);
+        
+        const newVisit = {
+            ...data.newVisit,
+            date: newDate.toISOString().split('T')[0]
+        };
+        
+        this.state.session.monitor.visits.push(newVisit);
+        
+        // Update patient if selected
+        if (this.state.currentPatient) {
+            const patient = this.state.patients.get(this.state.currentPatient);
+            if (patient) {
+                patient.visits.push(newVisit);
+                patient.updatedAt = new Date().toISOString();
+                this.state.patients.set(patient.id, patient);
+                this.saveState();
+            }
+        }
+        
+        this.updateVisitsTable();
+        this.updatePatientContext();
+        this.hideModal('duplicateDateModal');
+        
+        this.showToast('Visit added with modified date', 'success');
+    }
+
+    handleDuplicateReplace() {
+        const data = this.state.session.duplicateDateData;
+        if (!data) return;
+        
+        // Replace existing visit in monitor session
+        const index = this.state.session.monitor.visits.findIndex(v => v.date === data.date);
+        if (index !== -1) {
+            this.state.session.monitor.visits[index] = data.newVisit;
+        }
+        
+        // Replace in patient data
+        if (this.state.currentPatient) {
+            const patient = this.state.patients.get(this.state.currentPatient);
+            if (patient) {
+                const patientIndex = patient.visits.findIndex(v => v.date === data.date);
+                if (patientIndex !== -1) {
+                    patient.visits[patientIndex] = data.newVisit;
+                    patient.updatedAt = new Date().toISOString();
+                    this.state.patients.set(patient.id, patient);
+                    this.saveState();
+                }
+            }
+        }
+        
+        this.updateVisitsTable();
+        this.updatePatientContext();
+        this.hideModal('duplicateDateModal');
+        
+        this.showToast('Existing visit replaced', 'success');
+    }
+
+    // ===== EXPORT FUNCTIONS =====
+
+    exportMonitorPDF() {
+        const visits = this.state.session.monitor.visits;
+        if (visits.length === 0) {
+            this.showToast('No data to export', 'error');
+            return;
+        }
+        
+        // Use jsPDF for PDF export
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        // Add header
+        doc.setFontSize(20);
+        doc.setTextColor(26, 95, 122);
+        doc.text('Spirolite - Visit History', 20, 20);
+        
+        doc.setFontSize(12);
+        doc.setTextColor(100, 100, 100);
+        doc.text(`Patient: ${this.state.currentPatient || 'Not specified'}`, 20, 30);
+        doc.text(`Generated: ${new Date().toLocaleString()}`, 20, 37);
+        
+        // Add table
+        const headers = [['Date', 'FEV₁ (L)', 'FVC (L)', 'Ratio %', 'Notes']];
+        const data = visits.map(visit => {
+            const ratio = visit.fvc ? ((visit.fev1 / visit.fvc) * 100).toFixed(1) : '--';
+            const date = new Date(visit.date);
+            return [
+                date.toLocaleDateString(),
+                visit.fev1.toFixed(2),
+                visit.fvc ? visit.fvc.toFixed(2) : '--',
+                ratio,
+                visit.notes || ''
+            ];
+        });
+        
+        doc.autoTable({
+            head: headers,
+            body: data,
+            startY: 45,
+            theme: 'striped',
+            headStyles: { fillColor: [26, 95, 122] },
+            columnStyles: {
+                0: { cellWidth: 30 },
+                1: { cellWidth: 25 },
+                2: { cellWidth: 25 },
+                3: { cellWidth: 25 },
+                4: { cellWidth: 'auto' }
             }
         });
-    });
-    
-    // Handle service worker registration for PWA
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('sw.js').then(registration => {
-                console.log('ServiceWorker registration successful');
-            }).catch(err => {
-                console.log('ServiceWorker registration failed: ', err);
-            });
-        });
-    }
-    
-    // Handle beforeunload to warn about unsaved data
-    window.addEventListener('beforeunload', (e) => {
-        const hasUnsavedData = window.spiroliteApp && 
-            (window.spiroliteApp.state.session.monitor.visits.length > 0 ||
-             window.spiroliteApp.state.session.quick.fev1 !== null ||
-             window.spiroliteApp.state.session.full.fev1 !== null);
         
-        if (hasUnsavedData) {
-            e.preventDefault();
-            e.returnValue = 'You have unsaved data. Are you sure you want to leave?';
-            return 'You have unsaved data. Are you sure you want to leave?';
+        // Save PDF
+        doc.save(`spirolite-${this.state.currentPatient || 'export'}-${new Date().toISOString().split('T')[0]}.pdf`);
+        
+        this.showToast(this.t('pdfExported'), 'success');
+    }
+
+    exportPatientPDF() {
+        if (!this.state.currentPatient) {
+            this.showToast('No patient selected', 'error');
+            return;
         }
-    });
-    
-    // Make the app globally accessible
-    window.SpiroliteApp = SpiroliteApp;
-    
-    // End of Spirolite v1.0 Enhanced JavaScript
-    </script>
-</body>
-</html>
+        
+        const patient = this.state.patients.get(this.state.currentPatient);
+        if (!patient || patient.visits.length === 0) {
+            this.showToast('No patient data to export', 'error');
+            return;
+        }
+        
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        // Header
+        doc.setFontSize(24);
+        doc.setTextColor(26, 95, 122);
+        doc.text('Spirolite - Patient Report', 20, 20);
+        
+        doc.setFontSize(12);
+        doc.setTextColor(100, 100, 100);
+        doc.text(`Patient ID: ${patient.id}`, 20, 30);
+        doc.text(`Transplant Date: ${patient.txDate ? new Date(patient.txDate).toLocaleDateString() : 'Not specified'}`, 20, 37);
+        
+        if (patient.baselineFev1) {
+            doc.text(`Baseline FEV₁: ${patient.baselineFev1.toFixed(2)} L`, 20, 44);
+        }
+        
+        doc.text(`Total Visits: ${patient.visits.length}`, 20, 51);
+        doc.text(`Report Generated: ${new Date().toLocaleString()}`, 20, 58);
+        
+        // Summary section
+        doc.setFontSize(16);
+        doc.setTextColor(26, 95, 122);
+        doc.text('Summary', 20, 70);
+        
+        doc.setFontSize(10);
+        doc.setTextColor(50, 50, 50);
+        
+        const lastVisit = patient.visits[patient.visits.length - 1];
+        const bestVisit = [...patient.visits].sort((a, b) => b.fev1 - a.fev1)[0];
+        const stability = this.checkStability(patient.visits);
+        
+        let yPos = 80;
+        doc.text(`Last FEV₁: ${lastVisit.fev1.toFixed(2)} L`, 20, yPos);
+        yPos += 7;
+        doc.text(`Best FEV₁: ${bestVisit.fev1.toFixed(2)} L`, 20, yPos);
+        yPos += 7;
+        doc.text(`Stability: ${stability.stable ? 'Stable' : 'Unstable'}`, 20, yPos);
+        yPos += 7;
+        
+        if (patient.baselineFev1 && lastVisit) {
+            const percent = (lastVisit.fev1 / patient.baselineFev1) * 100;
+            doc.text(`Current vs Baseline: ${percent.toFixed(1)}%`, 20, yPos);
+        }
+        
+        // Visits table
+        yPos += 15;
+        doc.setFontSize(16);
+        doc.setTextColor(26, 95, 122);
+        doc.text('Visit History', 20, yPos);
+        
+        const sortedVisits = [...patient.visits].sort((a, b) => new Date(a.date) - new Date(b.date));
+        const headers = [['Date', 'Days', 'FEV₁ (L)', 'FVC (L)', 'Ratio %', 'Notes']];
+        const data = sortedVisits.map((visit, index) => {
+            const date = new Date(visit.date);
+            const firstDate = new Date(sortedVisits[0].date);
+            const days = Math.floor((date - firstDate) / (1000 * 60 * 60 * 24));
+            const ratio = visit.fvc ? ((visit.fev1 / visit.fvc) * 100).toFixed(1) : '--';
+            return [
+                date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                days.toString(),
+                visit.fev1.toFixed(2),
+                visit.fvc ? visit.fvc.toFixed(2) : '--',
+                ratio,
+                visit.notes || ''
+            ];
+        });
+        
+        doc.autoTable({
+            head: headers,
+            body: data,
+            startY: yPos + 5,
+            theme: 'striped',
+            headStyles: { fillColor: [26, 95, 122] }
+        });
+        
+        // Save PDF
+        doc.save(`spirolite-patient-${patient.id}-${new Date().toISOString().split('T')[0]}.pdf`);
+        
+        this.showToast(this.t('pdfExported'), 'success');
+    }
+
+    exportAllData() {
+        const data = {
+            version: '2.0',
+            exportedAt: new Date().toISOString(),
+            patients: Array.from(this.state.patients.values()),
+            protocol: this.state.protocol,
+            settings: {
+                colorCoding: this.state.colorCoding,
+                language: this.state.language
+            }
+        };
+        
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `spirolite-full-export-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        this.showToast(this.t('allDataExported'), 'success');
+    }
+
+    // ===== MODAL MANAGEMENT =====
+
+    showModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    hideModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+            
+            // Clear duplicate date data
+            if (modalId === 'duplicateDateModal') {
+                this.state.session.duplicateDateData = null;
+            }
+        }
+    }
+
+    // ===== TOAST NOTIFICATIONS =====
+
+    showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        
+        const icons = {
+            success: '✓',
+            error: '✗',
+            warning: '⚠',
+            info: 'ℹ'
+        };
+        
+        toast.innerHTML = `
+            <div class="toast-icon">${icons[type] || icons.info}</div>
+            <div class="toast-content">
+                <div class="toast-title">${type.charAt(0).toUpperCase() + type.slice(1)}</div>
+                <div class="toast-message">${message}</div>
+            </div>
+        `;
+        
+        this.dom.toastContainer.appendChild(toast);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(30px)';
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 300);
+        }, 5000);
+    }
+}
+
+// Initialize the app when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    window.app = new SpiroliteApp();
+});</script> </body> </html>
