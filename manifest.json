@@ -1,22 +1,110 @@
 {
-  "name": "Spirolite",
+  "name": "Spirolite Professional",
   "short_name": "Spirolite",
-  "description": "Lung Function Calculator",
+  "description": "Professional Lung Function Calculator & Tracker for post-transplant monitoring",
   "theme_color": "#1A5F7A",
-  "background_color": "#ffffff",
+  "background_color": "#F8FAFC",
   "display": "standalone",
+  "orientation": "portrait",
   "scope": "/",
-  "start_url": "/",
+  "start_url": "/?source=pwa",
+  "id": "/",
+  "dir": "ltr",
+  "lang": "en-US",
+  "categories": ["medical", "health", "productivity", "utilities"],
+  
   "icons": [
     {
       "src": "icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-1024.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any maskable"
     }
-  ]
+  ],
+  
+  "screenshots": [
+    {
+      "src": "screenshot-desktop.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Spirolite Desktop Interface"
+    },
+    {
+      "src": "screenshot-mobile.png",
+      "sizes": "360x640",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Spirolite Mobile Interface"
+    }
+  ],
+  
+  "shortcuts": [
+    {
+      "name": "Quick Calculation",
+      "short_name": "Quick Calc",
+      "description": "Perform a quick spirometry calculation",
+      "url": "/#modeQuick",
+      "icons": [
+        {
+          "src": "icon-96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Patient Monitoring",
+      "short_name": "Monitor",
+      "description": "Monitor patient progress over time",
+      "url": "/#modeMonitor",
+      "icons": [
+        {
+          "src": "icon-96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "New Patient",
+      "short_name": "New",
+      "description": "Create a new patient record",
+      "url": "/#newPatientModal",
+      "icons": [
+        {
+          "src": "icon-96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  
+  "related_applications": [],
+  "prefer_related_applications": false,
+  
+  "protocol_handlers": [],
+  
+  "display_override": ["window-controls-overlay"],
+  
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  }
 }
