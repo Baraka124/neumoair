@@ -6894,14 +6894,22 @@ Example:
                         lastVisit.date,
                         firstVisit.date
                     );
-                    
                     doc.text('Overall Trend:', 20, yPos);
-                    doc.setFont('helvetica', trend > 0 ? 'bold' : 'normal');
-                    doc.setTextColor(trend > 0 ? 5 : 150 : trend < 0 ? 220 : 38 : 0);
-                    doc.text(`${trend >= 0 ? '+' : ''}${trend.toFixed(3)} L/month`, 60, yPos);
-                    doc.setTextColor(0, 0, 0);
-                    doc.setFont('helvetica', 'normal');
-                    yPos += 10;
+if (trend > 0) {
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(5, 150, 105);      // Green
+} else if (trend < 0) {
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(220, 38, 38);      // Red
+} else {
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(0, 0, 0);          // Black
+}
+doc.text(`${trend >= 0 ? '+' : ''}${trend.toFixed(3)} L/month`, 60, yPos);
+doc.setTextColor(0, 0, 0);
+doc.setFont('helvetica', 'normal');
+yPos += 10;
+                    
                 }
                 
                 // Protocol recommendations
