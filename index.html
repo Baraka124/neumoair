@@ -6943,12 +6943,20 @@ yPos += 10;
                     );
                     
                     doc.text('Recent Trend (last 3 visits):', 20, yPos);
-                    doc.setFont('helvetica', recentTrend > 0 ? 'bold' : 'normal');
-                    doc.setTextColor(recentTrend > 0 ? 5 : 150 : recentTrend < 0 ? 220 : 38 : 0);
-                    doc.text(`${recentTrend >= 0 ? '+' : ''}${recentTrend.toFixed(3)} L/month`, 85, yPos);
-                    doc.setTextColor(0, 0, 0);
-                    doc.setFont('helvetica', 'normal');
-                    yPos += 10;
+if (recentTrend > 0) {
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(5, 150, 105);
+} else if (recentTrend < 0) {
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(220, 38, 38);
+} else {
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(0, 0, 0);
+}
+doc.text(`${recentTrend >= 0 ? '+' : ''}${recentTrend.toFixed(3)} L/month`, 85, yPos);
+doc.setTextColor(0, 0, 0);
+doc.setFont('helvetica', 'normal');
+yPos += 10;
                 }
             }
             
