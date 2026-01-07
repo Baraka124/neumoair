@@ -5,264 +5,68 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spirolite - Offline</title>
     <style>
-        :root {
-            --primary: #1A5F7A;
-            --primary-light: #2D9596;
-            --background: #F8FAFC;
-            --text: #1F2937;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: var(--background);
-            color: var(--text);
+            background: linear-gradient(135deg, #1A5F7A, #0D4B63);
+            color: white;
             height: 100vh;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
+            text-align: center;
             padding: 20px;
         }
         
-        .offline-container {
-            max-width: 500px;
-            text-align: center;
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
-            border: 1px solid rgba(26, 95, 122, 0.1);
-        }
-        
-        .offline-icon {
-            font-size: 80px;
-            margin-bottom: 20px;
-            color: var(--primary);
+        .logo {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            opacity: 0.9;
         }
         
         h1 {
-            color: var(--primary);
-            margin-bottom: 16px;
-            font-size: 28px;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
         }
         
         p {
-            color: #4B5563;
-            line-height: 1.6;
-            margin-bottom: 24px;
-            font-size: 16px;
+            opacity: 0.8;
+            line-height: 1.5;
+            max-width: 300px;
+            margin-bottom: 2rem;
         }
         
-        .features {
-            background: rgba(26, 95, 122, 0.05);
-            border-radius: 12px;
-            padding: 20px;
-            margin: 24px 0;
-            text-align: left;
-        }
-        
-        .features h3 {
-            color: var(--primary);
-            margin-bottom: 12px;
-            font-size: 18px;
-        }
-        
-        .features ul {
-            list-style: none;
-        }
-        
-        .features li {
-            padding: 8px 0;
-            color: #4B5563;
-            display: flex;
-            align-items: center;
-        }
-        
-        .features li:before {
-            content: "✓";
-            color: var(--primary-light);
-            margin-right: 10px;
-            font-weight: bold;
-        }
-        
-        .actions {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            margin-top: 30px;
-        }
-        
-        button {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 14px;
-        }
-        
-        .primary-btn {
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+        .button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             color: white;
-        }
-        
-        .secondary-btn {
-            background: rgba(26, 95, 122, 0.1);
-            color: var(--primary);
-        }
-        
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(26, 95, 122, 0.2);
-        }
-        
-        .connection-status {
-            margin-top: 20px;
-            padding: 10px;
+            padding: 12px 24px;
             border-radius: 8px;
-            background: rgba(220, 38, 38, 0.1);
-            color: #DC2626;
-            display: none;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
         }
         
-        .connection-status.connected {
-            background: rgba(5, 150, 105, 0.1);
-            color: #059669;
+        .button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
         }
         
-        @media (max-width: 600px) {
-            .offline-container {
-                padding: 30px 20px;
-            }
-            
-            .actions {
-                flex-direction: column;
-            }
-            
-            button {
-                width: 100%;
-            }
+        .icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.8;
         }
     </style>
 </head>
 <body>
-    <div class="offline-container">
-        <div class="offline-icon">📶</div>
-        
-        <h1>You're Offline</h1>
-        
-        <p>Spirolite Professional needs an internet connection to fully function. 
-           Some features may be limited while offline.</p>
-        
-        <div class="features">
-            <h3>Available Offline:</h3>
-            <ul>
-                <li>View previously loaded patient data</li>
-                <li>Perform quick calculations</li>
-                <li>Review saved visits and trends</li>
-                <li>Generate PDF reports from cached data</li>
-            </ul>
-        </div>
-        
-        <div class="connection-status" id="connectionStatus">
-            Checking connection...
-        </div>
-        
-        <div class="actions">
-            <button class="primary-btn" onclick="retryConnection()">
-                🔄 Retry Connection
-            </button>
-            <button class="secondary-btn" onclick="useOfflineMode()">
-                ⚡ Use Offline Mode
-            </button>
-        </div>
-        
-        <p style="margin-top: 20px; font-size: 14px; color: #9CA3AF;">
-            Last sync: <span id="lastSync">--:--</span>
-        </p>
-    </div>
-
-    <script>
-        // Connection monitoring
-        function updateConnectionStatus() {
-            const statusEl = document.getElementById('connectionStatus');
-            const lastSyncEl = document.getElementById('lastSync');
-            
-            if (navigator.onLine) {
-                statusEl.textContent = 'Connection restored!';
-                statusEl.className = 'connection-status connected';
-                lastSyncEl.textContent = new Date().toLocaleTimeString();
-                
-                // Auto-redirect after 3 seconds
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 3000);
-            } else {
-                statusEl.textContent = 'Still offline. Please check your connection.';
-                statusEl.className = 'connection-status';
-            }
-        }
-        
-        function retryConnection() {
-            const statusEl = document.getElementById('connectionStatus');
-            statusEl.textContent = 'Checking connection...';
-            statusEl.style.display = 'block';
-            
-            // Try to fetch a small file
-            fetch('./icon.svg', { method: 'HEAD', cache: 'no-store' })
-                .then(() => {
-                    updateConnectionStatus();
-                })
-                .catch(() => {
-                    statusEl.textContent = 'Still offline. Please check your connection.';
-                });
-        }
-        
-        function useOfflineMode() {
-            // Try to load main app from cache
-            caches.match('index.html')
-                .then(response => {
-                    if (response) {
-                        return response.text();
-                    }
-                    throw new Error('App not cached');
-                })
-                .then(html => {
-                    document.open();
-                    document.write(html);
-                    document.close();
-                })
-                .catch(error => {
-                    document.getElementById('connectionStatus').textContent = 
-                        'Offline mode not available. Please connect to internet first.';
-                });
-        }
-        
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            // Set last sync time from localStorage
-            const lastSync = localStorage.getItem('spirolite_last_sync');
-            if (lastSync) {
-                document.getElementById('lastSync').textContent = 
-                    new Date(lastSync).toLocaleTimeString();
-            }
-            
-            // Monitor connection
-            window.addEventListener('online', updateConnectionStatus);
-            window.addEventListener('offline', updateConnectionStatus);
-            
-            // Initial check
-            updateConnectionStatus();
-            
-            // Auto-retry every 30 seconds
-            setInterval(retryConnection, 30000);
-        });
-    </script>
+    <div class="logo">S</div>
+    <div class="icon">📶</div>
+    <h1>You're Offline</h1>
+    <p>Spirolite requires an internet connection to load for the first time. Please check your connection and try again.</p>
+    <button class="button" onclick="window.location.reload()">Retry Connection</button>
 </body>
 </html>
