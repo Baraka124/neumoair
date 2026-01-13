@@ -1,28 +1,26 @@
-// Service Worker for Spirolite Professional
-const CACHE_NAME = 'spirolite-v1.6';
+const CACHE_NAME = 'spirolite-pro-v2.0';
 const OFFLINE_URL = 'offline.html';
 
-// Resources to cache on install
-const PRECACHE_RESOURCES = [
-  './',
-  './index.html',
-  './manifest.json',
-  './icon.svg',
-  './icon-192.png',
-  './icon-512.png',
-  './offline.html'
+// Assets to cache immediately
+const PRECACHE_ASSETS = [
+  '/',
+  'index.html',
+  'styles.css',
+  'app.js',
+  'icons/icon-192x192.png',
+  'icons/icon-512x512.png'
 ];
 
-// Install event - cache essential resources
+// Install event - precache critical assets
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
         console.log('Caching app shell');
-        return cache.addAll(PRECACHE_RESOURCES);
+        return cache.addAll(PRECACHE_ASSETS);
       })
       .then(() => {
-        console.log('Service Worker installed');
+        console.log('Skip waiting on install');
         return self.skipWaiting();
       })
   );
@@ -41,62 +39,78 @@ self.addEventListener('activate', event => {
         })
       );
     }).then(() => {
-      console.log('Service Worker activated');
+      console.log('Claiming clients');
       return self.clients.claim();
     })
   );
 });
 
-// Fetch event - serve from cache, fallback to network
+// Fetch event - network first with cache fallback
 self.addEventListener('fetch', event => {
   // Skip non-GET requests
   if (event.request.method !== 'GET') return;
 
-  // Skip external resources
-  const url = new URL(event.request.url);
-  if (!url.origin.includes(location.origin)) return;
+  // Skip cross-origin requests
+  if (!event.request.url.startsWith(self.location.origin)) return;
 
+  // For API calls, network only
+  if (event.request.url.includes('/api/')) {
+    event.respondWith(
+      fetch(event.request)
+        .catch(() => {
+          return new Response(JSON.stringify({
+            error: 'Network error',
+            offline: true
+          }), {
+            headers: { 'Content-Type': 'application/json' }
+          });
+        })
+    );
+    return;
+  }
+
+  // For everything else: network first, cache fallback
   event.respondWith(
-    caches.match(event.request)
-      .then(cachedResponse => {
-        // Return cached response if found
-        if (cachedResponse) {
-          return cachedResponse;
-        }
-
-        // Otherwise fetch from network
-        return fetch(event.request)
-          .then(response => {
-            // Don't cache if not a valid response
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
+    fetch(event.request)
+      .then(response => {
+        // Cache the response
+        const responseClone = response.clone();
+        caches.open(CACHE_NAME)
+          .then(cache => {
+            cache.put(event.request, responseClone);
+          });
+        return response;
+      })
+      .catch(() => {
+        // Network failed, try cache
+        return caches.match(event.request)
+          .then(cachedResponse => {
+            if (cachedResponse) {
+              return cachedResponse;
             }
-
-            // Clone the response for caching
-            const responseToCache = response.clone();
-            caches.open(CACHE_NAME)
-              .then(cache => {
-                cache.put(event.request, responseToCache);
-              });
-
-            return response;
-          })
-          .catch(error => {
-            // If offline and HTML request, show offline page
-            if (event.request.headers.get('accept').includes('text/html')) {
+            
+            // If not in cache and this is a navigation request
+            if (event.request.mode === 'navigate') {
               return caches.match(OFFLINE_URL);
             }
             
-            console.log('Fetch failed:', error);
-            throw error;
+            return new Response('Network error', {
+              status: 408,
+              headers: { 'Content-Type': 'text/plain' }
+            });
           });
       })
   );
 });
 
-// Handle messages from the app
-self.addEventListener('message', event => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting();
+// Background sync for offline data
+self.addEventListener('sync', event => {
+  if (event.tag === 'sync-visits') {
+    event.waitUntil(syncVisits());
   }
 });
+
+async function syncVisits() {
+  // Implementation for syncing offline data
+  console.log('Syncing offline visits...');
+}
